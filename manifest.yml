@@ -1,0 +1,13 @@
+---
+applications:
+- services:
+  - insights-weather-weatherinsights
+  name:    firewater
+  host:    firewater
+  domain:  mybluemix.net
+  memory:  512M
+  command: node .
+  timeout: 80
+  env:
+    NODE_ENV: production
+    APP_URL: http://firewater.mybluemix.net

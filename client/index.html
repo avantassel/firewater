@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html ng-app="firewater">
+<head>
+  <base href="/">
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+  <meta name="description" content="FireWater is a perfect storm weather prediction application.">
+  <meta name="keywords" content="wild fires, floods, forecast, weather">
+  <title ng-bind="title || 'FireWater'">FireWater</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Sans:400,700" type="text/css">
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+  <link rel="stylesheet" href="css/app.css">
+</head>
+
+<body>
+
+<div ui-view></div>
+
+<script src="https://maps.googleapis.com/maps/api/js?libraries=places&language=en"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+<script src="dist/js/plugins.min.js"></script>
+<script src="js/lb-services.js"></script>
+<script src="js/app.js"></script>
+<!-- <script src="js/filters.js"></script>
+<script src="js/services.js"></script> -->
+<script src="js/controllers.js"></script>
+
+</body>
+</html>
