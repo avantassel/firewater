@@ -10,7 +10,6 @@ var firewaterApp = angular.module('firewater'
   ,'duScroll'
   ,'nvd3'
   ,'ui.bootstrap'
-  ,'angularXml2json'
   ,'ngGeolocation'])
 .config(function($stateProvider, $urlRouterProvider, $locationProvider, $logProvider, $httpProvider) {
 

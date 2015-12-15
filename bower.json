@@ -19,7 +19,6 @@
     "angular": "~1.4.8",
     "angular-leaflet-directive": "~0.10.0",
     "leaflet": "~0.7.7",
-    "angular-xml2json": "~0.0.2",
     "ngGeolocation": "~0.0.8",
     "Leaflet.Geodesic": "Fragger/Leaflet.Geodesic",
     "Leaflet.extra-markers": "coryasilva/Leaflet.ExtraMarkers#master",

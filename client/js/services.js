@@ -1,4 +1,4 @@
-firewaterApp.factory('FWService', function($http, $q, $filter, $location, ngXml2json){
+firewaterApp.factory('FWService', function($http, $q, $filter, $location, Location){
 
   var autocomplete = new google.maps.places.AutocompleteService();
 
@@ -6,14 +6,10 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, ngXml2
 
     alerts: function(state){
       var q = $q.defer();
-      $http.get('http://alerts.weather.gov/cap/'+state.toLowerCase()+'.atom').then(function(response){
-        if(response.data){
-          var json_response = ngXml2json.parser(response.data);
-          console.log(json_response);
+      Location.getAlerts({state:state}, function(response){
+        if(response.response){
+          q.resolve(response.response);
         }
-        // q.resolve(response);
-      },function(err){
-        q.reject(err);
       });
       return q.promise;
     },

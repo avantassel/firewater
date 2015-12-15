@@ -23,7 +23,7 @@ Look at [env-sample.yml](env-sample.yml)
 
 ```
   # if you add models you will need to run this
-  lb-ng server/server.js client/js/services/lb-services.js
+  lb-ng server/server.js client/js/lb-services.js
 ```
 
 ## Bluemix Notes
