@@ -2,5 +2,32 @@
   "db": {
     "name": "db",
     "connector": "memory"
+  },
+  "geocode": {
+    "name": "geocode",
+    "connector": "rest",
+    "operations": [
+      {
+        "template": {
+          "method": "GET",
+          "url": "http://maps.googleapis.com/maps/api/geocode/{format=json}",
+          "headers": {
+            "accepts": "application/json",
+            "content-type": "application/json"
+          },
+          "query": {
+            "latlng": "{lat},{lng}",
+            "sensor": "{sensor=false}"
+          },
+          "responsePath": "$.results[0].formatted_address"
+        },
+        "functions": {
+          "address": [
+            "lat",
+            "lng"
+          ]
+        }
+      }
+    ]
   }
 }

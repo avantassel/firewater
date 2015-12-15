@@ -19,7 +19,7 @@ gulp.task('css', function () {
 });
 
 gulp.task('appcss', function () {
-  return pipe([gulp.src(['./css/app.css'])
+  return pipe([gulp.src(['./client/css/app.css'])
               ,debug()
               ,concat('app.min.css')
               ,minifyCss({keepSpecialComments: 0})
@@ -30,7 +30,7 @@ gulp.task('appcss', function () {
 
 gulp.task('images', function () {
   var src = mainBowerFiles();
-  src.push('bower_components/Leaflet.extra-markers/src/images/*.png');
+  src.push('client/vendor/Leaflet.extra-markers/src/images/*.png');
 
   return pipe([gulp.src(src)
                 ,filter('*.png')
@@ -55,7 +55,7 @@ gulp.task('scripts', function(){
 });
 
 gulp.task('appscripts', function(){
-    return pipe([gulp.src(['./js/app.js','./js/controllers.js'])
+    return pipe([gulp.src(['./client/js/app.js','./client/js/controllers.js'])
               ,debug()
               ,concat('app.min.js')
               ,uglify({preserveComments:'some'})

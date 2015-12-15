@@ -17,6 +17,17 @@
     "moment": "~2.10.6",
     "jquery-character-counter": "dtisgodsson/jquery-character-counter#~1.5.2",
     "angular": "~1.4.8",
-    "leaflet": "~0.7.7"
+    "angular-leaflet-directive": "~0.10.0",
+    "leaflet": "~0.7.7",
+    "angular-xml2json": "~0.0.2",
+    "ngGeolocation": "~0.0.8",
+    "Leaflet.Geodesic": "Fragger/Leaflet.Geodesic",
+    "Leaflet.extra-markers": "coryasilva/Leaflet.ExtraMarkers#master",
+    "angular-scroll": "~1.0.0",
+    "d3": "~3.5.9",
+    "nvd3": "~1.8.1",
+    "angularjs-nvd3-directives": "~0.0.7",
+    "angular-nvd3": "~1.0.4",
+    "angular-bootstrap": "~0.14.3"
   }
 }
