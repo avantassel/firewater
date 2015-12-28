@@ -63,6 +63,47 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, Locati
         q.reject(err);
       });
       return q.promise;
+    },
+
+    center: function(){
+      return {lat: 39.9950, lng: -105.1006, zoom: 4};
+    },
+
+    mapOptions: function(scope){
+      return {
+          center: this.center(),
+          geojson: scope.geojson,
+          defaults: {
+              maxZoom: 16,
+              minZoom: 3,
+              doubleClickZoom: true,
+              scrollWheelZoom: false,
+              tileLayerOptions: {
+                opacity: 0.9,
+                detectRetina: true,
+                reuseTiles: true,
+              },
+            },
+            path: {
+                weight: 10,
+                opacity: 1,
+                color: '#0000ff'
+            },
+            layers:{
+              baselayers: {
+                arc: {
+                    name: 'ArcGIS',
+                    type: 'xyz',
+                    url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+                    layerOptions: {
+                        subdomains: ['a', 'b', 'c'],
+                        continuousWorld: true,
+                        showOnSelector: false
+                    }
+                }
+              }              
+            }
+        };
     }
   }
 });
