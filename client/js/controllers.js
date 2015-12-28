@@ -1,6 +1,6 @@
 firewaterApp.controller('homeCtrl', function($rootScope, $scope, $stateParams, $state, $filter, $geolocation, leafletData, FWService) {
 
-  $scope.state = 'us';
+  $scope.geocode = {state:'us', formatted_address:'', geometry:{}};
   $scope.position = null;
   $scope.alerts = null;
   $scope.forecast = null;
@@ -15,10 +15,9 @@ firewaterApp.controller('homeCtrl', function($rootScope, $scope, $stateParams, $
         $scope.position = position;
 
         //get state for user location
-        FWService.state(position.coords).then(function(state){
+        FWService.geocode(position.coords).then(function(response){
           //set state
-          // $scope.state = state;
-          return true;
+          return $scope.geocode = response;
 
         }).then(function(){
           //get forecast for user location
@@ -38,12 +37,13 @@ firewaterApp.controller('homeCtrl', function($rootScope, $scope, $stateParams, $
      });
 
      $scope.getAlerts = function(){
-       FWService.alerts($scope.state).then(function(alerts){
+      //  FWService.alerts($scope.geocode.state).then(function(alerts){
+      FWService.alerts('us').then(function(alerts){
          //set alerts
          $scope.alerts = alerts;
          //only get alerts with polygon for mapping
          $scope.statePolygonAlerts = alerts.filter(function(a){
-           return (a['cap:polygon'] && a['cap:polygon'][0] != "") ? a : null;
+           return (!!a['cap:polygon'] && a['cap:polygon'][0] != "") ? a : null;
          });
          console.log('areaPolygonAlerts',$scope.areaPolygonAlerts);
        });

@@ -34,25 +34,31 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, Locati
       return q.promise;
     },
 
-    state: function(position){
+    geocode: function(position){
       var q = $q.defer();
-      var state = '';
+
+      var response = {formatted_address:'', state:'', geometry:{}};
+
       var args = {sensor:false,latlng:position.latitude+','+position.longitude};
       $http.get('http://maps.googleapis.com/maps/api/geocode/json',{params:args}).then(function(response){
         if(response.data){
           var addr = response.data.results[0].address_components;
+          //set response fields needed
+          response.formatted_address = response.data.results[0].formatted_address;
+          response.geometry = response.data.results[0].geometry;
+          //parse address_components to get state
           for(a in addr){
             if(addr[a].types.indexOf("administrative_area_level_1")!==-1){
-              state = addr[a].short_name;
+              response.state = addr[a].short_name;
             }
-            //unset state if
+            //unset state if not US
             if(addr[a].types.indexOf("country")!==-1 && addr[a].short_name != "US"){
-              state = '';
+              response.state = '';
               break;
             }
           }
         }
-        q.resolve(state);
+        q.resolve(response);
       },function(err){
         q.reject(err);
       });
