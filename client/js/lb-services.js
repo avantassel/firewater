@@ -1584,6 +1584,42 @@ module.factory(
           url: urlBase + "/Locations/getAlerts",
           method: "GET"
         },
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Location#getForecast
+         * @methodOf lbServices.Location
+         *
+         * @description
+         *
+         * Get Weather Insights forecast by lat,lng
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `lat` – `{string=}` - 
+         *
+         *  - `lng` – `{string=}` - 
+         *
+         *  - `endPoint` – `{string=}` - 
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * Data properties:
+         *
+         *  - `response` – `{object=}` - 
+         */
+        "getForecast": {
+          url: urlBase + "/Locations/getForecast",
+          method: "GET"
+        },
       }
     );
 

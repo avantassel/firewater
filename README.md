@@ -14,10 +14,26 @@ FireWater was developed for the IBM [Sparkathon](http://sparkathon.devpost.com/)
 
 Running locally add values to .env file.
 Look at [env-sample.yml](env-sample.yml)
+
 ```
   cp env-sample.json env.json
 ```
 
+Import storm data and ugc areas to cloudant
+
+[http://www1.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/legacy](http://www1.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/legacy)
+
+[https://github.com/claudiusli/csv-import](https://github.com/claudiusli/csv-import)
+
+```
+pip install requests
+
+# import UGC areas
+python csv-import.py -f ~/Downloads/ugc_areas.csv -d stormdata_ugc_areas -u 5a96fba5-a18f-4c28-b935-06dc8f5832cf-bluemix -a
+
+# import storm data
+python csv-import.py -f ~/Downloads/stormdata_2011.csv -d stormdata -u 5a96fba5-a18f-4c28-b935-06dc8f5832cf-bluemix -a
+```
 
 ## Strongloop Notes
 
@@ -30,5 +46,5 @@ Look at [env-sample.yml](env-sample.yml)
 
 ```
   cf push
-  cf logs mobilize --recent
+  cf logs firewater --recent
 ```

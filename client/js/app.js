@@ -25,6 +25,11 @@ var firewaterApp = angular.module('firewater'
       controller: 'homeCtrl',
       templateUrl: 'views/home.html'
     })
+    .state('state', {
+      url: '/state/:state',
+      controller: 'stateCtrl',
+      templateUrl: 'views/state.html'
+    })
     .state('otherwise', {
       url: '*path',
       templateUrl: 'views/not-found.html'

@@ -1,7 +1,8 @@
 ---
 applications:
 - services:
-  - insights-weather-weatherinsights
+  - weatherinsights
+  - stormdata
   name:    firewater
   host:    firewater
   domain:  mybluemix.net

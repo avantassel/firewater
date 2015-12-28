@@ -6,9 +6,21 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, Locati
 
     alerts: function(state){
       var q = $q.defer();
-      Location.getAlerts({state:state}, function(response){
-        if(response.response){
-          q.resolve(response.response);
+      if(!state)
+        state='us';//get all alerts
+      Location.getAlerts({state:state}, function(data){
+        if(data.response){
+          q.resolve(data.response.feed.entry);
+        }
+      });
+      return q.promise;
+    },
+
+    forecast: function(position){
+      var q = $q.defer();
+      Location.getForecast({lat:position.latitude,lng:position.longitude}, function(data){
+        if(data.response){
+          q.resolve(data.response);
         }
       });
       return q.promise;
