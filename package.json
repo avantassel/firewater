@@ -20,6 +20,7 @@
     "loopback-connector-rest": "^1.10.1",
     "loopback-datasource-juggler": "^2.19.0",
     "noaa-forecasts": "0.0.4",
+    "point-in-polygon": "^1.0.0",
     "request": "^2.65.0",
     "serve-favicon": "^2.0.1",
     "vow": "^0.4.11",

@@ -4,6 +4,7 @@ var vow 		  = require('vow')
 	, fs		    = require('fs')
   , request   = require('request')
   , xml2js    = require('xml2js')
+	, inside 		= require('point-in-polygon')
 	, dotenv		= null
 	, env 			= null
 	, vcap 			= null;

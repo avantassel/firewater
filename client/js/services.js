@@ -101,9 +101,9 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, Locati
             layers:{
               baselayers: {
                 arc: {
-                    name: 'ArcGIS',
+                    name: 'OpenStreetMap',
                     type: 'xyz',
-                    url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+                    url: 'http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png',
                     layerOptions: {
                         subdomains: ['a', 'b', 'c'],
                         continuousWorld: true,
@@ -117,9 +117,9 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, Locati
     mapFillColor: function(name){
       switch(name){
         case 'Flood':
-          return "#6299c2";
+          return "#c6d8ef";
         case 'Fire':
-          return "#e3980a";
+          return "#ffa556";
         case 'Winter':
           return "#777777";
         case 'Other':
@@ -129,7 +129,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, Locati
     mapBorderColor: function(name){
       switch(name){
         case 'Flood':
-          return "#2c3e50";
+          return "#62a0ca";
         case 'Fire':
           return "#b64c28";
         case 'Winter':
@@ -203,6 +203,9 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, Locati
          //center the map
          scope.centerJSON("floods");
          centered=true;
+         //check if user location is inside flood polygons
+         if(scope.position && this.pip([scope.position.longitude,scope.position.latitude],geoAlerts.floods))
+          scope.inAlertArea.push({type:'floods'});
       }
 
       if(geoAlerts.fires.length){
@@ -211,6 +214,9 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, Locati
         if(!centered)
           scope.centerJSON("fires");
         centered=true;
+        //check if user location is inside fire polygons
+        if(scope.position && this.pip([scope.position.longitude,scope.position.latitude],geoAlerts.fires))
+         scope.inAlertArea.push({type:'fires'});
       }
 
       if(geoAlerts.winter.length){
@@ -219,6 +225,9 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, Locati
         if(!centered)
           scope.centerJSON("winter");
         centered=true;
+        //check if user location is inside winter polygons
+        if(scope.position && this.pip([scope.position.longitude,scope.position.latitude],geoAlerts.winter))
+         scope.inAlertArea.push({type:'winter'});
       }
 
       if(geoAlerts.other.length){
@@ -226,7 +235,30 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, Locati
         //center the map
         if(!centered)
           scope.centerJSON("other");
+        //check if user location is inside other polygons
+        if(scope.position && this.pip([scope.position.longitude,scope.position.latitude],geoAlerts.other))
+         scope.inAlertArea.push({type:'other'});
       }
+    },
+
+    //https://github.com/substack/point-in-polygon
+    pip: function(point,polygon){
+    // ray-casting algorithm based on
+    // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+
+      var x = point[0], y = point[1];
+
+      var inside = false;
+      for (var i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+          var xi = polygon[i][0], yi = polygon[i][1];
+          var xj = polygon[j][0], yj = polygon[j][1];
+
+          var intersect = ((yi > y) != (yj > y))
+              && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+          if (intersect) inside = !inside;
+      }
+
+      return inside;
     }
   }
 });

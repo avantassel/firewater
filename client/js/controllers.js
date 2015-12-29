@@ -22,6 +22,7 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
   $scope.geocode = {state:'us', formatted_address:'', geometry:{}};
   $scope.position = null;
   $scope.alerts = null;
+  $scope.inAlertArea = [];
   $scope.forecast = null;
   $scope.areaPolygonAlerts = null;
   $scope.geoAlerts = {};
@@ -111,6 +112,12 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
               );
             }
 
+            // snow_qpf: Snow Quantitative Precipitation Forecast
+            // qpf: Quantitative Precipitation Forecast
+            // rh: Relative Humidity
+            //
+            // QPF expected amount of melted precipitation accumulated over a specified time period
+
             $scope.forecastData = [
               {
                 "key": "Dew Point",
@@ -170,6 +177,7 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
 
   $scope.state = $stateParams.state;
   $scope.alerts = null;
+  $scope.inAlertArea = [];
   $scope.areaPolygonAlerts = null;
   $scope.geoAlerts = {};
   $scope.geojson = {floods:{},fires:{},winter:{},other:{}};

@@ -13,7 +13,7 @@ ul.alerts li{
 .badge:after{
   content: attr(number);
   position: absolute;
-  background: red;
+  background: #da4f51;
   height: 15px;
   top: -22px;
   right: 8px;
@@ -25,6 +25,22 @@ ul.alerts li{
   text-align: center;
   padding-top: 5px;
   font-weight: bold;
+}
+
+.fa-tint{
+  color: #62a0ca;
+}
+
+.fa-fire{
+  color: #ffa556;
+}
+
+.fa-asterisk{
+  color: #c6d8ef;
+}
+
+.fa-bell{
+  color: #777;
 }
 
 .leaflet-div-icon {

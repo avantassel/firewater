@@ -1,11 +1,15 @@
 <h2>{{state}}</h2>
 
+<!-- <ng-include src="'/views/search.html'" ng-controller="searchCtrl"></ng-include> -->
+
 <ul class="alerts">
   <li><i class="fa fa-fire fa-2x badge" number="{{geoAlerts.fires.length}}"></i></li>
   <li><i class="fa fa-tint fa-2x badge" number="{{geoAlerts.floods.length}}"></i></li>
   <li><i class="fa fa-asterisk fa-2x badge" number="{{geoAlerts.winter.length}}"></i></li>
   <li><i class="fa fa-bell fa-2x badge" number="{{geoAlerts.other.length}}"></i></li>
 </ul>
+
+<nvd3 options="forecastOptions" data="forecastData"></nvd3>
 
 <leaflet id="map" class="map" center="center" defaults="defaults" geojson="geojson" geojson-nested="true" layers="layers" markers="markers"></leaflet>
 
