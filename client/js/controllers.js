@@ -17,7 +17,7 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
     }
   };
 })
-.controller('homeCtrl', function($rootScope, $scope, $stateParams, $state, $filter, $geolocation, leafletData, FWService) {
+.controller('homeCtrl', function($rootScope, $scope, $stateParams, $state, $filter, leafletData, FWService) {
 
   $scope.geocode = {state:'us', formatted_address:'', geometry:{}};
   $scope.position = null;
@@ -28,6 +28,7 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
   $scope.geoAlerts = {};
   $scope.markers = [];
   $scope.geojson = {floods:{},fires:{},winter:{},other:{}};
+  $scope.nearestAlert = {miles:0,lat:0,lng:0};
 
   $scope.forecastOptions = {
             title: {
@@ -75,9 +76,7 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
   angular.extend($scope, FWService.mapOptions($scope));
 
   //get user geo location
-  $geolocation.getCurrentPosition({
-        timeout: 60000
-     }).then(function(position) {
+  FWService.getLocation().then(function(position) {
 
         //set user current location lat/lng
         $scope.position = position;
@@ -170,6 +169,16 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
          $scope.alerts = alerts;
          //parse alerts and add geojson alerts to the map
          FWService.mapAlerts(alerts,$scope);
+         //draw polyline to nearestAlert
+         if($scope.nearestAlert.lat && $scope.nearestAlert.lng){
+           leafletData.getMap().then(function(map) {
+             var polylineLayer = L.geodesicPolyline([
+               L.latLng($scope.position.coords.latitude,$scope.position.coords.longitude)
+               ,L.latLng($scope.nearestAlert.lat,$scope.nearestAlert.lng)
+             ],{color: '#428bca'});
+             polylineLayer.addTo(map);
+           });
+         }
        });
      };
 
@@ -181,6 +190,7 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
   $scope.areaPolygonAlerts = null;
   $scope.geoAlerts = {};
   $scope.geojson = {floods:{},fires:{},winter:{},other:{}};
+  $scope.nearestAlert = {miles:0,lat:0,lng:0};
 
   angular.extend($scope, FWService.mapOptions($scope));
 
@@ -204,9 +214,19 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
   FWService.alerts($scope.state).then(function(alerts){
       //set alerts
       $scope.alerts = alerts;
-      console.log(alerts)
       //parse alerts and add geojson alerts to the map
       FWService.mapAlerts(alerts,$scope);
+
+      //draw polyline to nearestAlert
+      if($scope.nearestAlert.lat && $scope.nearestAlert.lng){
+        leafletData.getMap().then(function(map) {
+          var polylineLayer = L.geodesicPolyline([
+            L.latLng($scope.position.coords.latitude,$scope.position.coords.longitude)
+            ,L.latLng($scope.nearestAlert.lat,$scope.nearestAlert.lng)
+          ],{color: '#428bca'});
+          polylineLayer.addTo(map);
+        });
+      }
     });
   };
 

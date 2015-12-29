@@ -43,6 +43,7 @@ gulp.task('images', function () {
 gulp.task('scripts', function(){
 
   var src = mainBowerFiles(['**/*.js']);
+  src.push('client/vendor/Leaflet.Geodesic/src/L.Geodesic.js');
 
   return pipe([gulp.src(src)
                 ,filter('*.js')

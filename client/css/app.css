@@ -3,6 +3,10 @@
   height: 500px;
 }
 
+.list-group-item {
+  border: none;
+}
+
 ul.alerts li{
     list-style-type: none;
     display: inline;
@@ -10,7 +14,7 @@ ul.alerts li{
     padding-right: 25px;
 }
 
-.badge:after{
+.alert-badge:after{
   content: attr(number);
   position: absolute;
   background: #da4f51;
@@ -44,7 +48,7 @@ ul.alerts li{
 }
 
 .leaflet-div-icon {
-  border: none!important;
+  border: none !important;
 }
 
 /* Map user pin */
@@ -53,7 +57,7 @@ ul.alerts li{
   height: 30px;
   -webkit-border-radius: 50% 50% 50% 0;
   border-radius: 50% 50% 50% 0;
-  background: #89849b;
+  background: #62a0ca;
   position: absolute;
   -webkit-transform: rotate(-45deg);
   -moz-transform: rotate(-45deg);
@@ -61,7 +65,7 @@ ul.alerts li{
   -ms-transform: rotate(-45deg);
   transform: rotate(-45deg);
   left: 50%;
-  top: 50%;
+  top: calc(50% - 15px);
   margin: -20px 0 0 -20px;
   -webkit-animation-name: bounce;
   -moz-animation-name: bounce;
@@ -97,7 +101,7 @@ ul.alerts li{
   width: 14px;
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: calc(50% - 15px);
   margin: 11px 0px 0px -12px;
   -webkit-transform: rotateX(55deg);
   -moz-transform: rotateX(55deg);

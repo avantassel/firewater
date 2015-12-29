@@ -1,8 +1,17 @@
-firewaterApp.factory('FWService', function($http, $q, $filter, $location, Location){
+firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolocation, Location){
 
   var autocomplete = new google.maps.places.AutocompleteService();
+  //TODO setup caching on all requests and geolocation
 
   return {
+
+    getLocation: function(){
+      var q = $q.defer();
+        $geolocation.getCurrentPosition({timeout: 60000}).then(function(position){
+          q.resolve(position);
+        });
+      return q.promise;
+    },
 
     alerts: function(state){
       var q = $q.defer();
@@ -18,7 +27,9 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, Locati
 
     forecast: function(position){
       var q = $q.defer();
-      Location.getForecast({lat:position.latitude,lng:position.longitude,endPoint:'/api/weather/v2/forecast/hourly/24hour'}, function(data){
+      Location.getForecast({'lat':position.latitude
+                            ,'lng':position.longitude
+                            ,'endPoint':'/api/weather/v2/forecast/hourly/24hour'}, function(data){
         if(data.response){
           q.resolve(data.response);
         }
@@ -166,11 +177,26 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, Locati
         }
       };
     },
+    calcNearestAlert: function(scope,lng,lat){
+      if(!scope.position)
+        return;
+      var distance = this.distance(
+        {'lat':scope.position.coords.latitude,'lng':scope.position.coords.longitude}
+        ,{'lat':lat,'lng':lng}
+      );
+      //update scope distance
+      if(scope.nearestAlert.miles == 0 || distance < scope.nearestAlert.miles){
+        scope.nearestAlert.miles = distance;
+        scope.nearestAlert.lat = lat;
+        scope.nearestAlert.lng = lng;
+      }
+    },
     mapAlerts: function(alerts,scope){
       if(!alerts)
         return;
 
       var centered = false;
+      var self = this;
       var geoAlerts = {floods:[],fires:[],winter:[],other:[]};
       //push all the coordinates in a geojson formatted array
       for(var a in alerts){
@@ -178,19 +204,23 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, Locati
 
           if(alerts[a]['cap:event'][0].indexOf('Flood') !== -1){
             geoAlerts.floods.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
+              self.calcNearestAlert(scope,parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0]));
               return [parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0])];//need lng,lat array
             }));
           } else if(alerts[a]['cap:event'][0].indexOf('Fire') !== -1){
             geoAlerts.fires.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
+              self.calcNearestAlert(scope,parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0]));
               return [parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0])];//need lng,lat array
             }));
           } else if(alerts[a]['cap:event'][0].indexOf('Winter') !== -1){
             geoAlerts.winter.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
+              self.calcNearestAlert(scope,parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0]));
               return [parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0])];//need lng,lat array
             }));
           } else {
             //TODO determine what other events there are
             geoAlerts.other.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
+              self.calcNearestAlert(scope,parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0]));
               return [parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0])];//need lng,lat array
             }));
           }
@@ -204,7 +234,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, Locati
          scope.centerJSON("floods");
          centered=true;
          //check if user location is inside flood polygons
-         if(scope.position && this.pip([scope.position.longitude,scope.position.latitude],geoAlerts.floods))
+         if(scope.position && this.pip([scope.position.coords.longitude,scope.position.coords.latitude],geoAlerts.floods))
           scope.inAlertArea.push({type:'floods'});
       }
 
@@ -215,7 +245,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, Locati
           scope.centerJSON("fires");
         centered=true;
         //check if user location is inside fire polygons
-        if(scope.position && this.pip([scope.position.longitude,scope.position.latitude],geoAlerts.fires))
+        if(scope.position && this.pip([scope.position.coords.longitude,scope.position.coords.latitude],geoAlerts.fires))
          scope.inAlertArea.push({type:'fires'});
       }
 
@@ -226,7 +256,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, Locati
           scope.centerJSON("winter");
         centered=true;
         //check if user location is inside winter polygons
-        if(scope.position && this.pip([scope.position.longitude,scope.position.latitude],geoAlerts.winter))
+        if(scope.position && this.pip([scope.position.coords.longitude,scope.position.coords.latitude],geoAlerts.winter))
          scope.inAlertArea.push({type:'winter'});
       }
 
@@ -236,7 +266,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, Locati
         if(!centered)
           scope.centerJSON("other");
         //check if user location is inside other polygons
-        if(scope.position && this.pip([scope.position.longitude,scope.position.latitude],geoAlerts.other))
+        if(scope.position && this.pip([scope.position.coords.longitude,scope.position.coords.latitude],geoAlerts.other))
          scope.inAlertArea.push({type:'other'});
       }
     },
@@ -259,6 +289,29 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, Locati
       }
 
       return inside;
+    },
+
+    distance: function(from, to, unit) {
+        if(!from || !to || !from['lat'] || !to['lat'])
+          return 0;
+
+    		lat = parseFloat(from['lat']);
+    		lon1 = parseFloat(from['lng']);
+    		lat2 = parseFloat(to['lat']);
+    		lon2 = parseFloat(to['lng']);
+        unit = unit || 'mi';//mi or km
+
+    		lat *= (Math.PI/180);
+    		lon1 *= (Math.PI/180);
+    		lat2 *= (Math.PI/180);
+    		lon2 *= (Math.PI/180);
+
+    		dist = 2*Math.asin(Math.sqrt( Math.pow((Math.sin((lat-lat2)/2)),2) + Math.cos(lat)*Math.cos(lat2)*Math.pow((Math.sin((lon1-lon2)/2)),2))) * 6378.137;
+
+    		if (unit == 'mi') {
+    			dist = (dist / 1.609344);
+    		}
+    		return dist;
     }
   }
 });

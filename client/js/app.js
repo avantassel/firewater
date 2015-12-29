@@ -9,9 +9,9 @@ var firewaterApp = angular.module('firewater'
   ,'leaflet-directive'
   ,'duScroll'
   ,'nvd3'
-  ,'nvd3ChartDirectives'
   ,'ui.bootstrap'
-  ,'ngGeolocation'])
+  ,'ngGeolocation'
+])
 .config(function($stateProvider, $urlRouterProvider, $locationProvider, $logProvider, $httpProvider) {
 
   $httpProvider.defaults.useXDomain = true;

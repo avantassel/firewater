@@ -1,17 +1,25 @@
-<h2>{{geocode.formatted_address}}</h2>
+<div class="row">
+  <div class="col-md-6">
+    <h3>{{geocode.formatted_address}}</h3>
+    <p ng-if="nearestAlert">
+      You are {{nearestAlert.miles | number:0}} mi away from the closest alert.
+    </p>
+  </div>
+  <div class="col-md-6">
+    <ul class="list-group">
+      <li class="list-group-item"><i class="fa fa-fire fa-2x" ></i> <strong>Fire Alerts</strong> <span class="badge">{{geoAlerts.fires.length}}</span></li>
+      <li class="list-group-item"><i class="fa fa-tint fa-2x" ></i> <strong>Flood Alerts</strong> <span class="badge">{{geoAlerts.floods.length}}</span></li>
+      <li class="list-group-item"><i class="fa fa-asterisk fa-2x" ></i> <strong>Winter Alerts</strong> <span class="badge">{{geoAlerts.winter.length}}</span></li>
+      <li class="list-group-item"><i class="fa fa-bell fa-2x" ></i> <strong>Other Alerts</strong> <span class="badge">{{geoAlerts.other.length}}</span></li>
+    </ul>
+  </div>
+</div>
 
 <!-- <ng-include src="'/views/search.html'" ng-controller="searchCtrl"></ng-include> -->
 
-<ul class="alerts">
-  <li><i class="fa fa-fire fa-2x badge" number="{{geoAlerts.fires.length}}"></i></li>
-  <li><i class="fa fa-tint fa-2x badge" number="{{geoAlerts.floods.length}}"></i></li>
-  <li><i class="fa fa-asterisk fa-2x badge" number="{{geoAlerts.winter.length}}"></i></li>
-  <li><i class="fa fa-bell fa-2x badge" number="{{geoAlerts.other.length}}"></i></li>
-</ul>
+<leaflet id="map" class="map" center="center" defaults="defaults" geojson="geojson" geojson-nested="true" layers="layers" markers="markers"></leaflet>
 
 <nvd3 options="forecastOptions" data="forecastData"></nvd3>
-
-<leaflet id="map" class="map" center="center" defaults="defaults" geojson="geojson" geojson-nested="true" layers="layers" markers="markers"></leaflet>
 
 <table class="table table-hover">
   <thead>
