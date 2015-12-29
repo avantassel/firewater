@@ -1,0 +1,38 @@
+<div class="container-fluid" style="padding: 10px;">
+<div class="row">
+  <div class="col-md-3">
+    <div class="media">
+      <div class="media-left">
+        <a href="/">
+          <span class="fa-stack fa-4x">
+            <i class="fa fa-square-o fa-stack-2x"></i>
+            <i class="fa fa-fire fa-stack-2x"></i>
+            <i class="fa fa-tint fa-stack-1x"></i>
+          </span>
+        </a>
+      </div>
+      <div class="media-body">
+        <h4 class="media-heading">FireWater</h4>
+        The perfect storm weather prediction application
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <h4 class="media-heading">Your Report Card</h4>
+    <p>{{geocode.formatted_address}}</p>
+    <ul class="list-group">
+      <li class="list-group-item"><i class="fa fa-{{nearestAlert.type}} fa-2x"></i> {{nearestAlert.miles | number:0}} miles from nearest alert</li>
+      <li class="list-group-item">24 Hours</li>
+      <li class="list-group-item">10 Days</li>
+    </ul>
+  </div>
+  <div class="col-md-3">
+    <ul class="list-group">
+      <li class="list-group-item"><i class="fa fa-fire fa-2x" ></i> <strong>Fire Alerts</strong> <span class="badge danger">{{geoAlerts.fires.length}}</span></li>
+      <li class="list-group-item"><i class="fa fa-tint fa-2x" ></i> <strong>Flood Alerts</strong> <span class="badge danger">{{geoAlerts.floods.length}}</span></li>
+      <li class="list-group-item"><i class="fa fa-asterisk fa-2x" ></i> <strong>Winter Alerts</strong> <span class="badge danger">{{geoAlerts.winter.length}}</span></li>
+      <li class="list-group-item"><i class="fa fa-bell fa-2x" ></i> <strong>Other Alerts</strong> <span class="badge danger">{{geoAlerts.other.length}}</span></li>
+    </ul>
+  </div>
+</div>
+</div>

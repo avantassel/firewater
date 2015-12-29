@@ -1,17 +1,4 @@
-<div class="row">
-  <div class="col-md-6">
-    <h3>{{state}}</h3>
-  </div>
-  <div class="col-md-6">
-    <ul class="list-group">
-      <li class="list-group-item"><i class="fa fa-fire fa-2x" ></i> <strong>Fire Alerts</strong> <span class="badge">{{geoAlerts.fires.length}}</span></li>
-      <li class="list-group-item"><i class="fa fa-tint fa-2x" ></i> <strong>Flood Alerts</strong> <span class="badge">{{geoAlerts.floods.length}}</span></li>
-      <li class="list-group-item"><i class="fa fa-asterisk fa-2x" ></i> <strong>Winter Alerts</strong> <span class="badge">{{geoAlerts.winter.length}}</span></li>
-      <li class="list-group-item"><i class="fa fa-bell fa-2x" ></i> <strong>Other Alerts</strong> <span class="badge">{{geoAlerts.other.length}}</span></li>
-    </ul>
-  </div>
-</div>
-
+<ng-include src="'/views/header.html'"></ng-include>
 
 <leaflet id="map" class="map" center="center" defaults="defaults" geojson="geojson" geojson-nested="true" layers="layers" markers="markers"></leaflet>
 
@@ -19,15 +6,24 @@
 
 <table class="table table-hover">
   <thead>
-    <th></th>
+    <th>Event</th>
+    <th>Updated</th>
+    <th>Expires</th>
+    <th>Certainty</th>
+    <th>State</th>
+    <th>Message</th>
   </thead>
   <tbody>
     <tr ng-repeat="alert in alerts">
-      <td>{{alert['cap:event']}}</td>
-      <td>{{alert['cap:urgency']}}</td>
-      <td>{{alert['cap:severity']}}</td>
-      <td>{{alert['cap:certainty']}}</td>
-      <td><a ui-sref="state({state:(alert['cap:geocode'] | parseState)})">{{alert['title']}}</a></td>
+      <td><i class="fa fa-{{(alert['cap:event'][0] | eventIcon)}} fa-2x"></i> <strong>{{alert['cap:event'][0]}}</strong></td>
+      <td>{{alert['updated'][0] | moment}}</td>
+      <td>{{alert['cap:expires'][0] | moment}}</td>
+      <td>{{alert['cap:certainty'][0]}}</td>
+      <td><a ui-sref="state({state:(alert['cap:geocode'] | parseState)})">{{(alert['cap:geocode'] | parseState)}}</a></td>
+      <td>
+        <a ui-sref="state({state:(alert['cap:geocode'] | parseState)})">{{alert['title'][0]}}</a>
+        <p>{{alert['summary'][0]}}</p>
+      </td>
     </tr>
   </tbody>
 </table>
