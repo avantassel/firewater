@@ -1,23 +1,22 @@
-<div class="container-fluid" style="padding: 10px;">
-<div class="row">
-  <div class="col-md-4">
-    <div class="media">
-      <div class="media-left">
-        <a ui-sref="home()">
-          <span class="fa-stack fa-4x">
-            <i class="fa fa-square-o fa-stack-2x"></i>
-            <i class="fa fa-fire fa-stack-2x"></i>
-            <i class="fa fa-tint fa-stack-1x"></i>
-          </span>
+<nav class="navbar navbar-inverse navbar-default navbar-static-top">
+  <div class="container-fluid">
+     <div class="navbar-header">
+        <a class="navbar-brand" ui-sref="home()">
+          <img ng-src="img/fire-water-icon37.png" width="37" height="50">
         </a>
-      </div>
-      <div class="media-body">
-        <h4 class="media-heading">FireWater</h4>
-        The perfect storm weather prediction application
-      </div>
+    </div>
+    <div class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li class="active"><a ui-sref="home()">FireWater</a></li>
+        <li><a ui-sref="home()">The perfect storm weather prediction application</a></li>
+      </ul>
     </div>
   </div>
-  <div class="col-md-5">
+</nav>
+
+<div class="container-fluid" style="padding: 10px;">
+<div class="row">
+  <div class="col-md-9">
     <h4 class="media-heading">Your Report Card</h4>
     <p>{{geocode.formatted_address}}</p>
     <ul class="list-group">
