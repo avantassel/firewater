@@ -17,9 +17,9 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
     }
   };
 })
-.controller('homeCtrl', function($rootScope, $scope, $stateParams, $state, $filter, leafletData, FWService) {
+.controller('mainCtrl', function($rootScope, $scope, $stateParams, $state, $filter, leafletData, FWService) {
 
-  $scope.geocode = {state:'us', formatted_address:'', geometry:{}};
+  $scope.geocode = {state: ($stateParams.state || 'us'), formatted_address:'', geometry:{}};
   $scope.position = null;
   $scope.alerts = null;
   $scope.inAlertArea = [];
@@ -91,8 +91,10 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
 
         //get state for user location
         FWService.geocode(position.coords).then(function(response){
-          //set state
-          return $scope.geocode = response;
+          
+          $scope.geocode.formatted_address = response.formatted_address;
+          $scope.geocode.geometry = response.geometry;
+          return true;
 
         }).then(function(){
           var dew = [], mslp = [], wspd = [];
@@ -163,8 +165,7 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
        };
 
      $scope.getAlerts = function(){
-      //  FWService.alerts($scope.geocode.state).then(function(alerts){
-      FWService.alerts('us').then(function(alerts){
+      FWService.alerts($scope.geocode.state).then(function(alerts){
          //set alerts
          $scope.alerts = alerts;
          //parse alerts and add geojson alerts to the map
@@ -181,55 +182,5 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
          }
        });
      };
-
-}).controller('stateCtrl', function($rootScope, $scope, $stateParams, $state, $filter, $geolocation, leafletData, FWService) {
-
-  $scope.state = $stateParams.state;
-  $scope.alerts = null;
-  $scope.inAlertArea = [];
-  $scope.areaPolygonAlerts = null;
-  $scope.geoAlerts = {};
-  $scope.geojson = {floods:{},fires:{},winter:{},other:{}};
-  $scope.nearestAlert = {miles:0,type:'circle-o-notch fa-spin',lat:0,lng:0};
-
-  angular.extend($scope, FWService.mapOptions($scope));
-
-  $scope.centerJSON = function(name) {
-        leafletData.getMap().then(function(map) {
-          var latlngs = [];
-          for (var i in $scope.geojson[name].data.features[0].geometry.coordinates) {
-              var coord = $scope.geojson[name].data.features[0].geometry.coordinates[i];
-              for (var j in coord) {
-                  var points = coord[j];
-                  for (var k in points) {
-                      latlngs.push(L.GeoJSON.coordsToLatLng(points[k]));
-                  }
-              }
-          }
-          return map.fitBounds(latlngs);
-        });
-    };
-
-  $scope.getAlerts = function(){
-  FWService.alerts($scope.state).then(function(alerts){
-      //set alerts
-      $scope.alerts = alerts;
-      //parse alerts and add geojson alerts to the map
-      FWService.mapAlerts(alerts,$scope);
-
-      //draw polyline to nearestAlert
-      if($scope.nearestAlert.lat && $scope.nearestAlert.lng){
-        leafletData.getMap().then(function(map) {
-          var polylineLayer = L.geodesicPolyline([
-            L.latLng($scope.position.coords.latitude,$scope.position.coords.longitude)
-            ,L.latLng($scope.nearestAlert.lat,$scope.nearestAlert.lng)
-          ],{color: '#428bca'});
-          polylineLayer.addTo(map);
-        });
-      }
-    });
-  };
-
-  $scope.getAlerts();
 
 });

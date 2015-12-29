@@ -4,20 +4,25 @@ firewaterApp.filter('parseState', function() {
     }
 }).filter('moment', function() {
   return function(date) {
-        return moment(new Date(date)).fromNow();
+      if(!date)
+        return '';
+      return moment(new Date(date)).fromNow();
     }
 }).filter('eventIcon', function() {
-  return function(event) {
-        if(event.indexOf('Flood') !== -1){
+  return function(alert) {
+        if(!alert)
+          return 'bell';
+
+        if(alert.indexOf('Flood') !== -1){
           return 'tint';
         }
-        else if(event.indexOf('Fire') !== -1){
+        else if(alert.indexOf('Fire') !== -1){
           return 'fire';
         }
-        else if(event.indexOf('Winter') !== -1
-        || event.indexOf('Frost') !== -1
-        || event.indexOf('Freez') !== -1
-        || event.indexOf('Blizzard') !== -1){
+        else if(alert.indexOf('Winter') !== -1
+        || alert.indexOf('Frost') !== -1
+        || alert.indexOf('Freez') !== -1
+        || alert.indexOf('Blizzard') !== -1){
           return 'asterisk';
         }
         else {

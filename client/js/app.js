@@ -23,18 +23,13 @@ var firewaterApp = angular.module('firewater'
   $stateProvider
     .state('home', {
       url: '/',
-      controller: 'homeCtrl',
+      controller: 'mainCtrl',
       templateUrl: 'views/home.html'
     })
     .state('state', {
       url: '/state/:state',
-      controller: 'stateCtrl',
-      templateUrl: 'views/state.html'
-    })
-    .state('location', {
-      url: '/state/:state/:lat,:lng',
-      controller: 'stateCtrl',
-      templateUrl: 'views/state.html'
+      controller: 'mainCtrl',
+      templateUrl: 'views/home.html'
     })
     .state('otherwise', {
       url: '*path',
