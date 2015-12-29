@@ -177,7 +177,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
         }
       };
     },
-    calcNearestAlert: function(scope,lng,lat){
+    calcNearestAlert: function(scope,type,lng,lat){
       if(!scope.position)
         return;
       var distance = this.distance(
@@ -186,6 +186,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
       );
       //update scope distance
       if(scope.nearestAlert.miles == 0 || distance < scope.nearestAlert.miles){
+        scope.nearestAlert.type = type;
         scope.nearestAlert.miles = distance;
         scope.nearestAlert.lat = lat;
         scope.nearestAlert.lng = lng;
@@ -204,23 +205,26 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
 
           if(alerts[a]['cap:event'][0].indexOf('Flood') !== -1){
             geoAlerts.floods.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
-              self.calcNearestAlert(scope,parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0]));
+              self.calcNearestAlert(scope,'tint',parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0]));
               return [parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0])];//need lng,lat array
             }));
           } else if(alerts[a]['cap:event'][0].indexOf('Fire') !== -1){
             geoAlerts.fires.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
-              self.calcNearestAlert(scope,parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0]));
+              self.calcNearestAlert(scope,'fire',parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0]));
               return [parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0])];//need lng,lat array
             }));
-          } else if(alerts[a]['cap:event'][0].indexOf('Winter') !== -1){
+          } else if(alerts[a]['cap:event'][0].indexOf('Winter') !== -1
+            || alerts[a]['cap:event'][0].indexOf('Frost') !== -1
+            || alerts[a]['cap:event'][0].indexOf('Freez') !== -1
+            || alerts[a]['cap:event'][0].indexOf('Blizzard') !== -1){
             geoAlerts.winter.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
-              self.calcNearestAlert(scope,parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0]));
+              self.calcNearestAlert(scope,'asterisk',parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0]));
               return [parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0])];//need lng,lat array
             }));
           } else {
             //TODO determine what other events there are
             geoAlerts.other.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
-              self.calcNearestAlert(scope,parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0]));
+              self.calcNearestAlert(scope,'bell',parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0]));
               return [parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0])];//need lng,lat array
             }));
           }

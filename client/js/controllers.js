@@ -28,7 +28,7 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
   $scope.geoAlerts = {};
   $scope.markers = [];
   $scope.geojson = {floods:{},fires:{},winter:{},other:{}};
-  $scope.nearestAlert = {miles:0,lat:0,lng:0};
+  $scope.nearestAlert = {miles:0,type:'',lat:0,lng:0};
 
   $scope.forecastOptions = {
             title: {
@@ -190,7 +190,7 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
   $scope.areaPolygonAlerts = null;
   $scope.geoAlerts = {};
   $scope.geojson = {floods:{},fires:{},winter:{},other:{}};
-  $scope.nearestAlert = {miles:0,lat:0,lng:0};
+  $scope.nearestAlert = {miles:0,type:'',lat:0,lng:0};
 
   angular.extend($scope, FWService.mapOptions($scope));
 

@@ -44,6 +44,7 @@ gulp.task('scripts', function(){
 
   var src = mainBowerFiles(['**/*.js']);
   src.push('client/vendor/Leaflet.Geodesic/src/L.Geodesic.js');
+  src.push('client/vendor/moment-transform/dist/moment-transform.min.js');  
 
   return pipe([gulp.src(src)
                 ,filter('*.js')

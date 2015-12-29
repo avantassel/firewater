@@ -14,6 +14,14 @@ ul.alerts li{
     padding-right: 25px;
 }
 
+.badge.danger{
+  background-color: #da4f51 !important;
+}
+
+.list-group-item i{
+  width: 30px;
+}
+
 .alert-badge:after{
   content: attr(number);
   position: absolute;
