@@ -1,11 +1,17 @@
 var loopback = require('loopback');
 var boot = require('loopback-boot');
+var path = require('path');
 
 var app = module.exports = loopback();
 
 app.set("port", process.env.VCAP_APP_PORT || process.env.PORT || 3000);
 
 app.set("host", process.env.VCAP_APP_HOST || 'localhost');
+
+// app.all('/*', function(req, res, next) {
+//   // Just send the index.html for other files to support HTML5Mode
+//   res.sendFile('index.html', { root: path.resolve(__dirname, '..', 'client') });
+// });
 
 app.start = function() {
   // start the web server

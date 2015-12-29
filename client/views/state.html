@@ -1,6 +1,13 @@
 <h2>{{state}}</h2>
 
-<leaflet id="map" class="map" center="center" defaults="defaults" markers="markers" layers="layers"></leaflet>
+<ul class="alerts">
+  <li><i class="fa fa-fire fa-2x badge" number="{{geoAlerts.fires.length}}"></i></li>
+  <li><i class="fa fa-tint fa-2x badge" number="{{geoAlerts.floods.length}}"></i></li>
+  <li><i class="fa fa-asterisk fa-2x badge" number="{{geoAlerts.winter.length}}"></i></li>
+  <li><i class="fa fa-bell fa-2x badge" number="{{geoAlerts.other.length}}"></i></li>
+</ul>
+
+<leaflet id="map" class="map" center="center" defaults="defaults" geojson="geojson" geojson-nested="true" layers="layers" markers="markers"></leaflet>
 
 <table class="table table-hover">
   <thead>
@@ -12,7 +19,7 @@
       <td>{{alert['cap:urgency']}}</td>
       <td>{{alert['cap:severity']}}</td>
       <td>{{alert['cap:certainty']}}</td>
-      <td>{{alert['title']}}</td>
+      <td><a ui-sref="state({state:(alert['cap:geocode'] | parseState)})">{{alert['title']}}</a></td>
     </tr>
   </tbody>
 </table>

@@ -9,6 +9,7 @@ var firewaterApp = angular.module('firewater'
   ,'leaflet-directive'
   ,'duScroll'
   ,'nvd3'
+  ,'nvd3ChartDirectives'
   ,'ui.bootstrap'
   ,'ngGeolocation'])
 .config(function($stateProvider, $urlRouterProvider, $locationProvider, $logProvider, $httpProvider) {
@@ -27,6 +28,11 @@ var firewaterApp = angular.module('firewater'
     })
     .state('state', {
       url: '/state/:state',
+      controller: 'stateCtrl',
+      templateUrl: 'views/state.html'
+    })
+    .state('location', {
+      url: '/state/:state/:lat,:lng',
       controller: 'stateCtrl',
       templateUrl: 'views/state.html'
     })

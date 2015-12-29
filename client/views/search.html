@@ -1,0 +1,11 @@
+<div class="search-container">
+  <div class="search">
+    <form class="pure-form pure-form-stacked" ng-submit="Search($event)">
+    <fieldset>
+      <input type="text" ng-model="address" uib-typeahead="address for address in getLocation($viewValue)" typeahead-loading="loadingLocations" typeahead-no-results="noResults" focus-me="{{searchByCity}}" placeholder="Enter a street address" ng-keypress="Search($event)">
+      <button type="submit" class="pure-button">Go</button>
+    </fieldset>
+  </form>
+
+  </div>
+</div>
