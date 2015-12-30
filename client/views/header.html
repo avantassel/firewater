@@ -19,9 +19,9 @@
   <div class="col-md-9">
     <h4 class="media-heading">Your Report Card</h4>
     <ul class="list-group">
-      <li class="list-group-item"><i class="fa fa-home fa-2x"></i> {{geocode.formatted_address}}</li>
+      <li class="list-group-item"><i class="fa fa-home fa-2x"></i> <a ui-sref="state({state:geocode.found_state})">{{geocode.formatted_address}}</a></li>
       <li class="list-group-item"><i class="fa fa-{{nearestAlert.type}} fa-2x"></i> {{nearestAlert.miles | number:0}} miles from nearest alert</li>
-      <li class="list-group-item"><i class="fa fa-clock-o fa-2x"></i> {{forecast.forecasts[0].phrase_22char}} {{forecast.forecasts[0].temp}}&deg;F</li>      
+      <li class="list-group-item"><i class="fa fa-clock-o fa-2x"></i> {{forecast.forecasts[0].phrase_22char}} {{forecast.forecasts[0].temp}}&deg;F</li>
     </ul>
   </div>
   <div class="col-md-3">

@@ -94,6 +94,7 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
 
           $scope.geocode.formatted_address = response.formatted_address;
           $scope.geocode.geometry = response.geometry;
+          $scope.geocode.found_state = response.state;
           return true;
 
         }).then(function(){
@@ -149,7 +150,7 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
                 "values": temp
               }
             ];
-            
+
             //set forecast
             return $scope.forecast = forecast;
           });
