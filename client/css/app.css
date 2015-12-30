@@ -64,7 +64,7 @@ ul.alerts li{
   color: #c6d8ef;
 }
 
-.fa-bell{
+.fa-bell, .fa-home, .fa-clock-o{
   color: #777;
 }
 

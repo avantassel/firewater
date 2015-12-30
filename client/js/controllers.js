@@ -33,7 +33,7 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
   $scope.forecastOptions = {
             title: {
                 enable: true,
-                text: '24 Hr Forecast'
+                text: '24 Hour Forecast'
             },
             chart: {
                 type: 'stackedAreaChart',
@@ -50,10 +50,17 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
                 clipEdge: true,
                 duration: 200,
                 useInteractiveGuideline: true,
+                interactiveLayer: {
+                  tooltip: {
+                    headerFormatter: function (d) {
+                      return d;
+                    }
+                  }
+                },
                 xAxis: {
                     showMaxMin: false,
                     tickFormat: function(d) {
-                        return d3.time.format('%X')(new Date(d))
+                        return d3.time.format('%I:%M%p')(new Date(d))
                     }
                 },
                 yAxis: {

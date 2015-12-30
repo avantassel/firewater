@@ -22,9 +22,9 @@ firewaterApp.filter('parseState', function() {
           return 'fire';
         }
         else if(alert.indexOf('Winter') !== -1
-        || alert.indexOf('Frost') !== -1
-        || alert.indexOf('Freez') !== -1
-        || alert.indexOf('Blizzard') !== -1){
+            || alert.indexOf('Frost') !== -1
+            || alert.indexOf('Freez') !== -1
+            || alert.indexOf('Blizzard') !== -1){
           return 'asterisk';
         }
         else {
