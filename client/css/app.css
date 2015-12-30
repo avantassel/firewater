@@ -12,6 +12,15 @@
   padding: 10px;
 }
 
+#about-modal {
+  display: none;
+}
+
+#about-modal .jumbotron{
+  padding: 50px;
+  border-radius: 25px;
+}
+
 .report-card .col-md-3{
   border-left: 1px solid #ccc;
 }

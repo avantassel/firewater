@@ -20,6 +20,14 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
     $scope.position = {coords: {latitude: parseFloat($stateParams.lat), longitude: parseFloat($stateParams.lng)}};
   }
 
+  $scope.ShowAbout = function(){
+    return Custombox.open({
+        target: '#about-modal',
+        effect: 'blur',
+        width: 800
+    });
+  };
+
   $scope.getLocation = function(val) {
     if(val.length<3)
       return '';
