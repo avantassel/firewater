@@ -31,6 +31,11 @@ var firewaterApp = angular.module('firewater'
       controller: 'mainCtrl',
       templateUrl: 'views/home.html'
     })
+    .state('location', {
+      url: '/location/:state/:lat,:lng',
+      controller: 'mainCtrl',
+      templateUrl: 'views/home.html'
+    })
     .state('otherwise', {
       url: '*path',
       templateUrl: 'views/not-found.html'

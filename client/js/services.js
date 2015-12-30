@@ -80,6 +80,37 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
       return q.promise;
     },
 
+    geocodeAddress: function(address){
+      var q = $q.defer();
+
+      var response = {formatted_address:'', state:'', geometry:{}};
+
+      var args = {sensor:false,address:address};
+      $http.get('http://maps.googleapis.com/maps/api/geocode/json',{params:args}).then(function(response){
+        if(response.data){
+          var addr = response.data.results[0].address_components;
+          //set response fields needed
+          response.formatted_address = response.data.results[0].formatted_address;
+          response.geometry = response.data.results[0].geometry;
+          //parse address_components to get state
+          for(var a in addr){
+            if(addr[a].types.indexOf("administrative_area_level_1")!==-1){
+              response.state = addr[a].short_name;
+            }
+            //unset state if not US
+            if(addr[a].types.indexOf("country")!==-1 && addr[a].short_name != "US"){
+              response.state = '';
+              break;
+            }
+          }
+        }
+        q.resolve(response);
+      },function(err){
+        q.reject(err);
+      });
+      return q.promise;
+    },
+
     mapCenter: function(){
       return {lat: 39.9950, lng: -105.1006, zoom: 4};
     },

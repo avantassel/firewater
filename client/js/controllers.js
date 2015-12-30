@@ -1,5 +1,23 @@
-firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
-  $scope.searchByCity = false;
+firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $state, $filter, leafletData, FWService) {
+
+  $scope.geocode = {state: ($stateParams.state || 'us')
+    , formatted_address: ''
+    , geometry: { location: {lat:($stateParams.lat || 0),lng:($stateParams.lng || 0)}}
+  };
+  $scope.position = null;
+  $scope.alerts = null;
+  $scope.inAlertArea = [];
+  $scope.forecast = null;
+  $scope.areaPolygonAlerts = null;
+  $scope.geoAlerts = {};
+  $scope.markers = [];
+  $scope.geojson = {floods:{},fires:{},winter:{},other:{}};
+  $scope.nearestAlert = {miles:0,type:'circle-o-notch fa-spin',lat:0,lng:0};
+  $scope.searchAddress = '';
+
+  if($stateParams.lat && $stateParams.lng){
+    $scope.position = {coords: {latitude:$stateParams.lat, longitude:$stateParams.lng}};
+  }
 
   $scope.getLocation = function(val) {
     if(val.length<3)
@@ -13,22 +31,15 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
 
   $scope.Search = function(e){
     if((e.type && e.type == 'submit') || (e && e.which === 13)){
-
+      FWService.geocodeAddress(this.searchAddress).then(function(response){
+        // $scope.geocode.formatted_address = response.formatted_address;
+        // $scope.geocode.geometry = response.geometry;
+        // $scope.geocode.found_state = response.state;
+        //redirect to location
+        $state.go('location',{state:response.state,lat:response.geometry.location.lat,lng:response.geometry.location.lng})
+      });
     }
   };
-})
-.controller('mainCtrl', function($rootScope, $scope, $stateParams, $state, $filter, leafletData, FWService) {
-
-  $scope.geocode = {state: ($stateParams.state || 'us'), formatted_address:'', geometry:{}};
-  $scope.position = null;
-  $scope.alerts = null;
-  $scope.inAlertArea = [];
-  $scope.forecast = null;
-  $scope.areaPolygonAlerts = null;
-  $scope.geoAlerts = {};
-  $scope.markers = [];
-  $scope.geojson = {floods:{},fires:{},winter:{},other:{}};
-  $scope.nearestAlert = {miles:0,type:'circle-o-notch fa-spin',lat:0,lng:0};
 
   $scope.forecastOptions = {
             title: {
@@ -82,95 +93,128 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
 
   angular.extend($scope, FWService.mapOptions($scope));
 
-  //get user geo location
-  FWService.getLocation().then(function(position) {
+  if(!$scope.position){
+    //get user geo location
+    FWService.getLocation().then(function(position) {
 
-        //set user current location lat/lng
-        $scope.position = position;
+          //set user current location lat/lng
+          $scope.position = position;
 
-        //add user pin
-        $scope.markers.push({
-          icon: FWService.mapIcons(),
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-          message: "Your Location"
-        });
-
-        //get state for user location
-        FWService.geocode(position.coords).then(function(response){
-
-          $scope.geocode.formatted_address = response.formatted_address;
-          $scope.geocode.geometry = response.geometry;
-          $scope.geocode.found_state = response.state;
-          return true;
-
-        }).then(function(){
-          var dew = [], mslp = [], wspd = [], qpf = [], snow_qpf = [], temp = [];
-          //get 24hr forecast for user location
-          FWService.forecast(position.coords,'24').then(function(forecast){
-
-            for(var f in forecast.forecasts){
-              var d = new Date(forecast.forecasts[f].fcst_valid_local);
-              dew.push(
-                [d.getTime(), forecast.forecasts[f].dewpt]
-              );
-              mslp.push(
-                [d.getTime(), forecast.forecasts[f].mslp]
-              );
-              wspd.push(
-                [d.getTime(), forecast.forecasts[f].wspd]
-              );
-              qpf.push(
-                [d.getTime(), forecast.forecasts[f].qpf]
-              );
-              snow_qpf.push(
-                [d.getTime(), forecast.forecasts[f].snow_qpf]
-              );
-              temp.push(
-                [d.getTime(), forecast.forecasts[f].temp]
-              );
-            }
-
-            $scope.forecastData = [
-              {
-                "key": "Dew Point",
-                "values": dew
-              },
-              {
-                "key": "Mean Sea Level Pressure",
-                "values": mslp
-              },
-              {
-                "key": "Wind Speed",
-                "values": wspd
-              },
-              {
-                "key": "Quantitative Precipitation Forecast",
-                "values": qpf
-              },
-              {
-                "key": "Snow Quantitative Precipitation Forecast",
-                "values": snow_qpf
-              },
-              {
-                "key": "Temperature F",
-                "values": temp
-              }
-            ];
-
-            //set forecast
-            return $scope.forecast = forecast;
+          //add user pin
+          $scope.markers.push({
+            icon: FWService.mapIcons(),
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            message: "Your Location"
           });
-        }).then(function(){
 
-          return $scope.getAlerts();
+          //get state for user location
+          FWService.geocode(position.coords).then(function(response){
 
-        });
-     },function(err){
+            $scope.geocode.formatted_address = response.formatted_address;
+            $scope.geocode.geometry = response.geometry;
+            $scope.geocode.found_state = response.state;
+            return true;
 
-       $scope.getAlerts();
+          }).then(function(){
 
-     });
+            return $scope.getForecast();
+
+          }).then(function(){
+
+            return $scope.getAlerts();
+
+          });
+       },function(err){
+
+         $scope.getAlerts();
+
+       });
+  } else {
+    $scope.markers.push({
+      icon: FWService.mapIcons(),
+      lat: $scope.position.coords.latitude,
+      lng: $scope.position.coords.longitude,
+      message: "Your Location"
+    });
+    //get state for user location
+    FWService.geocode($scope.position.coords).then(function(response){
+
+      $scope.geocode.formatted_address = response.formatted_address;
+      $scope.geocode.geometry = response.geometry;
+      $scope.geocode.found_state = response.state;
+      return true;
+
+    }).then(function(){
+
+      return $scope.getForecast();
+
+    }).then(function(){
+
+      return $scope.getAlerts();
+
+    });
+  }
+
+
+     $scope.getForecast = function(){
+       var dew = [], mslp = [], wspd = [], qpf = [], snow_qpf = [], temp = [];
+       //get 24hr forecast for user location
+       FWService.forecast($scope.position.coords,'24').then(function(forecast){
+
+         for(var f in forecast.forecasts){
+           var d = new Date(forecast.forecasts[f].fcst_valid_local);
+           dew.push(
+             [d.getTime(), forecast.forecasts[f].dewpt]
+           );
+           mslp.push(
+             [d.getTime(), forecast.forecasts[f].mslp]
+           );
+           wspd.push(
+             [d.getTime(), forecast.forecasts[f].wspd]
+           );
+           qpf.push(
+             [d.getTime(), forecast.forecasts[f].qpf]
+           );
+           snow_qpf.push(
+             [d.getTime(), forecast.forecasts[f].snow_qpf]
+           );
+           temp.push(
+             [d.getTime(), forecast.forecasts[f].temp]
+           );
+         }
+
+         $scope.forecastData = [
+           {
+             "key": "Dew Point",
+             "values": dew
+           },
+           {
+             "key": "Mean Sea Level Pressure",
+             "values": mslp
+           },
+           {
+             "key": "Wind Speed",
+             "values": wspd
+           },
+           {
+             "key": "Quantitative Precipitation Forecast",
+             "values": qpf
+           },
+           {
+             "key": "Snow Quantitative Precipitation Forecast",
+             "values": snow_qpf
+           },
+           {
+             "key": "Temperature F",
+             "values": temp
+           }
+         ];
+
+         //set forecast
+         return $scope.forecast = forecast;
+       });
+     };
 
      $scope.centerJSON = function(name) {
            leafletData.getMap().then(function(map) {
