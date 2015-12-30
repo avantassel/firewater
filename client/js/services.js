@@ -41,6 +41,20 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
       return q.promise;
     },
 
+    historical: function(position,radius){
+      var q = $q.defer();
+      if(!radius)
+        radius=20;
+      Location.getHistorical({'lat':position.latitude
+                            ,'lng':position.longitude
+                            ,'radius':radius}, function(data){
+        if(data.response){
+          q.resolve(data.response);
+        }
+      });
+      return q.promise;
+    },
+
     address: function(address){
       var q = $q.defer();
       autocomplete.getPlacePredictions({input: address}, function(response){

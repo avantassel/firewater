@@ -1560,7 +1560,7 @@ module.factory(
          *
          * @description
          *
-         * Get NOAA Alerts by state
+         * Get NOAA alerts by state
          *
          * @param {Object=} parameters Request parameters.
          *
@@ -1592,7 +1592,7 @@ module.factory(
          *
          * @description
          *
-         * Get Weather Insights forecast by lat,lng
+         * Get weather insights forecast by lat,lng
          *
          * @param {Object=} parameters Request parameters.
          *
@@ -1618,6 +1618,42 @@ module.factory(
          */
         "getForecast": {
           url: urlBase + "/Locations/getForecast",
+          method: "GET"
+        },
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Location#getHistorical
+         * @methodOf lbServices.Location
+         *
+         * @description
+         *
+         * Get historical weather events by lat,lng
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `lat` – `{string=}` - 
+         *
+         *  - `lng` – `{string=}` - 
+         *
+         *  - `radius` – `{string=}` - 
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * Data properties:
+         *
+         *  - `response` – `{object=}` - 
+         */
+        "getHistorical": {
+          url: urlBase + "/Locations/getHistorical",
           method: "GET"
         },
       }

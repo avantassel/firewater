@@ -132,6 +132,10 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
           }).then(function(){
 
+            return $scope.getHistorical();
+
+          }).then(function(){
+
             return $scope.getAlerts();
 
           });
@@ -169,110 +173,119 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
     }).then(function(){
 
+      return $scope.getHistorical();
+
+    }).then(function(){
+
       return $scope.getAlerts();
 
     });
   }
 
+  $scope.getHistorical = function(){
+    FWService.historical($scope.position.coords).then(function(response){
+      console.log(response)
+    });
+  };
 
-     $scope.getForecast = function(){
-       var dew = [], mslp = [], wspd = [], qpf = [], snow_qpf = [], temp = [];
-       //get 24hr forecast for user location
-       FWService.forecast($scope.position.coords,'24').then(function(forecast){
+ $scope.getForecast = function(){
+   var dew = [], mslp = [], wspd = [], qpf = [], snow_qpf = [], temp = [];
+   //get 24hr forecast for user location
+   FWService.forecast($scope.position.coords,'24').then(function(forecast){
 
-         for(var f in forecast.forecasts){
-           var d = new Date(forecast.forecasts[f].fcst_valid_local);
-           dew.push(
-             [d.getTime(), forecast.forecasts[f].dewpt]
-           );
-           mslp.push(
-             [d.getTime(), forecast.forecasts[f].mslp]
-           );
-           wspd.push(
-             [d.getTime(), forecast.forecasts[f].wspd]
-           );
-           qpf.push(
-             [d.getTime(), forecast.forecasts[f].qpf]
-           );
-           snow_qpf.push(
-             [d.getTime(), forecast.forecasts[f].snow_qpf]
-           );
-           temp.push(
-             [d.getTime(), forecast.forecasts[f].temp]
-           );
-         }
+     for(var f in forecast.forecasts){
+       var d = new Date(forecast.forecasts[f].fcst_valid_local);
+       dew.push(
+         [d.getTime(), forecast.forecasts[f].dewpt]
+       );
+       mslp.push(
+         [d.getTime(), forecast.forecasts[f].mslp]
+       );
+       wspd.push(
+         [d.getTime(), forecast.forecasts[f].wspd]
+       );
+       qpf.push(
+         [d.getTime(), forecast.forecasts[f].qpf]
+       );
+       snow_qpf.push(
+         [d.getTime(), forecast.forecasts[f].snow_qpf]
+       );
+       temp.push(
+         [d.getTime(), forecast.forecasts[f].temp]
+       );
+     }
 
-         $scope.forecastData = [
-           {
-             "key": "Dew Point",
-             "values": dew
-           },
-           {
-             "key": "Mean Sea Level Pressure",
-             "values": mslp
-           },
-           {
-             "key": "Wind Speed",
-             "values": wspd
-           },
-           {
-             "key": "Quantitative Precipitation Forecast",
-             "values": qpf
-           },
-           {
-             "key": "Snow Quantitative Precipitation Forecast",
-             "values": snow_qpf
-           },
-           {
-             "key": "Temperature F",
-             "values": temp
-           }
-         ];
+     $scope.forecastData = [
+       {
+         "key": "Dew Point",
+         "values": dew
+       },
+       {
+         "key": "Mean Sea Level Pressure",
+         "values": mslp
+       },
+       {
+         "key": "Wind Speed",
+         "values": wspd
+       },
+       {
+         "key": "Quantitative Precipitation Forecast",
+         "values": qpf
+       },
+       {
+         "key": "Snow Quantitative Precipitation Forecast",
+         "values": snow_qpf
+       },
+       {
+         "key": "Temperature F",
+         "values": temp
+       }
+     ];
 
-         //set forecast
-         return $scope.forecast = forecast;
-       });
-     };
+     //set forecast
+     return $scope.forecast = forecast;
+   });
+ };
 
-     $scope.centerJSON = function(name) {
-           leafletData.getMap().then(function(map) {
-             var latlngs = [];
-             //add user location
-             if($scope.position)
-              latlngs.push(L.GeoJSON.coordsToLatLng([$scope.position.coords.longitude,$scope.position.coords.latitude]));
+ $scope.centerJSON = function(name) {
+       leafletData.getMap().then(function(map) {
+         var latlngs = [];
+         //add user location
+         if($scope.position)
+          latlngs.push(L.GeoJSON.coordsToLatLng([$scope.position.coords.longitude,$scope.position.coords.latitude]));
 
-             for (var i in $scope.geojson[name].data.features[0].geometry.coordinates) {
-                 var coord = $scope.geojson[name].data.features[0].geometry.coordinates[i];
-                 for (var j in coord) {
-                     var points = coord[j];
-                     for (var k in points) {
-                         latlngs.push(L.GeoJSON.coordsToLatLng(points[k]));
-                     }
+         for (var i in $scope.geojson[name].data.features[0].geometry.coordinates) {
+             var coord = $scope.geojson[name].data.features[0].geometry.coordinates[i];
+             for (var j in coord) {
+                 var points = coord[j];
+                 for (var k in points) {
+                     latlngs.push(L.GeoJSON.coordsToLatLng(points[k]));
                  }
              }
-             return map.fitBounds(latlngs);
-           });
-       };
-
-     $scope.getAlerts = function(){
-      FWService.alerts($scope.geocode.state).then(function(alerts){
-         //set alerts
-         $scope.alerts = alerts;
-         //parse alerts and add geojson alerts to the map
-         FWService.mapAlerts(alerts,$scope);
-         //draw polyline to nearestAlert
-         if($scope.nearestAlert.lat && $scope.nearestAlert.lng){
-           leafletData.getMap().then(function(map) {
-             var polylineLayer = L.geodesicPolyline([
-               L.latLng($scope.position.coords.latitude,$scope.position.coords.longitude)
-               ,L.latLng($scope.nearestAlert.lat,$scope.nearestAlert.lng)
-             ],{color: '#428bca'});
-             polylineLayer.addTo(map);
-           });
          }
-         if($scope.nearestAlert.type.indexOf('spin')!==-1)
-          $scope.nearestAlert.type = 'exclamation';
+         return map.fitBounds(latlngs);
        });
-     };
+   };
+
+ $scope.getAlerts = function(){
+  FWService.alerts($scope.geocode.state).then(function(alerts){
+     //set alerts
+     $scope.alerts = alerts;
+     //parse alerts and add geojson alerts to the map
+     FWService.mapAlerts(alerts,$scope);
+     //draw polyline to nearestAlert
+     if($scope.nearestAlert.lat && $scope.nearestAlert.lng){
+       leafletData.getMap().then(function(map) {
+         var polylineLayer = L.geodesicPolyline([
+           L.latLng($scope.position.coords.latitude,$scope.position.coords.longitude)
+           ,L.latLng($scope.nearestAlert.lat,$scope.nearestAlert.lng)
+         ],{color: '#428bca'});
+         polylineLayer.addTo(map);
+       });
+     }
+     if($scope.nearestAlert.type.indexOf('spin')!==-1)
+      $scope.nearestAlert.type = 'exclamation';
+   });
+ };
 
 });

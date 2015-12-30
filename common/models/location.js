@@ -80,8 +80,35 @@ module.exports = function(Location) {
 					}
 				});
 			} else {
-				return cb('Missing Weather Insights variables',null);
+				return cb('Missing Weather Insights credential variables',null);
 			}
+	};
+
+	Location.getHistorical = function(lat,lng,radius,cb){
+		if(vcap && env
+			&& vcap['cloudantNoSQLDB']){
+
+			if(!radius)
+				radius=20;
+
+			var callURL = vcap['cloudantNoSQLDB'][0]['credentials']['url']+'/stormdata/_design/geodd/_geo/geoidx?lat='+lat+'&lon='+lng+'&radius='+radius;
+
+			request({url: callURL, method: 'GET'}, function(err, response, body) {
+				if(body){
+					try{
+						return cb(null,JSON.parse(body));
+					} catch(e){
+						return cb(e,null);
+					}
+				} else if(err){
+					return cb(err,null);
+				} else {
+					return cb('Missing Response',null);
+				}
+			});
+		} else {
+			return cb('Missing Cloudant credential variables',null);
+		}
 	};
 
   Location.remoteMethod(
@@ -92,21 +119,35 @@ module.exports = function(Location) {
           ],
           returns: {arg: 'response', type: 'object'},
           http: {path: '/getAlerts', verb: 'get'},
-          description: "Get NOAA Alerts by state"
+          description: "Get NOAA alerts by state"
         }
     );
 
-		Location.remoteMethod(
-	        'getForecast',
-	        {
-	          accepts: [
-	            { arg: 'lat', type: 'string', requried: true }
-							,{ arg: 'lng', type: 'string', requried: true }
-							,{ arg: 'endPoint', type: 'string' }
-	          ],
-	          returns: {arg: 'response', type: 'object'},
-	          http: {path: '/getForecast', verb: 'get'},
-	          description: "Get Weather Insights forecast by lat,lng"
-	        }
-	    );
+	Location.remoteMethod(
+        'getForecast',
+        {
+          accepts: [
+            { arg: 'lat', type: 'string', requried: true }
+						,{ arg: 'lng', type: 'string', requried: true }
+						,{ arg: 'endPoint', type: 'string' }
+          ],
+          returns: {arg: 'response', type: 'object'},
+          http: {path: '/getForecast', verb: 'get'},
+          description: "Get weather insights forecast by lat,lng"
+        }
+    );
+
+	Location.remoteMethod(
+				'getHistorical',
+				{
+					accepts: [
+						{ arg: 'lat', type: 'string', requried: true }
+						,{ arg: 'lng', type: 'string', requried: true }
+						,{ arg: 'radius', type: 'string', requried: true }
+					],
+					returns: {arg: 'response', type: 'object'},
+					http: {path: '/getHistorical', verb: 'get'},
+					description: "Get historical weather events by lat,lng"
+				}
+		);
 };
