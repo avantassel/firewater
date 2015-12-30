@@ -35,6 +35,10 @@ ul.alerts li{
   width: 30px;
 }
 
+.search input{
+    min-width: 250px;
+}
+
 .alert-badge:after{
   content: attr(number);
   position: absolute;

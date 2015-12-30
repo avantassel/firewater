@@ -1,8 +1,3 @@
-/*
-  firewater
-  App
-*/
-
 var firewaterApp = angular.module('firewater'
   , ['lbServices'
   ,'ui.router'
@@ -12,17 +7,19 @@ var firewaterApp = angular.module('firewater'
   ,'ui.bootstrap'
   ,'ngGeolocation'
 ])
-.config(function($stateProvider, $urlRouterProvider, $locationProvider, $logProvider, $httpProvider) {
+.config(function($stateProvider, $urlRouterProvider, $locationProvider, $logProvider, $httpProvider, $urlMatcherFactoryProvider) {
 
   $httpProvider.defaults.useXDomain = true;
   $httpProvider.defaults.headers.common = 'Content-Type: application/xml';
   delete $httpProvider.defaults.headers.common['X-Requested-With'];
 
-  $locationProvider.html5Mode(true);
+  // $locationProvider.html5Mode(true);
+
+  $urlMatcherFactoryProvider.strictMode(false);
 
   $stateProvider
     .state('home', {
-      url: '/',
+      url: '',
       controller: 'mainCtrl',
       templateUrl: 'views/home.html'
     })
@@ -32,7 +29,7 @@ var firewaterApp = angular.module('firewater'
       templateUrl: 'views/home.html'
     })
     .state('location', {
-      url: '/location/:state/:lat,:lng',
+      url: '/location/:lat,:lng',
       controller: 'mainCtrl',
       templateUrl: 'views/home.html'
     })

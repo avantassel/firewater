@@ -4,6 +4,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
     , formatted_address: ''
     , geometry: { location: {lat:($stateParams.lat || 0),lng:($stateParams.lng || 0)}}
   };
+  $scope.currentName = $state.current.name;
   $scope.position = null;
   $scope.alerts = null;
   $scope.inAlertArea = [];
@@ -16,7 +17,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   $scope.searchAddress = '';
 
   if($stateParams.lat && $stateParams.lng){
-    $scope.position = {coords: {latitude:$stateParams.lat, longitude:$stateParams.lng}};
+    $scope.position = {coords: {latitude: parseFloat($stateParams.lat), longitude: parseFloat($stateParams.lng)}};
   }
 
   $scope.getLocation = function(val) {
@@ -100,20 +101,21 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
           //set user current location lat/lng
           $scope.position = position;
 
-          //add user pin
-          $scope.markers.push({
-            icon: FWService.mapIcons(),
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-            message: "Your Location"
-          });
-
           //get state for user location
           FWService.geocode(position.coords).then(function(response){
+
+            //add user pin
+            $scope.markers.push({
+              icon: FWService.mapIcons(),
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+              message: response.formatted_address
+            });
 
             $scope.geocode.formatted_address = response.formatted_address;
             $scope.geocode.geometry = response.geometry;
             $scope.geocode.found_state = response.state;
+
             return true;
 
           }).then(function(){
@@ -131,18 +133,26 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
        });
   } else {
-    $scope.markers.push({
-      icon: FWService.mapIcons(),
-      lat: $scope.position.coords.latitude,
-      lng: $scope.position.coords.longitude,
-      message: "Your Location"
-    });
+
     //get state for user location
     FWService.geocode($scope.position.coords).then(function(response){
+
+      //add user pin
+      $scope.markers.push({
+        icon: FWService.mapIcons(),
+        lat: $scope.position.coords.latitude,
+        lng: $scope.position.coords.longitude,
+        message: response.formatted_address
+      });
 
       $scope.geocode.formatted_address = response.formatted_address;
       $scope.geocode.geometry = response.geometry;
       $scope.geocode.found_state = response.state;
+
+      //update the state param if coming from a location lat/lng
+      if($scope.currentName=='location')
+        $scope.geocode.state = response.state;
+
       return true;
 
     }).then(function(){
@@ -219,6 +229,10 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
      $scope.centerJSON = function(name) {
            leafletData.getMap().then(function(map) {
              var latlngs = [];
+             //add user location
+             if($scope.position)
+              latlngs.push(L.GeoJSON.coordsToLatLng([$scope.position.coords.longitude,$scope.position.coords.latitude]));
+
              for (var i in $scope.geojson[name].data.features[0].geometry.coordinates) {
                  var coord = $scope.geojson[name].data.features[0].geometry.coordinates[i];
                  for (var j in coord) {
