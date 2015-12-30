@@ -97,7 +97,7 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
           return true;
 
         }).then(function(){
-          var dew = [], mslp = [], wspd = [], qpf = [], snow_qpf = [];
+          var dew = [], mslp = [], wspd = [], qpf = [], snow_qpf = [], temp = [];
           //get 24hr forecast for user location
           FWService.forecast(position.coords,'24').then(function(forecast){
 
@@ -117,6 +117,9 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
               );
               snow_qpf.push(
                 [d.getTime(), forecast.forecasts[f].snow_qpf]
+              );
+              temp.push(
+                [d.getTime(), forecast.forecasts[f].temp]
               );
             }
 
@@ -140,9 +143,13 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
               {
                 "key": "Snow Quantitative Precipitation Forecast",
                 "values": snow_qpf
+              },
+              {
+                "key": "Temperature F",
+                "values": temp
               }
             ];
-            console.log(forecast)
+            
             //set forecast
             return $scope.forecast = forecast;
           });
