@@ -18,11 +18,10 @@
 <div class="row">
   <div class="col-md-9">
     <h4 class="media-heading">Your Report Card</h4>
-    <p>{{geocode.formatted_address}}</p>
     <ul class="list-group">
+      <li class="list-group-item"><i class="fa fa-home fa-2x"></i> {{geocode.formatted_address}}</li>
       <li class="list-group-item"><i class="fa fa-{{nearestAlert.type}} fa-2x"></i> {{nearestAlert.miles | number:0}} miles from nearest alert</li>
-      <li class="list-group-item">24 Hours</li>
-      <li class="list-group-item">10 Days</li>
+      <li class="list-group-item"><i class="fa fa-clock-o fa-2x"></i> {{forecast.forecasts[0].phrase_22char}} {{forecast.forecasts[0].temp}}&deg;F</li>      
     </ul>
   </div>
   <div class="col-md-3">

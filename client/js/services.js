@@ -25,11 +25,15 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
       return q.promise;
     },
 
-    forecast: function(position){
+    forecast: function(position,endPoint){
       var q = $q.defer();
+      if(!endPoint || endPoint == '24')
+        endPoint='/api/weather/v2/forecast/hourly/24hour';
+      else if(endPoint == '10')
+        endPoint='/api/weather/v2/forecast/daily/10day';
       Location.getForecast({'lat':position.latitude
                             ,'lng':position.longitude
-                            ,'endPoint':'/api/weather/v2/forecast/hourly/24hour'}, function(data){
+                            ,'endPoint':endPoint}, function(data){
         if(data.response){
           q.resolve(data.response);
         }

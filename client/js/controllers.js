@@ -48,7 +48,7 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
                 y: function(d){return d[1];},
                 useVoronoi: false,
                 clipEdge: true,
-                duration: 100,
+                duration: 200,
                 useInteractiveGuideline: true,
                 xAxis: {
                     showMaxMin: false,
@@ -91,15 +91,16 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
 
         //get state for user location
         FWService.geocode(position.coords).then(function(response){
-          
+
           $scope.geocode.formatted_address = response.formatted_address;
           $scope.geocode.geometry = response.geometry;
           return true;
 
         }).then(function(){
-          var dew = [], mslp = [], wspd = [];
-          //get forecast for user location
-          FWService.forecast(position.coords).then(function(forecast){
+          var dew = [], mslp = [], wspd = [], qpf = [], snow_qpf = [];
+          //get 24hr forecast for user location
+          FWService.forecast(position.coords,'24').then(function(forecast){
+
             for(var f in forecast.forecasts){
               var d = new Date(forecast.forecasts[f].fcst_valid_local);
               dew.push(
@@ -111,13 +112,13 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
               wspd.push(
                 [d.getTime(), forecast.forecasts[f].wspd]
               );
+              qpf.push(
+                [d.getTime(), forecast.forecasts[f].qpf]
+              );
+              snow_qpf.push(
+                [d.getTime(), forecast.forecasts[f].snow_qpf]
+              );
             }
-
-            // snow_qpf: Snow Quantitative Precipitation Forecast
-            // qpf: Quantitative Precipitation Forecast
-            // rh: Relative Humidity
-            //
-            // QPF expected amount of melted precipitation accumulated over a specified time period
 
             $scope.forecastData = [
               {
@@ -131,9 +132,17 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
               {
                 "key": "Wind Speed",
                 "values": wspd
+              },
+              {
+                "key": "Quantitative Precipitation Forecast",
+                "values": qpf
+              },
+              {
+                "key": "Snow Quantitative Precipitation Forecast",
+                "values": snow_qpf
               }
             ];
-
+            console.log(forecast)
             //set forecast
             return $scope.forecast = forecast;
           });
