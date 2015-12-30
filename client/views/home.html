@@ -5,6 +5,13 @@
 
 <nvd3 options="forecastOptions" data="forecastData"></nvd3>
 
+<form>
+  <div class="form-group">
+    <label for="search">Search Alerts</label>
+    <input type="text" class="form-control" id="search" placeholder="Search for an event" ng-model="searchText">
+  </div>
+</form>
+
 <table class="table table-hover">
   <thead>
     <th>Event</th>
@@ -15,7 +22,7 @@
     <th>Message</th>
   </thead>
   <tbody>
-    <tr ng-repeat="alert in alerts">
+    <tr ng-repeat="alert in alerts | filter:searchText">
       <td><i class="fa fa-{{(alert['cap:event'][0] | eventIcon)}} fa-2x"></i> <strong>{{alert['cap:event'][0]}}</strong></td>
       <td>{{alert['updated'][0] | moment}}</td>
       <td>{{alert['cap:expires'][0] | moment}}</td>

@@ -204,6 +204,8 @@ firewaterApp.controller('searchCtrl', function($scope, $state, FWService) {
              polylineLayer.addTo(map);
            });
          }
+         if($scope.nearestAlert.type.indexOf('spin')!==-1)
+          $scope.nearestAlert.type = 'exclamation';
        });
      };
 
