@@ -4,35 +4,39 @@
 
 <nvd3 options="forecastOptions" data="forecastData"></nvd3>
 
-<form>
-  <div class="form-group">
-    <label for="search">Search Alerts</label>
-    <input type="text" class="form-control" id="search" placeholder="Search for an event" ng-model="searchText">
-  </div>
-</form>
+<div class="row">
+  <div class="col-md-12">
+  <form>
+    <div class="form-group">
+      <label for="search">Search Alerts</label>
+      <input type="text" class="form-control" id="search" placeholder="Search for an event" ng-model="searchText">
+    </div>
+  </form>
 
-<table class="table table-hover">
-  <thead>
-    <th>Event</th>
-    <th>Updated</th>
-    <th>Expires</th>
-    <th>Certainty</th>
-    <th>State</th>
-    <th>Message</th>
-  </thead>
-  <tbody>
-    <tr ng-repeat="alert in alerts | filter:searchText">
-      <td><i class="fa fa-{{(alert['cap:event'][0] | eventIcon)}} fa-2x"></i> <strong>{{alert['cap:event'][0]}}</strong></td>
-      <td>{{alert['updated'][0] | moment}}</td>
-      <td>{{alert['cap:expires'][0] | moment}}</td>
-      <td>{{alert['cap:certainty'][0]}}</td>
-      <td><a ui-sref="state({state:(alert['cap:geocode'] | parseState)})">{{(alert['cap:geocode'] | parseState)}}</a></td>
-      <td>
-        <a ui-sref="state({state:(alert['cap:geocode'] | parseState)})">{{alert['title'][0]}}</a>
-        <p>{{alert['summary'][0]}}</p>
-      </td>
-    </tr>
-  </tbody>
-</table>
+  <table class="table table-hover">
+    <thead>
+      <th>Event</th>
+      <th>Updated</th>
+      <th>Expires</th>
+      <th>Certainty</th>
+      <th>State</th>
+      <th>Message</th>
+    </thead>
+    <tbody>
+      <tr ng-repeat="alert in alerts | filter:searchText">
+        <td><i class="fa fa-{{(alert['cap:event'][0] | eventIcon)}} fa-2x"></i> <strong>{{alert['cap:event'][0]}}</strong></td>
+        <td>{{alert['updated'][0] | moment}}</td>
+        <td>{{alert['cap:expires'][0] | moment}}</td>
+        <td>{{alert['cap:certainty'][0]}}</td>
+        <td><a ui-sref="state({state:(alert['cap:geocode'] | parseState)})">{{(alert['cap:geocode'] | parseState)}}</a></td>
+        <td>
+          <a ui-sref="state({state:(alert['cap:geocode'] | parseState)})">{{alert['title'][0]}}</a>
+          <p>{{alert['summary'][0]}}</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
 
 <ng-include src="'views/about.html'"></ng-include>

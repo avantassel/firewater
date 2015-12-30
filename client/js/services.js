@@ -130,7 +130,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
           geojson: scope.geojson,
           defaults: {
               maxZoom: 16,
-              minZoom: 3,
+              minZoom: 4,
               doubleClickZoom: true,
               scrollWheelZoom: false,
               tileLayerOptions: {
