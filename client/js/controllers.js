@@ -1,7 +1,7 @@
 firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $state, $filter, leafletData, FWService) {
 
   $scope.geocode = {state: ($stateParams.state || 'us')
-    , formatted_address: ''
+    , formatted_address: 'Locating...'
     , geometry: { location: {lat:($stateParams.lat || 0),lng:($stateParams.lng || 0)}}
   };
   $scope.currentName = $state.current.name;
@@ -15,7 +15,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   $scope.geojson = {floods:{},fires:{},winter:{},other:{}};
   $scope.nearestAlert = {miles:0,type:'circle-o-notch fa-spin',lat:0,lng:0};
   $scope.searchAddress = '';
-  $scope.historicalCount = 0;
+  $scope.historicalCount = 'Searching for ';
 
   if($stateParams.lat && $stateParams.lng){
     $scope.position = {coords: {latitude: parseFloat($stateParams.lat), longitude: parseFloat($stateParams.lng)}};
@@ -144,9 +144,11 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
         for(r in response.rows){
 
           message = '<strong>'+response.rows[r].doc.EVENT_TYPE+'</strong>';
+          if(response.rows[r].doc.BEGIN_DATE_TIME != '')
+            message += '<br/>'+$filter('moment')(response.rows[r].doc.BEGIN_DATE_TIME);
           if(response.rows[r].doc.EVENT_NARRATIVE != '')
             message += '<br/>'+response.rows[r].doc.EVENT_NARRATIVE;
-          else if(response.rows[r].doc.EVENT_NARRATIVE != '')
+          else if(response.rows[r].doc.EPISODE_NARRATIVE != '')
             message += '<br/>'+response.rows[r].doc.EPISODE_NARRATIVE;
 
           $scope.markers.push({
@@ -216,6 +218,12 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
      //set forecast
      return $scope.forecast = forecast;
+   });
+ };
+
+ $scope.zoomToAddress = function(){
+   leafletData.getMap().then(function(map) {
+     map.setView(L.latLng($scope.position.coords.latitude,$scope.position.coords.longitude),12, {animate: true});
    });
  };
 
