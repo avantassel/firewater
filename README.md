@@ -23,7 +23,7 @@ Import storm data and ugc areas to cloudant
 
 [http://www1.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/legacy](http://www1.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/legacy)
 
-[https://github.com/claudiusli/csv-import](https://github.com/claudiusli/csv-import)
+[https://github.com/avantassel/csv-import](https://github.com/avantassel/csv-import)
 
 ```
 pip install requests
@@ -32,7 +32,7 @@ pip install requests
 python csv-import.py -f ~/Downloads/ugc_areas.csv -d stormdata_ugc_areas -u 5a96fba5-a18f-4c28-b935-06dc8f5832cf-bluemix -a
 
 # import storm data stormdata_1996.csv - stormdata_2013.csv
-python csv-import.py -f ~/Downloads/stormdata_2013.csv -d stormdata -u 5a96fba5-a18f-4c28-b935-06dc8f5832cf-bluemix -a
+python csv-import.py -f ~/Downloads/stormdata_2013.csv -d stormdata_geo -u 5a96fba5-a18f-4c28-b935-06dc8f5832cf-bluemix -a -g BEGIN_LAT,BEGIN_LON
 ```
 
 Create a geo index to query by lat/lng
@@ -43,7 +43,7 @@ Create a geo index to query by lat/lng
   "language": "javascript",
   "st_indexes": {
     "geoidx": {
-      "index": "function(doc) {if (doc.BEGIN_LON && doc.BEGIN_LAT) {st_index({\"geometry\":{\"type\":\"Point\",\"coordinates\":[doc.BEGIN_LON,doc.BEGIN_LAT]}});}}"
+      "index": "function(doc) {if (doc.geometry && doc.geometry.coordinates) {st_index(doc.geometry);}}"
     }
   }
 }

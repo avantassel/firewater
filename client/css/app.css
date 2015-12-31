@@ -29,6 +29,11 @@
   border: none;
 }
 
+.leaflet-popup{
+  bottom: 15px;
+  left: -55px;
+}
+
 ul.alerts li{
     list-style-type: none;
     display: inline;
@@ -85,6 +90,10 @@ ul.alerts li{
   color: #777;
 }
 
+.fa-clock-o{
+  color: #ffc94c;
+}
+
 .leaflet-div-icon {
   border: none !important;
 }
@@ -130,6 +139,32 @@ ul.alerts li{
   position: absolute;
   -webkit-border-radius: 50%;
   border-radius: 50%;
+}
+.pin-historical {
+  width: 20px;
+  height: 20px;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  background: #ffc94c;
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 15px);
+  margin: -20px 0 0 -20px;
+  -webkit-animation-name: bounce;
+  -moz-animation-name: bounce;
+  -o-animation-name: bounce;
+  -ms-animation-name: bounce;
+  animation-name: bounce;
+  -webkit-animation-fill-mode: both;
+  -moz-animation-fill-mode: both;
+  -o-animation-fill-mode: both;
+  -ms-animation-fill-mode: both;
+  animation-fill-mode: both;
+  -webkit-animation-duration: 1s;
+  -moz-animation-duration: 1s;
+  -o-animation-duration: 1s;
+  -ms-animation-duration: 1s;
+  animation-duration: 1s;
 }
 .pulse {
   background: rgba(0,0,0,0.2);

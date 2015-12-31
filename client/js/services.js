@@ -44,7 +44,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
     historical: function(position,radius){
       var q = $q.defer();
       if(!radius)
-        radius=20;
+        radius=16093;//10 miles
       Location.getHistorical({'lat':position.latitude
                             ,'lng':position.longitude
                             ,'radius':radius}, function(data){
@@ -125,21 +125,86 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
       return q.promise;
     },
 
+    chartOptions: function(){
+      return {
+                title: {
+                    enable: true,
+                    text: '24 Hour Forecast'
+                },
+                chart: {
+                    type: 'stackedAreaChart',
+                    height: 450,
+                    margin : {
+                        top: 20,
+                        right: 20,
+                        bottom: 30,
+                        left: 40
+                    },
+                    x: function(d){return d[0];},
+                    y: function(d){return d[1];},
+                    useVoronoi: false,
+                    clipEdge: true,
+                    duration: 200,
+                    useInteractiveGuideline: true,
+                    interactiveLayer: {
+                      tooltip: {
+                        headerFormatter: function (d) {
+                          return d;
+                        }
+                      }
+                    },
+                    xAxis: {
+                        showMaxMin: false,
+                        tickFormat: function(d) {
+                            return d3.time.format('%I:%M%p')(new Date(d))
+                        }
+                    },
+                    yAxis: {
+                        tickFormat: function(d){
+                            return d3.format(',.2f')(d);
+                        }
+                    },
+                    zoom: {
+                        enabled: true,
+                        scaleExtent: [1, 10],
+                        useFixedDomain: false,
+                        useNiceScale: false,
+                        horizontalOff: false,
+                        verticalOff: true,
+                        unzoomEventType: 'dblclick.zoom'
+                    }
+                }
+            };
+    },
     mapCenter: function(){
       return {lat: 39.9950, lng: -105.1006, zoom: 4};
     },
 
-    mapIcons: function(){
-      return { type: 'div'
-              ,iconSize: [230, 0]
-              ,popupAnchor:  [0, 0]
-              ,html: '<div class="pin"></div><div class="pulse"></div>'
-              };
+    mapIcons: function(type){
+      var icons = [];
+
+      icons['locations'] = { type: 'div'
+                        ,iconSize: [230, 0]
+                        ,popupAnchor:  [0, 0]
+                        ,html: '<div class="pin"></div><div class="pulse"></div>'
+                        };
+
+      icons['historical'] = { type: 'div'
+                        ,iconSize: [230, 0]
+                        ,popupAnchor:  [0, 0]
+                        ,html: '<div class="pin-historical"></div>'
+                        };
+
+      if(type)
+        return icons[type];
+
+      return icons;
     },
 
     mapOptions: function(scope){
       return {
           center: this.mapCenter(),
+          markers: scope.markers,
           icons: this.mapIcons(),
           geojson: scope.geojson,
           defaults: {
@@ -248,7 +313,8 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
       var centered = false;
       var self = this;
       var geoAlerts = {floods:[],fires:[],winter:[],other:[]};
-      //push all the coordinates in a geojson formatted array
+      // push all the coordinates in a geojson formatted array
+      // polygon is WKT format
       for(var a in alerts){
         if(!!alerts[a]['cap:polygon'] && alerts[a]['cap:polygon'][0] != ""){
 

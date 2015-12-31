@@ -88,10 +88,11 @@ module.exports = function(Location) {
 		if(vcap && env
 			&& vcap['cloudantNoSQLDB']){
 
+			// in meters
 			if(!radius)
-				radius=20;
+				radius=3218; //2 miles
 
-			var callURL = vcap['cloudantNoSQLDB'][0]['credentials']['url']+'/stormdata/_design/geodd/_geo/geoidx?lat='+lat+'&lon='+lng+'&radius='+radius;
+			var callURL = vcap['cloudantNoSQLDB'][0]['credentials']['url']+'/stormdata_geo/_design/geodd/_geo/geoidx?include_docs=true&lat='+lat+'&lon='+lng+'&radius='+radius;
 
 			request({url: callURL, method: 'GET'}, function(err, response, body) {
 				if(body){

@@ -15,10 +15,15 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   $scope.geojson = {floods:{},fires:{},winter:{},other:{}};
   $scope.nearestAlert = {miles:0,type:'circle-o-notch fa-spin',lat:0,lng:0};
   $scope.searchAddress = '';
+  $scope.historicalCount = 0;
 
   if($stateParams.lat && $stateParams.lng){
     $scope.position = {coords: {latitude: parseFloat($stateParams.lat), longitude: parseFloat($stateParams.lng)}};
   }
+
+  angular.extend($scope, FWService.mapOptions($scope));
+
+  $scope.forecastOptions = FWService.chartOptions();
 
   $scope.ShowAbout = function(){
     return Custombox.open({
@@ -50,58 +55,6 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
     }
   };
 
-  $scope.forecastOptions = {
-            title: {
-                enable: true,
-                text: '24 Hour Forecast'
-            },
-            chart: {
-                type: 'stackedAreaChart',
-                height: 450,
-                margin : {
-                    top: 20,
-                    right: 20,
-                    bottom: 30,
-                    left: 40
-                },
-                x: function(d){return d[0];},
-                y: function(d){return d[1];},
-                useVoronoi: false,
-                clipEdge: true,
-                duration: 200,
-                useInteractiveGuideline: true,
-                interactiveLayer: {
-                  tooltip: {
-                    headerFormatter: function (d) {
-                      return d;
-                    }
-                  }
-                },
-                xAxis: {
-                    showMaxMin: false,
-                    tickFormat: function(d) {
-                        return d3.time.format('%I:%M%p')(new Date(d))
-                    }
-                },
-                yAxis: {
-                    tickFormat: function(d){
-                        return d3.format(',.2f')(d);
-                    }
-                },
-                zoom: {
-                    enabled: true,
-                    scaleExtent: [1, 10],
-                    useFixedDomain: false,
-                    useNiceScale: false,
-                    horizontalOff: false,
-                    verticalOff: true,
-                    unzoomEventType: 'dblclick.zoom'
-                }
-            }
-        };
-
-  angular.extend($scope, FWService.mapOptions($scope));
-
   if(!$scope.position){
     //get user geo location
     FWService.getLocation().then(function(position) {
@@ -114,7 +67,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
             //add user pin
             $scope.markers.push({
-              icon: FWService.mapIcons(),
+              icon: FWService.mapIcons('locations'),
               lat: position.coords.latitude,
               lng: position.coords.longitude,
               message: response.formatted_address
@@ -151,7 +104,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
       //add user pin
       $scope.markers.push({
-        icon: FWService.mapIcons(),
+        icon: FWService.mapIcons('locations'),
         lat: $scope.position.coords.latitude,
         lng: $scope.position.coords.longitude,
         message: response.formatted_address
@@ -183,8 +136,27 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   }
 
   $scope.getHistorical = function(){
+    var message = '';
     FWService.historical($scope.position.coords).then(function(response){
-      console.log(response)
+      if(response && response.rows){
+        $scope.historicalCount = response.rows.length;
+
+        for(r in response.rows){
+
+          message = '<strong>'+response.rows[r].doc.EVENT_TYPE+'</strong>';
+          if(response.rows[r].doc.EVENT_NARRATIVE != '')
+            message += '<br/>'+response.rows[r].doc.EVENT_NARRATIVE;
+          else if(response.rows[r].doc.EVENT_NARRATIVE != '')
+            message += '<br/>'+response.rows[r].doc.EPISODE_NARRATIVE;
+
+          $scope.markers.push({
+            icon: FWService.mapIcons('historical'),
+            lat: response.rows[r].geometry.coordinates[1],
+            lng: response.rows[r].geometry.coordinates[0],
+            message: message
+          });
+        }
+      }
     });
   };
 
