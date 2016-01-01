@@ -22,21 +22,25 @@
 
 <div class="container-fluid report-card">
 <div class="row">
-  <div class="col-md-9">
+  <div class="col-md-4">
     <h4 class="media-heading">Your Safety Card</h4>
     <ul class="list-group">
       <li class="list-group-item"><i class="fa fa-home fa-2x"></i> <a ng-click="zoomToAddress()">{{geocode.formatted_address}}</a></li>
-      <li class="list-group-item"><i class="fa fa-{{nearestAlert.type}} fa-2x"></i> {{nearestAlert.miles ==  0 ? 'Searching for alerts nearby':(nearestAlert.miles | number:0)+' miles from nearest alert'}}</li>
-      <li class="list-group-item"><i class="fa fa-sun-o fa-2x"></i> {{forecast.forecasts[0].phrase_22char}} {{forecast.forecasts[0].temp}}&deg;F</li>
-      <li class="list-group-item"><i class="fa fa-clock-o fa-2x"></i> {{historicalCount}} historical storm events nearby</li>
+      <li class="list-group-item"><i class="fa fa-sun-o fa-2x"></i> The current weather is {{forecast.forecasts[0].phrase_22char}} {{forecast.forecasts[0].temp}}&deg;F</li>
+      <li class="list-group-item"><i class="fa fa-{{nearest.alert.icon}} fa-2x"></i> {{nearest.alert.message}}</li>
+      <li class="list-group-item"><i class="fa fa-clock-o fa-2x"></i> {{nearest.historical.message}}</li>
     </ul>
   </div>
-  <div class="col-md-3">
+  <div class="col-md-4">
+    {{prediction}}
+  </div>
+  <div class="col-md-4">
     <ul class="list-group">
       <li class="list-group-item"><i class="fa fa-fire fa-2x" ></i> <strong>Fire Alerts</strong> <span class="badge danger">{{geoAlerts.fires.length}}</span></li>
       <li class="list-group-item"><i class="fa fa-tint fa-2x" ></i> <strong>Flood Alerts</strong> <span class="badge danger">{{geoAlerts.floods.length}}</span></li>
       <li class="list-group-item"><i class="fa fa-asterisk fa-2x" ></i> <strong>Winter Alerts</strong> <span class="badge danger">{{geoAlerts.winter.length}}</span></li>
       <li class="list-group-item"><i class="fa fa-bell fa-2x" ></i> <strong>Other Alerts</strong> <span class="badge danger">{{geoAlerts.other.length}}</span></li>
+      <li class="list-group-item"><i class="fa fa-circle fa-2x" ></i> <strong>Historical Events</strong> <span class="badge danger">{{historical.count}}</span></li>
     </ul>
     <p style="text-align:center;">See map for <a href="http://alerts.weather.gov/" target="_blank">NOAA</a> alerted areas</p>
   </div>

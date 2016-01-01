@@ -6,16 +6,20 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   };
   $scope.currentName = $state.current.name;
   $scope.position = null;
-  $scope.alerts = null;
   $scope.inAlertArea = [];
   $scope.forecast = null;
+  $scope.alerts = null;
   $scope.areaPolygonAlerts = null;
   $scope.geoAlerts = {};
   $scope.markers = [];
   $scope.geojson = {floods:{},fires:{},winter:{},other:{}};
-  $scope.nearestAlert = {miles:0,type:'circle-o-notch fa-spin',lat:0,lng:0};
+  $scope.nearest = {
+    alert: {miles:0,type:'',icon:'circle-o-notch fa-spin',lat:0,lng:0,message:''}
+    ,historical: {miles:0,type:'',lat:0,lng:0,message:''}
+  };
   $scope.searchAddress = '';
-  $scope.historicalCount = 'Searching for ';
+  $scope.historical = {count: 'Searching for '};
+  $scope.prediction = '';
 
   if($stateParams.lat && $stateParams.lng){
     $scope.position = {coords: {latitude: parseFloat($stateParams.lat), longitude: parseFloat($stateParams.lng)}};
@@ -53,6 +57,32 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
         $state.go('location',{state:response.state,lat:response.geometry.location.lat,lng:response.geometry.location.lng})
       });
     }
+  };
+
+  $scope.zoomToAddress = function(){
+    leafletData.getMap().then(function(map) {
+      map.setView(L.latLng($scope.position.coords.latitude,$scope.position.coords.longitude),12, {animate: true});
+    });
+  };
+
+  $scope.centerJSON = function(name) {
+      leafletData.getMap().then(function(map) {
+        var latlngs = [];
+        //add user location
+        if($scope.position)
+         latlngs.push(L.GeoJSON.coordsToLatLng([$scope.position.coords.longitude,$scope.position.coords.latitude]));
+
+        for (var i in $scope.geojson[name].data.features[0].geometry.coordinates) {
+            var coord = $scope.geojson[name].data.features[0].geometry.coordinates[i];
+            for (var j in coord) {
+                var points = coord[j];
+                for (var k in points) {
+                    latlngs.push(L.GeoJSON.coordsToLatLng(points[k]));
+                }
+            }
+        }
+        return map.fitBounds(latlngs);
+      });
   };
 
   if(!$scope.position){
@@ -137,9 +167,10 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
   $scope.getHistorical = function(){
     var message = '';
+    $scope.nearest.historical.message = 'Searching for past events nearby';
     FWService.historical($scope.position.coords).then(function(response){
       if(response && response.rows){
-        $scope.historicalCount = response.rows.length;
+        $scope.historical.count = response.rows.length;
 
         for(r in response.rows){
 
@@ -157,7 +188,16 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
             lng: response.rows[r].geometry.coordinates[0],
             message: message
           });
+
+          FWService.calcNearestHistorical($scope
+            ,response.rows[r].doc.EVENT_TYPE
+            ,response.rows[r].geometry.coordinates[1]
+            ,response.rows[r].geometry.coordinates[0]
+          );
         }
+        $scope.nearest.historical.message = 'The nearest historical event ('+$scope.nearest.historical.type+') is '+$filter('number')($scope.nearest.historical.miles,2)+' miles away';
+      } else {
+        $scope.nearest.historical.message = 'There are no past events nearby';
       }
     });
   };
@@ -221,50 +261,29 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
    });
  };
 
- $scope.zoomToAddress = function(){
-   leafletData.getMap().then(function(map) {
-     map.setView(L.latLng($scope.position.coords.latitude,$scope.position.coords.longitude),12, {animate: true});
-   });
- };
-
- $scope.centerJSON = function(name) {
-       leafletData.getMap().then(function(map) {
-         var latlngs = [];
-         //add user location
-         if($scope.position)
-          latlngs.push(L.GeoJSON.coordsToLatLng([$scope.position.coords.longitude,$scope.position.coords.latitude]));
-
-         for (var i in $scope.geojson[name].data.features[0].geometry.coordinates) {
-             var coord = $scope.geojson[name].data.features[0].geometry.coordinates[i];
-             for (var j in coord) {
-                 var points = coord[j];
-                 for (var k in points) {
-                     latlngs.push(L.GeoJSON.coordsToLatLng(points[k]));
-                 }
-             }
-         }
-         return map.fitBounds(latlngs);
-       });
-   };
-
  $scope.getAlerts = function(){
+  $scope.nearest.alert.message = 'Searching for alerts nearby';
   FWService.alerts($scope.geocode.state).then(function(alerts){
-     //set alerts
-     $scope.alerts = alerts;
+    $scope.alerts = alerts;
      //parse alerts and add geojson alerts to the map
      FWService.mapAlerts(alerts,$scope);
      //draw polyline to nearestAlert
-     if($scope.nearestAlert.lat && $scope.nearestAlert.lng){
+     if(!!$scope.nearest.alert.lat && !!$scope.nearest.alert.lng){
        leafletData.getMap().then(function(map) {
          var polylineLayer = L.geodesicPolyline([
            L.latLng($scope.position.coords.latitude,$scope.position.coords.longitude)
-           ,L.latLng($scope.nearestAlert.lat,$scope.nearestAlert.lng)
+           ,L.latLng($scope.nearest.alert.lat,$scope.nearest.alert.lng)
          ],{color: '#428bca'});
          polylineLayer.addTo(map);
        });
      }
-     if($scope.nearestAlert.type.indexOf('spin')!==-1)
-      $scope.nearestAlert.type = 'exclamation';
+
+     if(!!alerts.length && alerts[0].title!='There are no active watches, warnings or advisories'){
+       $scope.nearest.alert.message = 'The nearest alert ('+$scope.nearest.alert.type+') is '+$filter('number')($scope.nearest.alert.miles,2)+' miles away';
+     } else {
+       $scope.nearest.alert.type = 'exclamation';
+       $scope.nearest.alert.message = 'There are no alerts nearby';
+     }
    });
  };
 

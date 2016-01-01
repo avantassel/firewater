@@ -23,7 +23,7 @@ a {
   border-radius: 25px;
 }
 
-.report-card .col-md-3{
+.report-card .col-md-4{
   border-left: 1px solid #ccc;
 }
 
@@ -91,6 +91,12 @@ ul.alerts li{
   color: #ffc94c;
 }
 
+.fa-circle{
+  color: #ffc94c;
+}
+
+/* leaflet overrides */
+
 .leaflet-div-icon {
   border: none !important;
 }
@@ -138,15 +144,15 @@ ul.alerts li{
   border-radius: 50%;
 }
 .pin-historical {
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   -webkit-border-radius: 50%;
   border-radius: 50%;
   background: #ffc94c;
   position: absolute;
   left: 50%;
   top: 50%;
-  margin: -20px 0 0 -20px;
+  margin-left: -8px;
   -webkit-animation-name: bounce;
   -moz-animation-name: bounce;
   -o-animation-name: bounce;
