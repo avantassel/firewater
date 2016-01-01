@@ -125,8 +125,39 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
       return q.promise;
     },
 
-    chartOptions: function(){
-      return {
+    chartOptions: function(type){
+
+      if(type=='prediction'){
+        return {
+              chart: {
+                  type: 'pieChart',
+                  height: 286,
+                  donut: true,
+                  x: function(d){return d.key;},
+                  y: function(d){return d.y;},
+                  showLabels: true,
+                  showLegend: false,
+                  duration: 500,
+                  pie: {
+                      startAngle: function(d) { return d.startAngle/2 -Math.PI/2 },
+                      endAngle: function(d) { return d.endAngle/2 -Math.PI/2 }
+                  },
+                  color: function(d,l){
+                    if(d.key.indexOf('Positive') !== -1)
+                      return '#31A354';
+                    else if(d.key.indexOf('Neutral') !== -1)
+                      return '#3182BD';
+                    else if(d.key.indexOf('Negative') !== -1)
+                      return '#E6550D';
+                    else
+                      return '#C6DBEF';
+                  }
+              }
+          };
+      }
+      else if(type=='forecast'){
+
+        return {
                 title: {
                     enable: true,
                     text: '24 Hour Forecast'
@@ -145,6 +176,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
                     useVoronoi: false,
                     clipEdge: true,
                     duration: 200,
+                    noData: 'The foreast is not available',
                     useInteractiveGuideline: true,
                     interactiveLayer: {
                       tooltip: {
@@ -175,6 +207,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
                     }
                 }
             };
+        }
     },
     mapCenter: function(){
       return {lat: 39.9950, lng: -105.1006, zoom: 4};

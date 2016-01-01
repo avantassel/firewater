@@ -1,0 +1,51 @@
+{
+  "URTHECAST": {
+    "key": ""
+    ,"secret": ""
+  },
+  "VCAP_SERVICES": {
+    "weatherinsights": [
+      {
+         "name": "weatherinsights",
+         "label": "weatherinsights",
+         "plan": "Free",
+         "credentials": {
+            "username": "",
+            "password": "",
+            "host": "twcservice.mybluemix.net",
+            "port": 443,
+            "url": ""
+         }
+      }
+   ],
+   "spark": [
+      {
+         "name": "stormdata",
+         "label": "spark",
+         "plan": "ibm.SparkService.PayGoPersonalInteractive",
+         "credentials": {
+            "tenant_id": "",
+            "tenant_id_full": "",
+            "cluster_master_url": "",
+            "instance_id": "",
+            "tenant_secret": "",
+            "plan": "ibm.SparkService.PayGoPersonalInteractive"
+         }
+      }
+   ],
+   "cloudantNoSQLDB": [
+    {
+      "name": "Cloudant NoSQL DB-da",
+      "label": "cloudantNoSQLDB",
+      "plan": "Shared",
+      "credentials": {
+        "username": "",
+        "password": "",
+        "host": "",
+        "port": 443,
+        "url": ""
+      }
+    }
+  ]
+  }
+}

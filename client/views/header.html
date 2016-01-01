@@ -23,7 +23,6 @@
 <div class="container-fluid report-card">
 <div class="row">
   <div class="col-md-4">
-    <h4 class="media-heading">Your Safety Card</h4>
     <ul class="list-group">
       <li class="list-group-item"><i class="fa fa-home fa-2x"></i> <a ng-click="zoomToAddress()">{{geocode.formatted_address}}</a></li>
       <li class="list-group-item"><i class="fa fa-sun-o fa-2x"></i> The current weather is {{forecast.forecasts[0].phrase_22char}} {{forecast.forecasts[0].temp}}&deg;F</li>
@@ -32,7 +31,11 @@
     </ul>
   </div>
   <div class="col-md-4">
-    {{prediction}}
+    <ul class="list-group">
+      <li class="list-group-item floods">{{prediction.floods}}</li>
+      <li class="list-group-item fires">{{prediction.fires}}</li>
+      <li class="list-group-item">{{prediction.summary}}</li>
+    </ul>
   </div>
   <div class="col-md-4">
     <ul class="list-group">

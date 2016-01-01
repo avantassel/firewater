@@ -14,12 +14,12 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   $scope.markers = [];
   $scope.geojson = {floods:{},fires:{},winter:{},other:{}};
   $scope.nearest = {
-    alert: {miles:0,type:'',icon:'circle-o-notch fa-spin',lat:0,lng:0,message:''}
-    ,historical: {miles:0,type:'',lat:0,lng:0,message:''}
+    alert: {miles:0,type:'',icon:'circle-o-notch fa-spin',lat:0,lng:0,message:'Searching for alerts nearby'}
+    ,historical: {miles:0,type:'',lat:0,lng:0,message:'Searching for past events nearby'}
   };
   $scope.searchAddress = '';
   $scope.historical = {count: 'Searching for '};
-  $scope.prediction = '';
+  $scope.prediction = {floods:'',fires:'',summary:''};
 
   if($stateParams.lat && $stateParams.lng){
     $scope.position = {coords: {latitude: parseFloat($stateParams.lat), longitude: parseFloat($stateParams.lng)}};
@@ -27,7 +27,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
   angular.extend($scope, FWService.mapOptions($scope));
 
-  $scope.forecastOptions = FWService.chartOptions();
+  $scope.forecastOptions = FWService.chartOptions('forecast');
 
   $scope.ShowAbout = function(){
     return Custombox.open({
@@ -121,7 +121,12 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
             return $scope.getAlerts();
 
+          }).then(function(){
+
+            return $scope.calcPrediction();
+
           });
+
        },function(err){
 
          $scope.getAlerts();
@@ -162,7 +167,12 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
       return $scope.getAlerts();
 
+    }).then(function(){
+
+      return $scope.calcPrediction();
+
     });
+
   }
 
   $scope.getHistorical = function(){
@@ -198,6 +208,32 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
         $scope.nearest.historical.message = 'The nearest historical event ('+$scope.nearest.historical.type+') is '+$filter('number')($scope.nearest.historical.miles,2)+' miles away';
       } else {
         $scope.nearest.historical.message = 'There are no past events nearby';
+      }
+    });
+  };
+
+  $scope.getAlerts = function(){
+   $scope.nearest.alert.message = 'Searching for alerts nearby';
+   FWService.alerts($scope.geocode.state).then(function(alerts){
+     $scope.alerts = alerts;
+      //parse alerts and add geojson alerts to the map
+      FWService.mapAlerts(alerts,$scope);
+      //draw polyline to nearestAlert
+      if(!!$scope.nearest.alert.lat && !!$scope.nearest.alert.lng){
+        leafletData.getMap().then(function(map) {
+          var polylineLayer = L.geodesicPolyline([
+            L.latLng($scope.position.coords.latitude,$scope.position.coords.longitude)
+            ,L.latLng($scope.nearest.alert.lat,$scope.nearest.alert.lng)
+          ],{color: '#428bca'});
+          polylineLayer.addTo(map);
+        });
+      }
+
+      if(!!alerts.length && alerts[0].title!='There are no active watches, warnings or advisories'){
+        $scope.nearest.alert.message = 'The nearest alert ('+$scope.nearest.alert.type+') is '+$filter('number')($scope.nearest.alert.miles,2)+' miles away';
+      } else {
+        $scope.nearest.alert.type = 'exclamation';
+        $scope.nearest.alert.message = 'There are no alerts nearby';
       }
     });
   };
@@ -261,30 +297,8 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
    });
  };
 
- $scope.getAlerts = function(){
-  $scope.nearest.alert.message = 'Searching for alerts nearby';
-  FWService.alerts($scope.geocode.state).then(function(alerts){
-    $scope.alerts = alerts;
-     //parse alerts and add geojson alerts to the map
-     FWService.mapAlerts(alerts,$scope);
-     //draw polyline to nearestAlert
-     if(!!$scope.nearest.alert.lat && !!$scope.nearest.alert.lng){
-       leafletData.getMap().then(function(map) {
-         var polylineLayer = L.geodesicPolyline([
-           L.latLng($scope.position.coords.latitude,$scope.position.coords.longitude)
-           ,L.latLng($scope.nearest.alert.lat,$scope.nearest.alert.lng)
-         ],{color: '#428bca'});
-         polylineLayer.addTo(map);
-       });
-     }
+ $scope.calcPrediction = function(){
 
-     if(!!alerts.length && alerts[0].title!='There are no active watches, warnings or advisories'){
-       $scope.nearest.alert.message = 'The nearest alert ('+$scope.nearest.alert.type+') is '+$filter('number')($scope.nearest.alert.miles,2)+' miles away';
-     } else {
-       $scope.nearest.alert.type = 'exclamation';
-       $scope.nearest.alert.message = 'There are no alerts nearby';
-     }
-   });
  };
 
 });

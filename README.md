@@ -4,7 +4,7 @@
 
 FireWater is a perfect storm weather prediction application.
 
-FireWater uses historical weather disaster data from NOAA and weather forecast to predict locations susceptible to flooding and wild fires.
+FireWater uses historical weather disaster data from NOAA and weather insights to predict locations susceptible to flooding and wild fires.
 
 FireWater was developed for the IBM [Sparkathon](http://sparkathon.devpost.com/)
 
@@ -13,13 +13,15 @@ FireWater was developed for the IBM [Sparkathon](http://sparkathon.devpost.com/)
 ## Config environment variables
 
 Running locally add values to .env file.
-Look at [env-sample.yml](env-sample.yml)
+Look at [env-sample.json](env-sample.json)
 
 ```
   cp env-sample.json env.json
 ```
 
-Import storm data and ugc areas to cloudant
+## Data
+
+Import storm data and ugc areas to Cloudant
 
 [http://www1.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/legacy](http://www1.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/legacy)
 
@@ -62,3 +64,10 @@ Create a geo index to query by lat/lng
   cf push firewater
   cf logs firewater --recent
 ```
+
+## Bluemix Services
+
+* Cloudant
+* Weather Insights
+* Apache Spark
+* Strongloop
