@@ -25,6 +25,7 @@ a {
 
 .report-card .col-md-4{
   border-left: 1px solid #ccc;
+  height: 286px;
 }
 
 .list-group-item {

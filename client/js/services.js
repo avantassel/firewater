@@ -5,6 +5,8 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
 
   return {
 
+    alertDistance: 2, //2 miles
+
     getLocation: function(){
       var q = $q.defer();
         $geolocation.getCurrentPosition({timeout: 60000}).then(function(position){
@@ -209,6 +211,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
             };
         }
     },
+
     mapCenter: function(){
       return {lat: 39.9950, lng: -105.1006, zoom: 4};
     },
@@ -331,6 +334,17 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
         {'lat':scope.position.coords.latitude,'lng':scope.position.coords.longitude}
         ,{'lat':lat,'lng':lng}
       );
+
+      //counts current alerts within 2 miles
+      if(distance <= this.alertDistance){
+        if(type.toLowerCase().indexOf('fire')!==-1)
+          scope.prediction.counts.alerts.fires++;
+        if(type.toLowerCase().indexOf('flood')!==-1)
+          scope.prediction.counts.alerts.floods++;
+        if(type.toLowerCase().indexOf('flash')!==-1)
+          scope.prediction.counts.alerts.flash++;
+      }
+
       //update scope distance
       if(scope.nearest.alert.miles == 0 || distance < scope.nearest.alert.miles){
         scope.nearest.alert.icon = icon;
@@ -347,7 +361,15 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
         {'lat':scope.position.coords.latitude,'lng':scope.position.coords.longitude}
         ,{'lat':lat,'lng':lng}
       );
-
+      //counts for historical events within 2 miles
+      if(distance <= this.alertDistance){
+        if(type.toLowerCase().indexOf('fire')!==-1)
+          scope.prediction.counts.historical.fires++;
+        if(type.toLowerCase().indexOf('flood')!==-1)
+          scope.prediction.counts.historical.floods++;
+        if(type.toLowerCase().indexOf('flash')!==-1)
+          scope.prediction.counts.historical.flash++;
+      }
       //update scope distance
       if(scope.nearest.historical.miles == 0 || distance < scope.nearest.historical.miles){
         scope.nearest.historical.type = type;

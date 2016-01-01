@@ -18,8 +18,19 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
     ,historical: {miles:0,type:'',lat:0,lng:0,message:'Searching for past events nearby'}
   };
   $scope.searchAddress = '';
-  $scope.historical = {count: 'Searching for '};
-  $scope.prediction = {floods:'',fires:'',summary:''};
+  $scope.historical = {count: 0};
+  $scope.prediction = {floods:''
+                      ,fires:''
+                      ,summary:''
+                      ,forecast: {
+                        fires: {high_winds:false}
+                        ,floods: {high_qpf:false}
+                      }
+                      ,counts:{
+                        alerts: {floods:0,flash:0,fires:0}
+                        ,historical: {floods:0,flash:0,fires:0}
+                      }
+                    };
 
   if($stateParams.lat && $stateParams.lng){
     $scope.position = {coords: {latitude: parseFloat($stateParams.lat), longitude: parseFloat($stateParams.lng)}};
@@ -239,11 +250,20 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   };
 
  $scope.getForecast = function(){
-   var dew = [], mslp = [], wspd = [], qpf = [], snow_qpf = [], temp = [];
+   var dew = [], mslp = [], wspd = [], qpf = [], snow_qpf = [], temp = [], qpfAmount = 0;
    //get 24hr forecast for user location
    FWService.forecast($scope.position.coords,'24').then(function(forecast){
 
      for(var f in forecast.forecasts){
+
+       //  https://en.wikipedia.org/wiki/Gale_warning
+       if(forecast.forecasts[f].wspd >= 40){
+         $scope.prediction.forecast.fires.high_winds=true;
+       }
+
+       qpfAmount += forecast.forecasts[f].qpf;
+       qpfAmount += forecast.forecasts[f].snow_qpf;
+
        var d = new Date(forecast.forecasts[f].fcst_valid_local);
        dew.push(
          [d.getTime(), forecast.forecasts[f].dewpt]
@@ -263,6 +283,10 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
        temp.push(
          [d.getTime(), forecast.forecasts[f].temp]
        );
+     }
+
+     if(qpfAmount >= 4){
+       $scope.prediction.forecast.floods.high_qpf=true;
      }
 
      $scope.forecastData = [
@@ -297,7 +321,43 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
    });
  };
 
+ // https://www.researchgate.net/publication/233775970_Quantitative_Precipitation_Forecasts_and_Early_Flood_Warning_the_Hunter_Valley_Flood_of_June_2007
+ // http://www.erh.noaa.gov/nerfc/qpfpaper.htm
+
  $scope.calcPrediction = function(){
+
+   //TODO add rain+drought history and tree coverage?
+   if($scope.prediction.counts.alerts.fires
+     && $scope.prediction.historical.alerts.fires
+     && $scope.prediction.forecast.fires.high_winds){
+       $scope.prediction.fires = 'Fire risk is high';
+   } else if($scope.prediction.counts.alerts.fires
+     && $scope.prediction.historical.alerts.fires){
+       $scope.prediction.fires = 'Fire risk is medium';
+   } else if($scope.prediction.counts.alerts.fires){
+       $scope.prediction.fires = 'Fire risk is low';
+   } else {
+      $scope.prediction.fires = 'There is no risk of fires';
+   }
+
+   //TODO add rain+drought history
+   if($scope.prediction.counts.alerts.flash
+     && $scope.prediction.counts.historical.flash
+     && $scope.prediction.counts.alerts.floods
+     && $scope.prediction.counts.historical.floods
+     && $scope.prediction.forecast.floods.high_qpf){
+       $scope.prediction.floods = 'Flood risk is high';
+   } else if($scope.prediction.counts.alerts.floods
+     && $scope.prediction.counts.historical.floods){
+       $scope.prediction.floods = 'Flood risk is medium';
+   } else if($scope.prediction.counts.alerts.flash
+     && $scope.prediction.counts.historical.flash){
+       $scope.prediction.floods = 'Flood risk is medium';
+   } else if($scope.prediction.counts.alerts.floods){
+       $scope.prediction.floods = 'Flood risk is low';
+   } else {
+     $scope.prediction.floods = 'There is no risk of flooding';
+   }
 
  };
 

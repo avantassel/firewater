@@ -1,6 +1,6 @@
 # FireWater
 
-<img src="client/images/icon.png?raw=true" alt="FireWater logo" title="FireWater" align="right" />
+<img src="client/img/fire-water-icon50.png?raw=true" alt="FireWater logo" title="FireWater" align="right" />
 
 FireWater is a perfect storm weather prediction application.
 
