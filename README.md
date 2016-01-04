@@ -2,7 +2,7 @@
 
 <img src="client/img/fire-water-icon50.png?raw=true" alt="FireWater logo" title="FireWater" align="right" />
 
-FireWater is a perfect storm weather prediction application.
+FireWater is a perfect storm prediction application.
 
 FireWater uses historical weather disaster data from NOAA and weather insights to predict locations susceptible to flooding and wild fires.
 

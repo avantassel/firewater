@@ -76,11 +76,11 @@ ul.alerts li{
   font-weight: bold;
 }
 
-.fa-tint{
+.fa-tint, .fa-ship{
   color: #62a0ca;
 }
 
-.fa-fire{
+.fa-fire, .fa-fire-extinguisher{
   color: #ffa556;
 }
 

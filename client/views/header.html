@@ -43,13 +43,16 @@
   <div class="col-md-4">
     <ul class="list-group">
       <li class="list-group-item" ng-repeat="prediction in predictions">
-        <div class="message bg-{{prediction.type}}">{{prediction.message}}</div>
+        <div class="message bg-{{prediction.type}}">
+          <i ng-if="prediction.icon" class="fa fa-{{prediction.icon}} fa-lg"></i>
+          {{prediction.message}}
+        </div>
       </li>
     </ul>
   </div>
   <div class="col-md-4">
     <ul class="list-group">
-      <li class="list-group-item"><i class="fa fa-fire fa-2x" ></i> <strong>{{geocode.state}} Fire Alerts</strong> <span class="badge danger">{{geoAlerts.fires.length}}</span></li>
+      <li class="list-group-item"><i class="fa fa-fire fa-2x" ></i> <strong>{{geocode.state}} WildFire Alerts</strong> <span class="badge danger">{{geoAlerts.fires.length}}</span></li>
       <li class="list-group-item"><i class="fa fa-tint fa-2x" ></i> <strong>{{geocode.state}} Flood Alerts</strong> <span class="badge danger">{{geoAlerts.floods.length}}</span></li>
       <li class="list-group-item"><i class="fa fa-asterisk fa-2x" ></i> <strong>{{geocode.state}} Winter Alerts</strong> <span class="badge danger">{{geoAlerts.winter.length}}</span></li>
       <li class="list-group-item"><i class="fa fa-bell fa-2x" ></i> <strong>Other {{geocode.state}} Alerts</strong> <span class="badge danger">{{geoAlerts.other.length}}</span></li>

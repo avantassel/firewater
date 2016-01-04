@@ -1,7 +1,7 @@
 {
   "name": "firewater",
   "version": "1.0.0",
-  "description": "A perfect storm weather prediction application",
+  "description": "A perfect storm prediction application",
   "main": "server/server.js",
   "scripts": {
     "start": "node ."
