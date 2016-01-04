@@ -2,6 +2,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
   $scope.geocode = {state: ($stateParams.state || 'US')
     , formatted_address: 'Locating...'
+    , elev: 0
     , geometry: { location: {lat:($stateParams.lat || 0),lng:($stateParams.lng || 0)}}
   };
   $scope.currentName = $state.current.name;
@@ -13,14 +14,15 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   $scope.markers = [];
   $scope.geojson = {floods:{},fires:{},winter:{},other:{}};
   $scope.nearest = {
-    alert: {miles:0,type:'',icon:'circle-o-notch fa-spin',lat:0,lng:0,message:'Searching for alerts nearby'}
+    alert: {miles:0,elev:0,type:'',icon:'circle-o-notch fa-spin',lat:0,lng:0,message:'Searching for alerts nearby'}
     ,historical: {miles:0,type:'',lat:0,lng:0,message:'Searching for past events nearby'}
   };
   $scope.searchAddress = '';
   $scope.historical = {count: 0};
   $scope.prediction = {floods:''
                       ,fires:''
-                      ,summary:''
+                      ,summary:'There is no current risk at your location'
+                      ,alert:'success'
                       ,forecast: {
                         fires: {high_winds:false,in_alert:false}
                         ,floods: {high_qpf:false,in_alert:false}
@@ -231,7 +233,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
             ,response.rows[r].geometry.coordinates[0]
           );
         }
-        $scope.nearest.historical.message = 'The nearest historical event ('+$scope.nearest.historical.type+') is '+$filter('number')($scope.nearest.historical.miles,2)+' miles away';
+        $scope.nearest.historical.message = 'The nearest historical event ('+$scope.nearest.historical.type+')';
       } else {
         $scope.nearest.historical.message = 'There are no past events nearby';
       }
@@ -256,10 +258,22 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
           ],{color: '#428bca'});
           polylineLayer.addTo(map);
         });
+
+        // elevation
+        if($scope.position){
+          geolib.getElevation([
+            {'lat':$scope.position.coords.latitude,'lng':$scope.position.coords.longitude}
+            ,{'lat':$scope.nearest.alert.lat,'lng':$scope.nearest.alert.lng}
+          ],function(err,result){
+            $scope.geocode.elev = result[0].elev * 3.28084;//elevation in feet
+            $scope.nearest.alert.elev = result[1].elev * 3.28084;//elevation in feet
+          });
+        }
+
       }
 
       if(!!alerts.length && alerts[0]['title'][0] != 'There are no active watches, warnings or advisories'){
-        $scope.nearest.alert.message = 'The nearest alert ('+$scope.nearest.alert.type+') is '+$filter('number')($scope.nearest.alert.miles,2)+' miles away';
+        $scope.nearest.alert.message = 'The nearest alert ('+$scope.nearest.alert.type+')';
       } else {
         $scope.nearest.alert.icon = 'exclamation';
         $scope.nearest.alert.message = 'There are no alerts nearby';
@@ -348,45 +362,66 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
  // http://www.erh.noaa.gov/nerfc/qpfpaper.htm
 
  $scope.calcPrediction = function(){
-   
+
+   //FIRES
    //TODO add rain+drought history and tree coverage?
-   if($scope.prediction.counts.alerts.fires
+   if($scope.prediction.forecast.fires.in_alert){
+     $scope.prediction.fires = 'Fire risk is high';
+     $scope.prediction.summary = 'Be aware you are in a NOAA fire alert area';
+     $scope.prediction.alert = 'danger';
+   } else if($scope.prediction.counts.alerts.fires
      && $scope.prediction.historical.alerts.fires
      && $scope.prediction.forecast.fires.high_winds){
        $scope.prediction.fires = 'Fire risk is high';
+       $scope.prediction.alert = 'danger';
    } else if($scope.prediction.counts.alerts.fires
      && $scope.prediction.historical.alerts.fires){
        $scope.prediction.fires = 'Fire risk is medium';
+       $scope.prediction.alert = 'warning';
    } else if($scope.prediction.counts.alerts.fires){
        $scope.prediction.fires = 'Fire risk is low';
+       $scope.prediction.alert = 'info';
    } else {
       $scope.prediction.fires = 'There is no risk of fires';
+      $scope.prediction.alert = 'success';
    }
 
+   //FLOODS
    //TODO add rain+drought history
-   if($scope.prediction.counts.alerts.flash
+   if($scope.prediction.forecast.floods.in_alert){
+     $scope.prediction.floods = 'Flood risk is high';
+     $scope.prediction.summary = 'Be aware you are in a NOAA flood alert area';
+     $scope.prediction.alert = 'danger';
+   } else if($scope.prediction.counts.alerts.flash
      && $scope.prediction.counts.historical.flash
      && $scope.prediction.counts.alerts.floods
      && $scope.prediction.counts.historical.floods
      && $scope.prediction.forecast.floods.high_qpf){
        $scope.prediction.floods = 'Flood risk is high';
+       $scope.prediction.alert = 'danger';
    } else if($scope.prediction.counts.alerts.floods
      && $scope.prediction.counts.historical.floods){
        $scope.prediction.floods = 'Flood risk is medium';
+       $scope.prediction.alert = 'warning';
    } else if($scope.prediction.counts.alerts.flash
      && $scope.prediction.counts.historical.flash){
        $scope.prediction.floods = 'Flood risk is medium';
+       $scope.prediction.alert = 'warning';
    } else if($scope.prediction.counts.alerts.floods){
        $scope.prediction.floods = 'Flood risk is low';
+       $scope.prediction.alert = 'info';
    } else {
      $scope.prediction.floods = 'There is no risk of flooding';
+     $scope.prediction.alert = 'success';
    }
 
-   if($scope.prediction.forecast.floods.in_alert){
-     $scope.prediction.summary = 'Be aware you are in a NOAA flood alert area';
-   } else if($scope.prediction.forecast.floods.in_alert){
-     $scope.prediction.summary = 'Be aware you are in a NOAA fire alert area';
-   }
+   //are we below the flooded alert elevation?
+   if($scope.nearest.alert.type.toLowerCase().indexOf('flood') !== -1
+    && $scope.nearest.alert.miles < 2
+    && $scope.geocode.elev < $scope.nearest.alert.elev){
+      $scope.prediction.summary = 'Be aware you are below a flood alert area';
+      $scope.prediction.alert = 'danger';
+    }
 
  };
 

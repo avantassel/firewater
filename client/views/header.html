@@ -24,17 +24,33 @@
 <div class="row">
   <div class="col-md-4">
     <ul class="list-group">
-      <li class="list-group-item"><i class="fa fa-home fa-2x"></i> <a ng-click="zoomToAddress()">{{geocode.formatted_address}}</a></li>
+      <li class="list-group-item"><i class="fa fa-home fa-2x"></i>
+        <a ng-click="zoomToAddress()">{{geocode.formatted_address}}</a>
+        <span ng-if="geocode.elev"><br/>Altitude at {{geocode.elev | number:0}} ft.</span>
+      </li>
       <li class="list-group-item"><i class="fa fa-sun-o fa-2x"></i> The current weather is {{forecast.forecasts[0].phrase_22char}} {{forecast.forecasts[0].temp}}&deg;F</li>
-      <li class="list-group-item"><i class="fa fa-{{nearest.alert.icon}} fa-2x"></i> {{nearest.alert.message}}</li>
-      <li class="list-group-item"><i class="fa fa-clock-o fa-2x"></i> {{nearest.historical.message}}</li>
+      <li class="list-group-item">
+        <i class="fa fa-{{nearest.alert.icon}} fa-2x"></i> {{nearest.alert.message}}
+        <span ng-if="nearest.alert.miles"><br/>{{nearest.alert.miles | number:2}} miles away</span>
+        <span ng-if="nearest.alert.elev"><br/>Altitude at {{nearest.alert.elev | number:0}} ft.</span>
+      </li>
+      <li class="list-group-item">
+        <i class="fa fa-clock-o fa-2x"></i> {{nearest.historical.message}}
+        <span ng-if="nearest.alert.miles"><br/>{{nearest.historical.miles | number:2}} miles away</span>
+      </li>
     </ul>
   </div>
   <div class="col-md-4">
     <ul class="list-group">
-      <li class="list-group-item floods">{{prediction.floods}}</li>
-      <li class="list-group-item fires">{{prediction.fires}}</li>
-      <li class="list-group-item">{{prediction.summary}}</li>
+      <li class="list-group-item summary">
+        <div class="alert alert-{{prediction.alert}}"
+        <strong>{{prediction.summary}}</strong>
+      </li>
+      <li class="list-group-item fires"><i class="fa fa-fire fa-2x" ></i> {{prediction.fires}}</li>
+      <li class="list-group-item floods"><i class="fa fa-tint fa-2x" ></i> {{prediction.floods}}</li>
+      <li class="list-group-item chart">
+
+      </li>
     </ul>
   </div>
   <div class="col-md-4">

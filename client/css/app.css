@@ -47,6 +47,10 @@ ul.alerts li{
   width: 30px;
 }
 
+.summary{
+  text-align: center;
+}
+
 .search input{
     min-width: 250px;
 }
