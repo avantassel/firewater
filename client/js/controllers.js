@@ -1,12 +1,11 @@
-firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $state, $filter, leafletData, FWService) {
+firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $state, $filter, $q, leafletData, FWService) {
 
-  $scope.geocode = {state: ($stateParams.state || 'us')
+  $scope.geocode = {state: ($stateParams.state || 'US')
     , formatted_address: 'Locating...'
     , geometry: { location: {lat:($stateParams.lat || 0),lng:($stateParams.lng || 0)}}
   };
   $scope.currentName = $state.current.name;
   $scope.position = null;
-  $scope.inAlertArea = [];
   $scope.forecast = null;
   $scope.alerts = null;
   $scope.areaPolygonAlerts = null;
@@ -23,8 +22,10 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
                       ,fires:''
                       ,summary:''
                       ,forecast: {
-                        fires: {high_winds:false}
-                        ,floods: {high_qpf:false}
+                        fires: {high_winds:false,in_alert:false}
+                        ,floods: {high_qpf:false,in_alert:false}
+                        ,winter: {in_alert:false}
+                        ,other: {in_alert:false}
                       }
                       ,counts:{
                         alerts: {floods:0,flash:0,fires:0}
@@ -95,6 +96,17 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
         return map.fitBounds(latlngs);
       });
   };
+
+  // $scope.addEsriLayers = function(){
+  //   leafletData.getMap().then(function(map) {
+  //     var fires = L.esri.featureLayer({
+  //        url: "http://landscape3.arcgis.com/arcgis/rest/services/USA_Fire_Potential/ImageServer",
+  //        style: function () {
+  //          return { color: "#70ca49", weight: 2 };
+  //        }
+  //      }).addTo(map);
+  //    });
+  // };
 
   if(!$scope.position){
     //get user geo location
@@ -186,7 +198,10 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
   }
 
+  // $scope.addEsriLayers();
+
   $scope.getHistorical = function(){
+    var q = $q.defer();
     var message = '';
     $scope.nearest.historical.message = 'Searching for past events nearby';
     FWService.historical($scope.position.coords).then(function(response){
@@ -220,15 +235,18 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
       } else {
         $scope.nearest.historical.message = 'There are no past events nearby';
       }
+      q.resolve(true);
     });
+    return q.promise;
   };
 
   $scope.getAlerts = function(){
+   var q = $q.defer();
    $scope.nearest.alert.message = 'Searching for alerts nearby';
-   FWService.alerts($scope.geocode.state).then(function(alerts){
+   FWService.alerts($scope.geocode.state.toLowerCase()).then(function(alerts){
      $scope.alerts = alerts;
       //parse alerts and add geojson alerts to the map
-      FWService.mapAlerts(alerts,$scope);
+      FWService.mapParseAlerts(alerts,$scope);
       //draw polyline to nearestAlert
       if(!!$scope.nearest.alert.lat && !!$scope.nearest.alert.lng){
         leafletData.getMap().then(function(map) {
@@ -240,16 +258,19 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
         });
       }
 
-      if(!!alerts.length && alerts[0].title!='There are no active watches, warnings or advisories'){
+      if(!!alerts.length && alerts[0]['title'][0] != 'There are no active watches, warnings or advisories'){
         $scope.nearest.alert.message = 'The nearest alert ('+$scope.nearest.alert.type+') is '+$filter('number')($scope.nearest.alert.miles,2)+' miles away';
       } else {
-        $scope.nearest.alert.type = 'exclamation';
+        $scope.nearest.alert.icon = 'exclamation';
         $scope.nearest.alert.message = 'There are no alerts nearby';
       }
+      q.resolve(true);
     });
+    return q.promise;
   };
 
  $scope.getForecast = function(){
+   var q = $q.defer();
    var dew = [], mslp = [], wspd = [], qpf = [], snow_qpf = [], temp = [], qpfAmount = 0;
    //get 24hr forecast for user location
    FWService.forecast($scope.position.coords,'24').then(function(forecast){
@@ -317,15 +338,17 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
      ];
 
      //set forecast
-     return $scope.forecast = forecast;
+     $scope.forecast = forecast;
+     q.resolve(true);
    });
+   return q.promise;
  };
 
  // https://www.researchgate.net/publication/233775970_Quantitative_Precipitation_Forecasts_and_Early_Flood_Warning_the_Hunter_Valley_Flood_of_June_2007
  // http://www.erh.noaa.gov/nerfc/qpfpaper.htm
 
  $scope.calcPrediction = function(){
-
+   
    //TODO add rain+drought history and tree coverage?
    if($scope.prediction.counts.alerts.fires
      && $scope.prediction.historical.alerts.fires
@@ -357,6 +380,12 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
        $scope.prediction.floods = 'Flood risk is low';
    } else {
      $scope.prediction.floods = 'There is no risk of flooding';
+   }
+
+   if($scope.prediction.forecast.floods.in_alert){
+     $scope.prediction.summary = 'Be aware you are in a NOAA flood alert area';
+   } else if($scope.prediction.forecast.floods.in_alert){
+     $scope.prediction.summary = 'Be aware you are in a NOAA fire alert area';
    }
 
  };

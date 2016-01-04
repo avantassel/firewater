@@ -238,6 +238,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
     },
 
     mapOptions: function(scope){
+
       return {
           center: this.mapCenter(),
           markers: scope.markers,
@@ -378,7 +379,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
         scope.nearest.historical.lng = lng;
       }
     },
-    mapAlerts: function(alerts,scope){
+    mapParseAlerts: function(alerts,scope){
       if(!alerts)
         return;
 
@@ -446,7 +447,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
          centered=true;
          //check if user location is inside flood polygons
          if(scope.position && this.pip([scope.position.coords.longitude,scope.position.coords.latitude],geoAlerts.floods))
-          scope.inAlertArea.push({type:'floods'});
+          scope.prediction.forecast.floods.in_alert=true;
       }
 
       if(geoAlerts.fires.length){
@@ -457,7 +458,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
         centered=true;
         //check if user location is inside fire polygons
         if(scope.position && this.pip([scope.position.coords.longitude,scope.position.coords.latitude],geoAlerts.fires))
-         scope.inAlertArea.push({type:'fires'});
+         scope.prediction.forecast.fires.in_alert=true;
       }
 
       if(geoAlerts.winter.length){
@@ -468,7 +469,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
         centered=true;
         //check if user location is inside winter polygons
         if(scope.position && this.pip([scope.position.coords.longitude,scope.position.coords.latitude],geoAlerts.winter))
-         scope.inAlertArea.push({type:'winter'});
+         scope.prediction.forecast.winter.in_alert=true;
       }
 
       if(geoAlerts.other.length){
@@ -478,11 +479,11 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
           scope.centerJSON("other");
         //check if user location is inside other polygons
         if(scope.position && this.pip([scope.position.coords.longitude,scope.position.coords.latitude],geoAlerts.other))
-         scope.inAlertArea.push({type:'other'});
+         scope.prediction.forecast.other.in_alert=true;
       }
     },
 
-    //https://github.com/substack/point-in-polygon
+    // https://github.com/substack/point-in-polygon
     pip: function(point,polygon){
     // ray-casting algorithm based on
     // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
@@ -490,13 +491,15 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
       var x = point[0], y = point[1];
 
       var inside = false;
-      for (var i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-          var xi = polygon[i][0], yi = polygon[i][1];
-          var xj = polygon[j][0], yj = polygon[j][1];
+      for (p in polygon){
+        for (var i = 0, j = polygon[p].length - 1; i < polygon[p].length; j = i++) {
+            var xi = polygon[p][i][0], yi = polygon[p][i][1];
+            var xj = polygon[p][j][0], yj = polygon[p][j][1];
 
-          var intersect = ((yi > y) != (yj > y))
-              && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-          if (intersect) inside = !inside;
+            var intersect = ((yi > y) != (yj > y))
+                && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
+        }
       }
 
       return inside;
