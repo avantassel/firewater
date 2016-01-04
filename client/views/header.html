@@ -42,14 +42,8 @@
   </div>
   <div class="col-md-4">
     <ul class="list-group">
-      <li class="list-group-item summary">
-        <div class="alert alert-{{prediction.alert}}"
-        <strong>{{prediction.summary}}</strong>
-      </li>
-      <li class="list-group-item fires"><i class="fa fa-fire fa-2x" ></i> {{prediction.fires}}</li>
-      <li class="list-group-item floods"><i class="fa fa-tint fa-2x" ></i> {{prediction.floods}}</li>
-      <li class="list-group-item chart">
-
+      <li class="list-group-item" ng-repeat="prediction in predictions">
+        <div class="message bg-{{prediction.type}}">{{prediction.message}}</div>
       </li>
     </ul>
   </div>

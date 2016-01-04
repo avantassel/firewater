@@ -19,13 +19,14 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   };
   $scope.searchAddress = '';
   $scope.historical = {count: 0};
-  $scope.prediction = {floods:''
-                      ,fires:''
-                      ,summary:'There is no current risk at your location'
+  $scope.predictions = [];
+  $scope.prediction = {summary:'There is no current risk at your location'
                       ,alert:'success'
+                      ,high_winds:false
+                      ,high_qpf:false
                       ,forecast: {
-                        fires: {high_winds:false,in_alert:false}
-                        ,floods: {high_qpf:false,in_alert:false}
+                        fires: {in_alert:false}
+                        ,floods: {in_alert:false}
                         ,winter: {in_alert:false}
                         ,other: {in_alert:false}
                       }
@@ -267,6 +268,14 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
           ],function(err,result){
             $scope.geocode.elev = result[0].elev * 3.28084;//elevation in feet
             $scope.nearest.alert.elev = result[1].elev * 3.28084;//elevation in feet
+
+            //are we below the flooded alert elevation?
+            if($scope.nearest.alert.type.toLowerCase().indexOf('flood') !== -1
+             && $scope.nearest.alert.miles < 10
+             && $scope.geocode.elev < $scope.nearest.alert.elev){
+               $scope.predictions.push({message:'Be aware you are below a flood alert area',type:'danger'});
+             }
+
           });
         }
 
@@ -293,7 +302,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
        //  https://en.wikipedia.org/wiki/Gale_warning
        if(forecast.forecasts[f].wspd >= 40){
-         $scope.prediction.forecast.fires.high_winds=true;
+         $scope.prediction.forecast.high_winds=true;
        }
 
        qpfAmount += forecast.forecasts[f].qpf;
@@ -321,7 +330,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
      }
 
      if(qpfAmount >= 4){
-       $scope.prediction.forecast.floods.high_qpf=true;
+       $scope.prediction.forecast.high_qpf=true;
      }
 
      $scope.forecastData = [
@@ -363,66 +372,56 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
  $scope.calcPrediction = function(){
 
+   //FORECAST
+   if($scope.prediction.forecast.high_winds){
+     $scope.predictions.push({message:'High winds are forecasted'});
+   }
+   if($scope.prediction.forecast.high_qpf){
+     $scope.predictions.push({message:'High Precipitation is forecasted'});
+   }
+
    //FIRES
    //TODO add rain+drought history and tree coverage?
    if($scope.prediction.forecast.fires.in_alert){
-     $scope.prediction.fires = 'Fire risk is high';
-     $scope.prediction.summary = 'Be aware you are in a NOAA fire alert area';
-     $scope.prediction.alert = 'danger';
-   } else if($scope.prediction.counts.alerts.fires
+     $scope.predictions.push({message:'Be aware you are in a NOAA fire alert area',type:'danger'});
+   }
+
+   if($scope.prediction.counts.alerts.fires
      && $scope.prediction.historical.alerts.fires
      && $scope.prediction.forecast.fires.high_winds){
-       $scope.prediction.fires = 'Fire risk is high';
-       $scope.prediction.alert = 'danger';
+       $scope.predictions.push({message:'Fire risk is high',type:'danger'});
    } else if($scope.prediction.counts.alerts.fires
      && $scope.prediction.historical.alerts.fires){
-       $scope.prediction.fires = 'Fire risk is medium';
-       $scope.prediction.alert = 'warning';
+       $scope.predictions.push({message:'Fire risk is medium',type:'warning'});
    } else if($scope.prediction.counts.alerts.fires){
-       $scope.prediction.fires = 'Fire risk is low';
-       $scope.prediction.alert = 'info';
-   } else {
-      $scope.prediction.fires = 'There is no risk of fires';
-      $scope.prediction.alert = 'success';
+       $scope.predictions.push({message:'Fire risk is low',type:'info'});
+   } else if(!$scope.prediction.forecast.fires.in_alert){
+     $scope.predictions.push({message:'There is no risk of fires',type:'success'});
    }
 
    //FLOODS
    //TODO add rain+drought history
    if($scope.prediction.forecast.floods.in_alert){
-     $scope.prediction.floods = 'Flood risk is high';
-     $scope.prediction.summary = 'Be aware you are in a NOAA flood alert area';
-     $scope.prediction.alert = 'danger';
-   } else if($scope.prediction.counts.alerts.flash
+     $scope.predictions.push({message:'Be aware you are in a NOAA flood alert area',type:'danger'});
+   }
+
+   if($scope.prediction.counts.alerts.flash
      && $scope.prediction.counts.historical.flash
      && $scope.prediction.counts.alerts.floods
      && $scope.prediction.counts.historical.floods
      && $scope.prediction.forecast.floods.high_qpf){
-       $scope.prediction.floods = 'Flood risk is high';
-       $scope.prediction.alert = 'danger';
+       $scope.predictions.push({message:'Flash flood risk is high',type:'danger'});
    } else if($scope.prediction.counts.alerts.floods
      && $scope.prediction.counts.historical.floods){
-       $scope.prediction.floods = 'Flood risk is medium';
-       $scope.prediction.alert = 'warning';
+       $scope.predictions.push({message:'Flood risk is medium',type:'warning'});
    } else if($scope.prediction.counts.alerts.flash
      && $scope.prediction.counts.historical.flash){
-       $scope.prediction.floods = 'Flood risk is medium';
-       $scope.prediction.alert = 'warning';
+       $scope.predictions.push({message:'Flash flood risk is medium',type:'warning'});
    } else if($scope.prediction.counts.alerts.floods){
-       $scope.prediction.floods = 'Flood risk is low';
-       $scope.prediction.alert = 'info';
-   } else {
-     $scope.prediction.floods = 'There is no risk of flooding';
-     $scope.prediction.alert = 'success';
+       $scope.predictions.push({message:'Flood risk is low',type:'info'});
+   } else if(!$scope.prediction.forecast.floods.in_alert){
+     $scope.predictions.push({message:'There is no risk of flooding',type:'success'});
    }
-
-   //are we below the flooded alert elevation?
-   if($scope.nearest.alert.type.toLowerCase().indexOf('flood') !== -1
-    && $scope.nearest.alert.miles < 2
-    && $scope.geocode.elev < $scope.nearest.alert.elev){
-      $scope.prediction.summary = 'Be aware you are below a flood alert area';
-      $scope.prediction.alert = 'danger';
-    }
-
  };
 
 });

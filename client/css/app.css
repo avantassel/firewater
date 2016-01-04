@@ -28,6 +28,10 @@ a {
   height: 286px;
 }
 
+.report-card .col-md-4 .message{
+  padding: 15px;
+}
+
 .list-group-item {
   border: none;
 }

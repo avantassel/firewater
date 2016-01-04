@@ -23,8 +23,11 @@
       <th>Message</th>
     </thead>
     <tbody>
-      <tr ng-repeat="alert in alerts | filter:searchText">
-        <td><i class="fa fa-{{(alert['cap:event'][0] | eventIcon)}} fa-2x"></i> <strong>{{alert['cap:event'][0]}}</strong></td>
+      <tr ng-repeat="alert in alerts | filter:searchText | orderBy:'distance'">
+        <td>
+          <i class="fa fa-{{(alert['cap:event'][0] | eventIcon)}} fa-2x"></i> <strong>{{alert['cap:event'][0]}}</strong>
+          <span ng-show="alert['distance']"><br/>{{alert['distance'] | number:2}} mi</span>
+        </td>
         <td>{{alert['updated'][0] | moment}}</td>
         <td>{{alert['cap:expires'][0] | moment}}</td>
         <td>{{alert['cap:certainty'][0]}}</td>

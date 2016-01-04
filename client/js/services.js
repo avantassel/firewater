@@ -354,6 +354,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
         scope.nearest.alert.lat = lat;
         scope.nearest.alert.lng = lng;
       }
+      return distance;
     },
     calcNearestHistorical: function(scope,type,lat,lng){
       if(!scope.position)
@@ -378,6 +379,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
         scope.nearest.historical.lat = lat;
         scope.nearest.historical.lng = lng;
       }
+      return distance;
     },
     mapParseAlerts: function(alerts,scope){
       if(!alerts)
@@ -393,7 +395,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
 
           if(alerts[a]['cap:event'][0].indexOf('Flood') !== -1){
             geoAlerts.floods.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
-              self.calcNearestAlert(scope
+              alerts[a]['distance'] = self.calcNearestAlert(scope
                 ,'tint'
                 ,alerts[a]['cap:event'][0]
                 ,parseFloat(coord.split(',')[0])
@@ -403,7 +405,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
             }));
           } else if(alerts[a]['cap:event'][0].indexOf('Fire') !== -1){
             geoAlerts.fires.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
-              self.calcNearestAlert(scope
+              alerts[a]['distance'] = self.calcNearestAlert(scope
                 ,'fire'
                 ,alerts[a]['cap:event'][0]
                 ,parseFloat(coord.split(',')[0])
@@ -416,7 +418,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
             || alerts[a]['cap:event'][0].indexOf('Freez') !== -1
             || alerts[a]['cap:event'][0].indexOf('Blizzard') !== -1){
             geoAlerts.winter.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
-              self.calcNearestAlert(scope
+              alerts[a]['distance'] = self.calcNearestAlert(scope
                 ,'asterisk'
                 ,alerts[a]['cap:event'][0]
                 ,parseFloat(coord.split(',')[0])
@@ -427,7 +429,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
           } else {
             //TODO determine what other events there are
             geoAlerts.other.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
-              self.calcNearestAlert(scope
+              alerts[a]['distance'] = self.calcNearestAlert(scope
                 ,'bell'
                 ,alerts[a]['cap:event'][0]
                 ,parseFloat(coord.split(',')[0])
