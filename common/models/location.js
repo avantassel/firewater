@@ -111,6 +111,34 @@ module.exports = function(Location) {
 		}
 	};
 
+	Location.getScene = function(geometry_intersects,cb){
+		if(env
+			&& env.URTHECAST
+			&& env.URTHECAST.api_key
+			&& env.URTHECAST.api_secret){
+
+			var callURL = 'https://api.urthecast.com/v1/archive/scenes?api_key='+env.URTHECAST.api_key
+				+'&api_secret='+env.URTHECAST.api_secret
+				+'&geometry_intersects='+geometry_intersects;
+
+			request({url: callURL, method: 'GET'}, function(err, response, body) {
+				if(body){
+					try{
+						return cb(null,JSON.parse(body));
+					} catch(e){
+						return cb(e,null);
+					}
+				} else if(err){
+					return cb(err,null);
+				} else {
+					return cb('Missing Response',null);
+				}
+			});
+		} else {
+			return cb('Missing Urthecast credential variable',null);
+		}
+	};
+
   Location.remoteMethod(
         'getAlerts',
         {
@@ -150,4 +178,16 @@ module.exports = function(Location) {
 					description: "Get historical weather events by lat,lng"
 				}
 		);
+
+		Location.remoteMethod(
+	        'getScene',
+	        {
+	          accepts: [
+	            { arg: 'geometry_intersects', type: 'string', requried: true }
+	          ],
+	          returns: {arg: 'response', type: 'object'},
+	          http: {path: '/getScene', verb: 'get'},
+	          description: "Get Urthecast scene"
+	        }
+	    );
 };

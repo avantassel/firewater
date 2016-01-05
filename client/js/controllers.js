@@ -24,11 +24,12 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
                       ,alert:'success'
                       ,high_winds:false
                       ,high_qpf:false
+                      ,season:''
                       ,forecast: {
-                        fires: {in_alert:false}
-                        ,floods: {in_alert:false}
-                        ,winter: {in_alert:false}
-                        ,other: {in_alert:false}
+                        fires: {risk:0,in_alert:false}
+                        ,floods: {risk:0,in_alert:false}
+                        ,winter: {risk:0,in_alert:false}
+                        ,other: {risk:0,in_alert:false}
                       }
                       ,counts:{
                         alerts: {floods:0,flash:0,fires:0}
@@ -149,6 +150,10 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
           }).then(function(){
 
+            return $scope.getUrthecast();
+
+          }).then(function(){
+
             return $scope.calcPrediction();
 
           });
@@ -195,6 +200,10 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
     }).then(function(){
 
+      return $scope.getUrthecast();
+
+    }).then(function(){
+
       return $scope.calcPrediction();
 
     });
@@ -202,6 +211,14 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   }
 
   // $scope.addEsriLayers();
+  $scope.getUrthecast = function(){
+    var q = $q.defer();
+    FWService.urthecast($scope.position.coords).then(function(response){
+      if(response.payload && response.payload.length)
+        $scope.prediction.season = response.payload[0].season;
+    });
+    return q.promise;
+  };
 
   $scope.getHistorical = function(){
     var q = $q.defer();
@@ -377,26 +394,38 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
    //FORECAST
    if($scope.prediction.forecast.high_winds){
      $scope.predictions.push({message:'High winds are forecasted'});
+     $scope.prediction.fires.risk++;
    }
    if($scope.prediction.forecast.high_qpf){
      $scope.predictions.push({message:'High Precipitation is forecasted'});
+     $scope.prediction.floods.risk++;
    }
 
    //FIRES
-   //TODO add rain+drought history and tree coverage?
+   //TODO add rain+drought history and tree shrub coverage (ie. fuel potential and spread threat)?
    if($scope.prediction.forecast.fires.in_alert){
      $scope.predictions.push({message:'Be aware you are in a NOAA fire alert area',type:'danger',icon:'fire-extinguisher'});
+     $scope.prediction.fires.risk++;
    }
 
    if($scope.prediction.counts.alerts.fires
      && $scope.prediction.historical.alerts.fires
      && $scope.prediction.forecast.fires.high_winds){
        $scope.predictions.push({message:'Fire risk is high',type:'danger',icon:'fire-extinguisher'});
+       $scope.prediction.fires.risk++;
+       if($scope.prediction=='summer')
+        $scope.prediction.fires.risk++;
    } else if($scope.prediction.counts.alerts.fires
      && $scope.prediction.historical.alerts.fires){
        $scope.predictions.push({message:'Fire risk is medium',type:'warning',icon:'fire-extinguisher'});
+       $scope.prediction.fires.risk++;
+       if($scope.prediction=='summer')
+        $scope.prediction.fires.risk++;
    } else if($scope.prediction.counts.alerts.fires){
        $scope.predictions.push({message:'Fire risk is low',type:'info',icon:'fire-extinguisher'});
+       $scope.prediction.fires.risk++;
+       if($scope.prediction=='summer')
+        $scope.prediction.fires.risk++;
    } else if(!$scope.prediction.forecast.fires.in_alert){
      $scope.predictions.push({message:'There is no risk of fires',type:'success'});
    }
@@ -405,6 +434,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
    //TODO add rain+drought history
    if($scope.prediction.forecast.floods.in_alert){
      $scope.predictions.push({message:'Be aware you are in a NOAA flood alert area',type:'danger',icon:'ship'});
+     $scope.prediction.floods.risk++;
    }
 
    if($scope.prediction.counts.alerts.flash
@@ -413,14 +443,18 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
      && $scope.prediction.counts.historical.floods
      && $scope.prediction.forecast.floods.high_qpf){
        $scope.predictions.push({message:'Flash flood risk is high',type:'danger',icon:'ship'});
+       $scope.prediction.floods.risk++;
    } else if($scope.prediction.counts.alerts.floods
      && $scope.prediction.counts.historical.floods){
        $scope.predictions.push({message:'Flood risk is medium',type:'warning',icon:'ship'});
+       $scope.prediction.floods.risk++;
    } else if($scope.prediction.counts.alerts.flash
      && $scope.prediction.counts.historical.flash){
        $scope.predictions.push({message:'Flash flood risk is medium',type:'warning',icon:'ship'});
+       $scope.prediction.floods.risk++;
    } else if($scope.prediction.counts.alerts.floods){
        $scope.predictions.push({message:'Flood risk is low',type:'info',icon:'ship'});
+       $scope.prediction.floods.risk++;
    } else if(!$scope.prediction.forecast.floods.in_alert){
      $scope.predictions.push({message:'There is no risk of flooding',type:'success'});
    }

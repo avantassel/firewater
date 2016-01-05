@@ -57,6 +57,16 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
       return q.promise;
     },
 
+    urthecast: function(position){
+      var q = $q.defer();
+      Location.getScene({'geometry_intersects':'POINT('+position.longitude+'+'+position.latitude+')'}, function(data){
+        if(data.response){
+          q.resolve(data.response);
+        }
+      });
+      return q.promise;
+    },
+
     address: function(address){
       var q = $q.defer();
       autocomplete.getPlacePredictions({input: address}, function(response){

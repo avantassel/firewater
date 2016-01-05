@@ -1656,6 +1656,38 @@ module.factory(
           url: urlBase + "/Locations/getHistorical",
           method: "GET"
         },
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Location#getScene
+         * @methodOf lbServices.Location
+         *
+         * @description
+         *
+         * Get Urthecast scene
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `geometry_intersects` – `{string=}` - 
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * Data properties:
+         *
+         *  - `response` – `{object=}` - 
+         */
+        "getScene": {
+          url: urlBase + "/Locations/getScene",
+          method: "GET"
+        },
       }
     );
 
