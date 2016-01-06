@@ -139,14 +139,14 @@ module.exports = function(Location) {
 		}
 	};
 
-	Location.getTweets = function(lat,lng,radius,cb){
+	Location.getTweets = function(q,lat,lng,radius,cb){
 		if(vcap && env
 			&& vcap['twitterinsights']){
 
 			if(!radius)
-				radius='2mi'; //2 miles in meters
+				radius='2mi'; //2 miles
 
-			var callURL = vcap['twitterinsights'][0]['credentials']['url']+'/api/v1/messages/count?q=#Flood&point_radius=['+lng+' '+lat+' '+radius+']';
+			var callURL = vcap['twitterinsights'][0]['credentials']['url']+'/api/v1/messages/count?q='+q+'%20point_radius:['+lng+'%20'+lat+'%20'+radius+']';
 
 			request({url: callURL, method: 'GET'}, function(err, response, body) {
 				if(body){
@@ -172,7 +172,8 @@ module.exports = function(Location) {
         'getTweets',
         {
           accepts: [
-            { arg: 'lat', type: 'string', requried: true }
+						{ arg: 'q', type: 'string', requried: true }
+            ,{ arg: 'lat', type: 'string', requried: true }
 						,{ arg: 'lng', type: 'string', requried: true }
 						,{ arg: 'radius', type: 'string', requried: true }
           ],

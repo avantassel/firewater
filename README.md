@@ -69,5 +69,6 @@ Create a geo index to query by lat/lng
 
 * Cloudant
 * Weather Insights
+* Twitter Insights
 * Apache Spark
 * Strongloop

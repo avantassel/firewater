@@ -29,8 +29,8 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
                       ,high_qpf:false
                       ,season:''
                       ,forecast: {
-                        fires: {risk:0,in_alert:false}
-                        ,floods: {risk:0,in_alert:false}
+                        fires: {risk:0,social:null,in_alert:false}
+                        ,floods: {risk:0,social:null,in_alert:false}
                         ,winter: {risk:0,in_alert:false}
                         ,other: {risk:0,in_alert:false}
                       }
@@ -169,9 +169,15 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
   $scope.getTweets = function(){
     var q = $q.defer();
-    FWService.tweets($scope.position.coords).then(function(response){
-      console.log(response)
-      q.resolve(true);
+    FWService.tweets('%23flood',$scope.position.coords).then(function(response){
+      if(response && response.search && response.search.results)
+        $scope.prediction.forecast.floods.social = response.search.results;        
+    }).then(function(){
+      FWService.tweets('%23fire',$scope.position.coords).then(function(response){
+        if(response && response.search && response.search.results)
+          $scope.prediction.forecast.fires.social = response.search.results;
+        q.resolve(true);
+      });
     });
     return q.promise;
   };
@@ -349,16 +355,6 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
    $scope.predictions = [];
 
-   //FORECAST
-   if($scope.prediction.forecast.high_winds){
-     $scope.predictions.push({message:'High winds are forecasted',type:'warning'});
-     $scope.prediction.forecast.fires.risk++;
-   }
-   if($scope.prediction.forecast.high_qpf){
-     $scope.predictions.push({message:'High Precipitation is forecasted',type:'warning'});
-     $scope.prediction.forecast.floods.risk++;
-   }
-
    //FIRES
    //TODO add rain+drought history and tree shrub coverage (ie. fuel potential and spread threat)?
    if($scope.prediction.forecast.fires.in_alert){
@@ -415,6 +411,27 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
        $scope.prediction.forecast.floods.risk++;
    } else if(!$scope.prediction.forecast.floods.in_alert){
      $scope.predictions.push({message:'There is no risk of flooding',type:'success'});
+   }
+
+   //FORECAST
+   if($scope.prediction.forecast.high_winds){
+     $scope.predictions.push({message:'High winds are forecasted',type:'warning'});
+     $scope.prediction.forecast.fires.risk++;
+   }
+   if($scope.prediction.forecast.high_qpf){
+     $scope.predictions.push({message:'High Precipitation is forecasted',type:'warning'});
+     $scope.prediction.forecast.floods.risk++;
+   }
+
+   //SOCIAL SIGNALS
+   if($scope.prediction.forecast.floods.social){
+     $scope.predictions.push({message:'People are talking about #Flood',type:'info',icon:'ship fa-lg'});
+     $scope.prediction.forecast.floods.risk++;
+   }
+
+   if($scope.prediction.forecast.fires.social){
+     $scope.predictions.push({message:'People are talking about #Fire',type:'info',icon:'fire-extinguisher fa-lg'});
+     $scope.prediction.forecast.fires.risk++;
    }
  };
 

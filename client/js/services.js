@@ -67,10 +67,12 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
       return q.promise;
     },
 
-    tweets: function(position){
+    tweets: function(query,position){
       var q = $q.defer();
-      Location.getTweets({'lat':position.latitude
-                        ,'lng':position.longitude}, function(data){
+      Location.getTweets({'q':query
+                        ,'lat':position.latitude
+                        ,'lng':position.longitude
+                        ,'radius':'10mi'}, function(data){
         if(data.response){
           q.resolve(data.response);
         }

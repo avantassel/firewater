@@ -1564,6 +1564,8 @@ module.factory(
          *
          * @param {Object=} parameters Request parameters.
          *
+         *  - `q` – `{string=}` - 
+         *
          *  - `lat` – `{string=}` - 
          *
          *  - `lng` – `{string=}` - 

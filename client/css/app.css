@@ -36,6 +36,10 @@ a {
   border: none;
 }
 
+.row.alerts{
+  padding: 15px;
+}
+
 ul.alerts li{
     list-style-type: none;
     display: inline;
