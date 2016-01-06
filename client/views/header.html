@@ -43,6 +43,12 @@
   </div>
   <div class="col-md-4">
     <ul class="list-group">
+      <li class="list-group-item">
+        <div class="message bg-info" ng-if="searching">
+          <i class="fa fa-circle-o-notch fa-spin fa-lg"></i>
+          Analyzing weather events past and present...
+        </div>
+      </li>
       <li class="list-group-item" ng-repeat="prediction in predictions">
         <div class="message bg-{{prediction.type}}">
           <i ng-if="prediction.icon" class="fa fa-{{prediction.icon}}"></i>

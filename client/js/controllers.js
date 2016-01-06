@@ -9,6 +9,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   $scope.position = null;
   $scope.forecast = null;
   $scope.alerts = null;
+  $scope.searching = true;
   $scope.areaPolygonAlerts = null;
   $scope.geoAlerts = {};
   $scope.markers = [];
@@ -19,9 +20,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   };
   $scope.searchAddress = '';
   $scope.historical = {count: 0};
-  $scope.predictions = [
-    {message:'Analyzing weather events past and present...',type:'info',icon:'circle-o-notch fa-spin fa-lg'}
-  ];
+  $scope.predictions = [];
 
   $scope.prediction = {summary:'There is no current risk at your location'
                       ,alert:'success'
@@ -171,7 +170,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
     var q = $q.defer();
     FWService.tweets('%23flood',$scope.position.coords).then(function(response){
       if(response && response.search && response.search.results)
-        $scope.prediction.forecast.floods.social = response.search.results;        
+        $scope.prediction.forecast.floods.social = response.search.results;
     }).then(function(){
       FWService.tweets('%23fire',$scope.position.coords).then(function(response){
         if(response && response.search && response.search.results)
@@ -353,8 +352,6 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
  $scope.calcPrediction = function(){
 
-   $scope.predictions = [];
-
    //FIRES
    //TODO add rain+drought history and tree shrub coverage (ie. fuel potential and spread threat)?
    if($scope.prediction.forecast.fires.in_alert){
@@ -446,6 +443,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
      ,$scope.getTweets()
    ]).then(function(values) {
      $scope.calcPrediction();
+     $scope.searching = false;
    });
 
  });
