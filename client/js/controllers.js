@@ -25,7 +25,8 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   $scope.prediction = {summary:'There is no current risk at your location'
                       ,alert:'success'
                       ,high_winds:false
-                      ,high_qpf:false
+                      ,high_pop:false
+                      ,high_severity:false
                       ,season:''
                       ,forecast: {
                         fires: {risk:0,social:null,in_alert:false}
@@ -256,7 +257,6 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
           });
         }
-
       }
 
       if(!!alerts.length && alerts[0]['title'][0] != 'There are no active watches, warnings or advisories'){
@@ -270,24 +270,20 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
     return q.promise;
   };
 
+  // https://twcservice.mybluemix.net/rest-api/#!/twc_forecast_hourly/v2fcsthourly24
  $scope.getForecast = function(){
    var q = $q.defer();
-   var dew = [], mslp = [], wspd = [], qpf = [], snow_qpf = [], temp = [], qpfAmount = 0;
+   var dewpt = [], mslp = [], wspd = [], gust = [], pop = [], temp = [], popAmount = 0, severityAmount = 0;
    //get 24hr forecast for user location
    FWService.forecast($scope.position.coords,'24').then(function(forecast){
 
      for(var f in forecast.forecasts){
 
-       //  https://en.wikipedia.org/wiki/Gale_warning
-       if(forecast.forecasts[f].wspd >= 40){
-         $scope.prediction.forecast.high_winds=true;
-       }
-
-       qpfAmount += forecast.forecasts[f].qpf;
-       qpfAmount += forecast.forecasts[f].snow_qpf;
+       popAmount += forecast.forecasts[f].pop;
+       severityAmount += forecast.forecasts[f].severity;
 
        var d = new Date(forecast.forecasts[f].fcst_valid_local);
-       dew.push(
+       dewpt.push(
          [d.getTime(), forecast.forecasts[f].dewpt]
        );
        mslp.push(
@@ -296,25 +292,32 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
        wspd.push(
          [d.getTime(), forecast.forecasts[f].wspd]
        );
-       qpf.push(
-         [d.getTime(), forecast.forecasts[f].qpf]
+       gust.push(
+         [d.getTime(), forecast.forecasts[f].gust]
        );
-       snow_qpf.push(
-         [d.getTime(), forecast.forecasts[f].snow_qpf]
+       pop.push(
+         [d.getTime(), forecast.forecasts[f].pop]
        );
        temp.push(
          [d.getTime(), forecast.forecasts[f].temp]
        );
+
+       //  https://en.wikipedia.org/wiki/Gale_warning
+       if(forecast.forecasts[f].wspd >= 40){
+         $scope.prediction.forecast.high_winds=true;
+       }
      }
 
-     if(qpfAmount >= 4){
-       $scope.prediction.forecast.high_qpf=true;
-     }
+     if(popAmount/forecast.forecasts.length > 50)
+      $scope.prediction.forecast.high_pop=true;
+
+     if(severityAmount/forecast.forecasts.length > 3)
+      $scope.prediction.forecast.high_severity=true;
 
      $scope.forecastData = [
        {
          "key": "Dew Point",
-         "values": dew
+         "values": dewpt
        },
        {
          "key": "Mean Sea Level Pressure",
@@ -325,12 +328,12 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
          "values": wspd
        },
        {
-         "key": "Quantitative Precipitation Forecast",
-         "values": qpf
+         "key": "Wind Gust",
+         "values": gust
        },
        {
-         "key": "Snow Quantitative Precipitation Forecast",
-         "values": snow_qpf
+         "key": "Probability of Precipitation",
+         "values": pop
        },
        {
          "key": "Temperature F",
@@ -392,7 +395,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
      && $scope.prediction.counts.historical.flash
      && $scope.prediction.counts.alerts.floods
      && $scope.prediction.counts.historical.floods
-     && $scope.prediction.forecast.floods.high_qpf){
+     && $scope.prediction.forecast.floods.high_pop){
        $scope.predictions.push({message:'Flash flood risk is high',type:'danger',icon:'ship fa-lg'});
        $scope.prediction.forecast.floods.risk++;
    } else if($scope.prediction.counts.alerts.floods
@@ -410,14 +413,17 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
      $scope.predictions.push({message:'There is no risk of flooding',type:'success'});
    }
 
-   //FORECAST
+   //24HR FORECAST
    if($scope.prediction.forecast.high_winds){
      $scope.predictions.push({message:'High winds are forecasted',type:'warning'});
      $scope.prediction.forecast.fires.risk++;
    }
-   if($scope.prediction.forecast.high_qpf){
+   if($scope.prediction.forecast.high_pop){
      $scope.predictions.push({message:'High Precipitation is forecasted',type:'warning'});
      $scope.prediction.forecast.floods.risk++;
+   }
+   if($scope.prediction.forecast.high_severity){
+     $scope.predictions.push({message:'Weather Severity is high',type:'warning'});
    }
 
    //SOCIAL SIGNALS
@@ -435,7 +441,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
  $scope.getGeo().then(function(){
 
    $q.all([
-     ,$scope.getMarker()
+     $scope.getMarker()
      ,$scope.getForecast()
      ,$scope.getHistorical()
      ,$scope.getAlerts()
