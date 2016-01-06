@@ -1,4 +1,4 @@
-firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $state, $filter, $q, leafletData, FWService) {
+firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $state, $filter, $timeout, $q, leafletData, FWService) {
 
   $scope.geocode = {state: ($stateParams.state || 'US')
     , formatted_address: 'Locating...'
@@ -9,7 +9,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   $scope.position = null;
   $scope.forecast = null;
   $scope.alerts = null;
-  $scope.searching = true;
+  $scope.searching = 'Analyzing weather events past and present...';
   $scope.areaPolygonAlerts = null;
   $scope.geoAlerts = {};
   $scope.markers = [];
@@ -47,6 +47,22 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   angular.extend($scope, FWService.mapOptions($scope));
 
   $scope.forecastOptions = FWService.chartOptions('forecast');
+
+  var timeout=null, messages=[];
+
+  $scope.setProcessMessage = function(message){
+    if(!timeout){
+      timeout = $timeout(function(){
+        $scope.searching = message;
+        timeout=null;
+        if(messages.length){
+          $scope.setProcessMessage(messages.shift());
+        }
+      },500);
+    } else {
+      messages.push(message);
+    }
+  };
 
   $scope.ShowAbout = function(){
     return Custombox.open({
@@ -116,9 +132,8 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   // };
 
   $scope.getGeo = function(){
-
+    $scope.setProcessMessage('Getting geo location...');
     var q = $q.defer();
-
     if(!!$scope.position){
       q.resolve(true);
     } else {
@@ -128,7 +143,6 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
           q.resolve(true);
       });
     }
-
     return q.promise;
   };
 
@@ -158,6 +172,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   };
 
   $scope.getUrthecast = function(){
+    $scope.setProcessMessage('Analyzing Urthecast satellite data...');
     var q = $q.defer();
     FWService.urthecast($scope.position.coords).then(function(response){
       if(response.payload && response.payload.length)
@@ -167,22 +182,22 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
     return q.promise;
   };
 
-  $scope.getTweets = function(){
+  $scope.getTweets = function(query){
+    $scope.setProcessMessage('Analyzing tweets for '+query+'...');
     var q = $q.defer();
-    FWService.tweets('%23flood',$scope.position.coords).then(function(response){
-      if(response && response.search && response.search.results)
+    FWService.tweets(query,$scope.position.coords).then(function(response){
+      if(response && response.search && response.search.results){
         $scope.prediction.forecast.floods.social = response.search.results;
-    }).then(function(){
-      FWService.tweets('%23fire',$scope.position.coords).then(function(response){
-        if(response && response.search && response.search.results)
-          $scope.prediction.forecast.fires.social = response.search.results;
-        q.resolve(true);
-      });
+        q.resolve(response.search.results);
+      } else {
+        q.resolve(0);
+      }
     });
     return q.promise;
   };
 
   $scope.getHistorical = function(){
+    $scope.setProcessMessage('Analyzing historical storm events...');
     var q = $q.defer();
     var message = '';
     $scope.nearest.historical.message = 'Searching for past events nearby';
@@ -223,6 +238,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   };
 
   $scope.getAlerts = function(){
+    $scope.setProcessMessage('Analyzing nearby NOAA alerts...');
    var q = $q.defer();
    $scope.nearest.alert.message = 'Searching for alerts nearby';
    FWService.alerts($scope.geocode.state.toLowerCase()).then(function(alerts){
@@ -254,7 +270,6 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
              && $scope.geocode.elev < $scope.nearest.alert.elev){
                $scope.predictions.push({message:'Be aware you are below a flood alert area',type:'danger',icon:'ship'});
              }
-
           });
         }
       }
@@ -272,6 +287,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
   // https://twcservice.mybluemix.net/rest-api/#!/twc_forecast_hourly/v2fcsthourly24
  $scope.getForecast = function(){
+   $scope.setProcessMessage('Analyzing weather foreast...');
    var q = $q.defer();
    var dewpt = [], mslp = [], wspd = [], gust = [], pop = [], temp = [], popAmount = 0, severityAmount = 0;
    //get 24hr forecast for user location
@@ -355,6 +371,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
  $scope.calcPrediction = function(){
 
+   $scope.setProcessMessage('Calculating prediction...');
    //FIRES
    //TODO add rain+drought history and tree shrub coverage (ie. fuel potential and spread threat)?
    if($scope.prediction.forecast.fires.in_alert){
@@ -426,16 +443,6 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
      $scope.predictions.push({message:'Weather Severity is high',type:'warning'});
    }
 
-   //SOCIAL SIGNALS
-   if($scope.prediction.forecast.floods.social){
-     $scope.predictions.push({message:'People are talking about #Flood',type:'info',icon:'ship fa-lg'});
-     $scope.prediction.forecast.floods.risk++;
-   }
-
-   if($scope.prediction.forecast.fires.social){
-     $scope.predictions.push({message:'People are talking about #Fire',type:'info',icon:'fire-extinguisher fa-lg'});
-     $scope.prediction.forecast.fires.risk++;
-   }
  };
 
  $scope.getGeo().then(function(){
@@ -446,10 +453,33 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
      ,$scope.getHistorical()
      ,$scope.getAlerts()
      ,$scope.getUrthecast()
-     ,$scope.getTweets()
-   ]).then(function(values) {
-     $scope.calcPrediction();
-     $scope.searching = false;
+   ]).then(function() {
+     return $scope.calcPrediction();
+   },function(err){
+     $scope.predictions.push({message:err,type:'danger'});
+   }).then(function(){
+     var social = [];
+     //SOCIAL SIGNALS
+     //tweets take a while so move down here
+     if($scope.prediction.forecast.floods.risk > 0){
+       social.push($scope.getTweets('%23flood').then(function(count){
+         if(!!count){
+           $scope.predictions.push({message:'People are talking about #Flood',type:'info',icon:'ship fa-lg'});
+           $scope.prediction.forecast.floods.risk++;
+         }
+       }));
+     }
+     if($scope.prediction.forecast.fires.risk > 0){
+       social.push($scope.getTweets('%23fire').then(function(count){
+         if(!!count){
+           $scope.predictions.push({message:'People are talking about #Fire',type:'info',icon:'fire-extinguisher fa-lg'});
+           $scope.prediction.forecast.fires.risk++;
+         }
+       }));
+     }
+     return $q.all(social);
+   }).then(function(){
+     $scope.setProcessMessage('');
    });
 
  });
