@@ -1555,6 +1555,42 @@ module.factory(
 
         /**
          * @ngdoc method
+         * @name lbServices.Location#getTweets
+         * @methodOf lbServices.Location
+         *
+         * @description
+         *
+         * Get Tweets
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `lat` – `{string=}` - 
+         *
+         *  - `lng` – `{string=}` - 
+         *
+         *  - `radius` – `{string=}` - 
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * Data properties:
+         *
+         *  - `response` – `{object=}` - 
+         */
+        "getTweets": {
+          url: urlBase + "/Locations/getTweets",
+          method: "GET"
+        },
+
+        /**
+         * @ngdoc method
          * @name lbServices.Location#getAlerts
          * @methodOf lbServices.Location
          *

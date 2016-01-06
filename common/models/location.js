@@ -139,6 +139,49 @@ module.exports = function(Location) {
 		}
 	};
 
+	Location.getTweets = function(lat,lng,radius,cb){
+		if(vcap && env
+			&& vcap['twitterinsights']){
+
+			if(!radius)
+				radius='2mi'; //2 miles in meters
+
+			var callURL = vcap['twitterinsights'][0]['credentials']['url']+'/api/v1/messages/count?q=#Flood&point_radius=['+lng+' '+lat+' '+radius+']';
+
+			request({url: callURL, method: 'GET'}, function(err, response, body) {
+				if(body){
+					try{
+						return cb(null,JSON.parse(body));
+					} catch(e){
+						return cb(e,null);
+					}
+				} else if(err){
+					return cb(err,null);
+				} else {
+					return cb('Missing Response',null);
+				}
+			});
+		} else {
+			return cb('Missing Twitter Insights credential variables',null);
+		}
+	};
+
+	// curl https://<username>:<password>@cdeservice.mybluemix.net:443/api/v1/tracks/{trackId}/messages/count?q=IBM
+	// point_radius:[41.128611 -73.707778 5.0mi]
+	Location.remoteMethod(
+        'getTweets',
+        {
+          accepts: [
+            { arg: 'lat', type: 'string', requried: true }
+						,{ arg: 'lng', type: 'string', requried: true }
+						,{ arg: 'radius', type: 'string', requried: true }
+          ],
+          returns: {arg: 'response', type: 'object'},
+          http: {path: '/getTweets', verb: 'get'},
+          description: "Get Tweets"
+        }
+    );
+
   Location.remoteMethod(
         'getAlerts',
         {

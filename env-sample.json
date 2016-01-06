@@ -18,6 +18,32 @@
          }
       }
    ],
+   "twitterinsights": [
+     {
+       "name": "Insights for Twitter-az",
+       "label": "twitterinsights",
+       "plan": "Free",
+       "credentials": {
+         "username": "",
+         "password": "",
+         "host": "cdeservice.mybluemix.net",
+         "port": 443,
+         "url": ""
+       }
+     }
+   ],
+   "tone_analyzer": [
+         {
+            "name": "tone-analyzer-service-experimental",
+            "label": "tone_analyzer",
+            "plan": "experimental",
+            "credentials": {
+               "url": "https://gateway.watsonplatform.net/tone-analyzer-experimental/api",
+               "username": "",
+               "password": ""
+            }
+         }
+      ],
    "spark": [
       {
          "name": "stormdata",

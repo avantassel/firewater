@@ -67,6 +67,17 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
       return q.promise;
     },
 
+    tweets: function(position){
+      var q = $q.defer();
+      Location.getTweets({'lat':position.latitude
+                        ,'lng':position.longitude}, function(data){
+        if(data.response){
+          q.resolve(data.response);
+        }
+      });
+      return q.promise;
+    },
+
     address: function(address){
       var q = $q.defer();
       autocomplete.getPlacePredictions({input: address}, function(response){
@@ -139,7 +150,38 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
 
     chartOptions: function(type){
 
-      if(type=='prediction'){
+      if(type=='risk'){
+        return {
+                chart: {
+                  type: 'multiBarChart',
+                  height: 200,
+                  margin : {
+                      top: 20,
+                      right: 20,
+                      bottom: 45,
+                      left: 45
+                  },
+                  clipEdge: true,
+                  duration: 500,
+                  stacked: true,
+                  xAxis: {
+                      axisLabel: 'Time (ms)',
+                      showMaxMin: false,
+                      tickFormat: function(d){
+                          return d3.format(',f')(d);
+                      }
+                  },
+                  yAxis: {
+                      axisLabel: 'Y Axis',
+                      axisLabelDistance: -20,
+                      tickFormat: function(d){
+                          return d3.format(',.1f')(d);
+                      }
+                  }
+              }
+            };
+      }
+      else if(type=='prediction'){
         return {
               chart: {
                   type: 'pieChart',
@@ -150,6 +192,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
                   showLabels: true,
                   showLegend: false,
                   duration: 500,
+                  noData: 'Predicting risk',
                   pie: {
                       startAngle: function(d) { return d.startAngle/2 -Math.PI/2 },
                       endAngle: function(d) { return d.endAngle/2 -Math.PI/2 }
