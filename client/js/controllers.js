@@ -19,7 +19,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
     ,historical: {miles:0,type:'',lat:0,lng:0,message:'Searching for past events nearby'}
   };
   $scope.searchAddress = '';
-  $scope.historical = {count: 0};
+  $scope.historical = [];
   $scope.predictions = [];
 
   $scope.prediction = {summary:'There is no current risk at your location'
@@ -171,8 +171,8 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
     return q.promise;
   };
 
-  $scope.getUrthecast = function(){
-    $scope.setProcessMessage('Analyzing Urthecast satellite data...');
+  $scope.getUrtheCast = function(){
+    $scope.setProcessMessage('Analyzing UrtheCast satellite data...');
     var q = $q.defer();
     FWService.urthecast($scope.position.coords).then(function(response){
       if(response.payload && response.payload.length)
@@ -183,7 +183,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   };
 
   $scope.getTweets = function(query){
-    $scope.setProcessMessage('Analyzing tweets for '+query+'...');
+    $scope.setProcessMessage('Analyzing tweets for '+query.replace('%23','#')+'...');
     var q = $q.defer();
     FWService.tweets(query,$scope.position.coords).then(function(response){
       if(response && response.search && response.search.results){
@@ -203,7 +203,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
     $scope.nearest.historical.message = 'Searching for past events nearby';
     FWService.historical($scope.position.coords).then(function(response){
       if(response && response.rows){
-        $scope.historical.count = response.rows.length;
+        $scope.historical = response.rows;
 
         for(r in response.rows){
 
@@ -222,7 +222,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
             message: message
           });
 
-          FWService.calcNearestHistorical($scope
+          response.rows[r].distance = FWService.calcNearestHistorical($scope
             ,response.rows[r].doc.EVENT_TYPE
             ,response.rows[r].geometry.coordinates[1]
             ,response.rows[r].geometry.coordinates[0]
@@ -447,12 +447,15 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
  $scope.getGeo().then(function(){
 
+   return $scope.getMarker();
+
+ }).then(function(){
+
    $q.all([
-     $scope.getMarker()
-     ,$scope.getForecast()
+     $scope.getForecast()
      ,$scope.getHistorical()
      ,$scope.getAlerts()
-     ,$scope.getUrthecast()
+     ,$scope.getUrtheCast()
    ]).then(function() {
      return $scope.calcPrediction();
    },function(err){
