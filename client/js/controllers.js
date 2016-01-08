@@ -50,6 +50,19 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
   var timeout=null, messages=[];
 
+  $scope.getNoaaAlertClass = function(severity){
+     switch(severity){
+      case 'Severe':
+        return 'label-danger';
+      case 'Moderate':
+        return 'label-warning';
+      case 'Minor':
+        return 'label-info';
+      default:
+        return 'label-success';
+    }
+  };
+  
   $scope.setProcessMessage = function(message){
     if(!timeout){
       timeout = $timeout(function(){

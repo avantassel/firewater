@@ -8,56 +8,60 @@
   <div class="col-md-12">
   <form>
     <div class="form-group">
-      <label for="search">Search Alerts</label>
-      <input type="text" class="form-control" id="search" placeholder="Search for an event" ng-model="searchText">
+      <label for="search">Search Current NOAA Alerts</label>
+      <input type="text" class="form-control" id="search" placeholder="Alert search" ng-model="searchText">
     </div>
   </form>
 
-  <table class="table table-hover">
-    <thead>
-      <th>Event</th>
-      <th>Distance</th>
-      <th>Updated</th>
-      <th>Expires</th>
-      <th>Certainty</th>
-      <th>State</th>
-      <th>Message</th>
-    </thead>
+  <table class="table table-hover table-alerts">
     <tbody>
       <tr ng-repeat="alert in alerts | filter:searchText | orderBy:'distance'">
         <td>
-          <i class="fa fa-{{(alert['cap:event'][0] | eventIcon)}} fa-2x"></i> <strong>{{alert['cap:event'][0]}}</strong>
-        </td>
-        <td>{{alert['distance'] | number:2}} mi</td>
-        <td>{{alert['updated'][0] | moment}}</td>
-        <td>{{alert['cap:expires'][0] | moment}}</td>
-        <td>{{alert['cap:certainty'][0]}}</td>
-        <td><a ui-sref="state({state:(alert['cap:geocode'] | parseState)})">{{(alert['cap:geocode'] | parseState)}}</a></td>
-        <td>
-          <a ui-sref="state({state:(alert['cap:geocode'] | parseState)})">{{alert['title'][0]}}</a>
-          <p>{{alert['summary'][0]}}</p>
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              <i class="fa fa-{{(alert['cap:event'][0] | eventIcon)}} fa-2x"></i>
+              &nbsp;<a ui-sref="state({state:(alert['cap:geocode'] | parseState)})">{{alert['title'][0]}}</a>
+              <div class="label label-noaa pull-right {{getNoaaAlertClass(alert['cap:severity'][0])}}">{{alert['cap:severity'][0]}}</div>
+            </h3>
+          </div>
+          <div class="panel-body">
+            <strong>{{alert['cap:event'][0]}}</strong> {{alert['distance'] | number:2}} miles away<br/>
+            <p>Updated {{alert['updated'][0] | moment}} Expires {{alert['cap:expires'][0] | moment}}</p>
+            {{alert['summary'][0]}} <a ng-href="{{alert['cap:link'][0]}}" title="Read More" target="_blank">more...</a>
+            <br/><strong>Affected areas:</strong> {{alert['cap:areaDesc'][0]}}
+          </div>
         </td>
       </tr>
     </tbody>
   </table>
+  </div>
+</div>
 
-  <table class="table table-hover">
-    <thead>
-      <th>Event</th>
-      <th>Distance</th>
-      <th>Date</th>
-      <th>Message</th>
-    </thead>
+  <div class="row past">
+    <div class="col-md-12">
+    <form>
+      <div class="form-group">
+        <label for="search">Search Past Events</label>
+        <input type="text" class="form-control" id="search" placeholder="Past event search" ng-model="pastSearchText">
+      </div>
+    </form>
+
+  <table class="table table-hover table-past">
     <tbody>
-      <tr ng-repeat="event in historical | orderBy:'distance'">
+      <tr ng-repeat="event in historical | filter:pastSearchText | orderBy:'distance'">
         <td>
-          <i class="fa fa-circle fa-2x"></i> <strong>{{event.doc.EVENT_TYPE}}</strong>
-        </td>
-        <td>{{event.distance | number:2}} mi</td>
-        <td>{{event.doc.BEGIN_DATE_TIME | moment}}</td>
-        <td>
-          <p ng-if="event.doc.EVENT_NARRATIVE!=''">{{event.doc.EVENT_NARRATIVE}}</p>
-          <p ng-if="event.doc.EVENT_NARRATIVE==''">{{event.doc.EPISODE_NARRATIVE}}</p>
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              <i class="fa fa-circle fa-2x"></i>
+              {{event.doc.EVENT_TYPE}}
+            </h3>
+          </div>
+          <div class="panel-body">
+            <strong>{{event.doc.EVENT_TYPE}}</strong> {{event.distance | number:2}} miles away<br/>
+            <p>Updated {{event.doc.BEGIN_DATE_TIME | moment}}</p>
+            <p ng-if="event.doc.EVENT_NARRATIVE!=''">{{event.doc.EVENT_NARRATIVE}}</p>
+            <p ng-if="event.doc.EPISODE_NARRATIVE!=''">{{event.doc.EPISODE_NARRATIVE}}</p>
+          </div>
         </td>
       </tr>
     </tbody>

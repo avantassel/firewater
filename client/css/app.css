@@ -23,6 +23,19 @@ a {
   border-radius: 25px;
 }
 
+.table-alerts .label-noaa{
+  padding: 10px;
+}
+
+.table-alerts td,.table-past td{
+  border-top: none !important;
+}
+
+.table-alerts .panel-heading, .table-past .panel-heading{
+  background-color: #2b3e50;
+  color: #ebebeb;
+}
+
 .report-card .col-md-4{
   border-left: 1px solid #ccc;
   height: 286px;
@@ -36,7 +49,7 @@ a {
   border: none;
 }
 
-.row.alerts{
+.row.alerts, .row.past{
   padding: 15px;
 }
 
