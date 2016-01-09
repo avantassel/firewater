@@ -33,7 +33,10 @@ module.exports = function(Location) {
       return cb('Missing State',null);
 
     request({url: 'http://alerts.weather.gov/cap/'+state.toLowerCase()+'.atom', method: 'GET'}, function(err, response, body) {
-      if(body){
+			if(response.statusCode !== 200)
+				return cb(err || 'Bad Response',null);
+
+			if(body){
         var parser = new xml2js.Parser();
         parser.parseString(body, function (err, result) {
           return cb(null,result);
@@ -67,6 +70,9 @@ module.exports = function(Location) {
 		      "&units=e";
 
 				request({url: callURL, method: 'GET'}, function(err, response, body) {
+					if(response.statusCode !== 200)
+						return cb(err || 'Bad Response',null);
+
 					if(body){
 						try{
 							return cb(null,JSON.parse(body));
@@ -94,6 +100,9 @@ module.exports = function(Location) {
 			var callURL = vcap['cloudantNoSQLDB'][0]['credentials']['url']+'/stormdata_geo/_design/geodd/_geo/geoidx?include_docs=true&lat='+lat+'&lon='+lng+'&radius='+radius;
 
 			request({url: callURL, method: 'GET'}, function(err, response, body) {
+				if(response.statusCode !== 200)
+					return cb(err || 'Bad Response',null);
+
 				if(body){
 					try{
 						return cb(null,JSON.parse(body));
@@ -113,15 +122,17 @@ module.exports = function(Location) {
 
 	Location.getScene = function(geometry_intersects,cb){
 		if(env
-			&& env.URTHECAST
-			&& env.URTHECAST.api_key
-			&& env.URTHECAST.api_secret){
+			&& env.URTHECAST_KEY
+			&& env.URTHECAST_SECRET){
 
-			var callURL = 'https://api.urthecast.com/v1/archive/scenes?api_key='+env.URTHECAST.api_key
-				+'&api_secret='+env.URTHECAST.api_secret
+			var callURL = 'https://api.urthecast.com/v1/archive/scenes?api_key='+env.URTHECAST_KEY
+				+'&api_secret='+env.URTHECAST_SECRET
 				+'&geometry_intersects='+geometry_intersects;
 
 			request({url: callURL, method: 'GET'}, function(err, response, body) {
+				if(response.statusCode !== 200)
+					return cb(err || 'Bad Response',null);
+
 				if(body){
 					try{
 						return cb(null,JSON.parse(body));
@@ -135,7 +146,7 @@ module.exports = function(Location) {
 				}
 			});
 		} else {
-			return cb('Missing Urthecast credential variable',null);
+			return cb('Missing UrtheCast credential variable',null);
 		}
 	};
 
@@ -149,6 +160,9 @@ module.exports = function(Location) {
 			var callURL = vcap['twitterinsights'][0]['credentials']['url']+'/api/v1/messages/count?q='+q+'%20point_radius:['+lng+'%20'+lat+'%20'+radius+']';
 
 			request({url: callURL, method: 'GET'}, function(err, response, body) {
+				if(response.statusCode !== 200)
+					return cb(err || 'Bad Response',null);
+
 				if(body){
 					try{
 						return cb(null,JSON.parse(body));

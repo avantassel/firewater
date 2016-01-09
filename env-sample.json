@@ -1,9 +1,7 @@
 {
-  "URTHECAST": {
-    "key": ""
-    ,"secret": ""
-  },
-  "VCAP_SERVICES": {
+  "URTHECAST_KEY": ""
+  ,"URTHECAST_SECRET": ""
+  ,"VCAP_SERVICES": {
     "weatherinsights": [
       {
          "name": "weatherinsights",
@@ -20,7 +18,7 @@
    ],
    "twitterinsights": [
      {
-       "name": "Insights for Twitter-az",
+       "name": "twitterinsights",
        "label": "twitterinsights",
        "plan": "Free",
        "credentials": {
@@ -61,7 +59,7 @@
    ],
    "cloudantNoSQLDB": [
     {
-      "name": "Cloudant NoSQL DB-da",
+      "name": "cloudantNoSQLDB",
       "label": "cloudantNoSQLDB",
       "plan": "Shared",
       "credentials": {

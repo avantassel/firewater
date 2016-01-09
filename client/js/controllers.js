@@ -191,7 +191,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   };
 
   $scope.getTweets = function(query){
-    $scope.setProcessMessage('Analyzing tweets for '+query.replace('%23','#')+'...');
+    $scope.setProcessMessage('Analyzing nearby tweets for '+query.replace('%23','#')+'...');
     var q = $q.defer();
     FWService.tweets(query,$scope.position.coords).then(function(response){
       if(response && response.search && response.search.results){
