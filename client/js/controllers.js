@@ -143,6 +143,8 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
           //set user current location lat/lng
           $scope.position = position;
           q.resolve(true);
+      },function(err){
+        q.resolve(true);
       });
     }
     return q.promise;
@@ -169,6 +171,8 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
         $scope.geocode.state = response.state;
 
       q.resolve(true);
+    },function(err){
+      q.resolve(true);
     });
     return q.promise;
   };
@@ -179,6 +183,8 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
     FWService.urthecast($scope.position.coords).then(function(response){
       if(response.payload && response.payload.length)
         $scope.prediction.season = response.payload[0].season;
+      q.resolve(true);
+    },function(err){
       q.resolve(true);
     });
     return q.promise;
@@ -194,6 +200,8 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
       } else {
         q.resolve(0);
       }
+    },function(err){
+      q.resolve(true);
     });
     return q.promise;
   };
@@ -234,6 +242,8 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
       } else {
         $scope.nearest.historical.message = 'There are no past events nearby';
       }
+      q.resolve(true);
+    },function(err){
       q.resolve(true);
     });
     return q.promise;
@@ -284,6 +294,8 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
         $scope.nearest.alert.icon = 'exclamation';
         $scope.nearest.alert.message = 'There are no alerts nearby';
       }
+      q.resolve(true);
+    },function(err){
       q.resolve(true);
     });
     return q.promise;
@@ -363,6 +375,8 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
      //set forecast
      $scope.forecast = forecast;
+     q.resolve(true);
+   },function(err){
      q.resolve(true);
    });
    return q.promise;

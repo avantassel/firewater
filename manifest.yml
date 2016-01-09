@@ -4,6 +4,7 @@ applications:
   - weatherinsights
   - twitterinsights
   - stormdata
+  - cloudantNoSQLDB
   name:    firewater
   host:    firewater
   domain:  mybluemix.net

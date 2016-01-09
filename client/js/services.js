@@ -22,6 +22,8 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
       Location.getAlerts({state:state}, function(data){
         if(data.response){
           q.resolve(data.response.feed.entry);
+        } else {
+          q.reject('Failed');
         }
       });
       return q.promise;
@@ -38,6 +40,8 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
                             ,'endPoint':endPoint}, function(data){
         if(data.response){
           q.resolve(data.response);
+        } else {
+          q.reject('Failed');
         }
       });
       return q.promise;
@@ -52,6 +56,8 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
                             ,'radius':radius}, function(data){
         if(data.response){
           q.resolve(data.response);
+        } else {
+          q.reject('Failed');
         }
       });
       return q.promise;
@@ -62,6 +68,8 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
       Location.getScene({'geometry_intersects':'POINT('+position.longitude+'+'+position.latitude+')'}, function(data){
         if(data.response){
           q.resolve(data.response);
+        } else {
+          q.reject('Failed');
         }
       });
       return q.promise;
@@ -75,6 +83,8 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
                         ,'radius':'10mi'}, function(data){
         if(data.response){
           q.resolve(data.response);
+        } else {
+          q.reject('Failed');
         }
       });
       return q.promise;
