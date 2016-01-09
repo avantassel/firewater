@@ -317,14 +317,26 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
             },
             layers:{
               baselayers: {
-                arc: {
+                blackwhite: {
                     name: 'OpenStreetMap',
                     type: 'xyz',
                     url: 'http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png',
+                    visible: true,
                     layerOptions: {
                         subdomains: ['a', 'b', 'c'],
                         continuousWorld: true,
                         showOnSelector: false
+                    }
+                }
+              },
+              overlays: {
+                soil: {
+                    name: "Soil Survey",
+                    type: "agsTiled",
+                    url: "http://server.arcgisonline.com/arcgis/rest/services/Specialty/Soil_Survey_Map/MapServer",
+                    visible: false,
+                    layerOptions: {
+                        opacity: 0.4
                     }
                 }
               }
@@ -334,7 +346,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
     mapFillColor: function(name){
       switch(name){
         case 'Flood':
-          return "#c6d8ef";
+          return "#62a0ca";
         case 'Fire':
           return "#ffa556";
         case 'Winter':
@@ -346,7 +358,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
     mapBorderColor: function(name){
       switch(name){
         case 'Flood':
-          return "#62a0ca";
+          return "#c6d8ef";
         case 'Fire':
           return "#b64c28";
         case 'Winter':
@@ -442,13 +454,15 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
 
       var centered = false;
       var self = this;
-      var geoAlerts = {floods:[],fires:[],winter:[],other:[]};
+      var geoAlerts = {};
       // push all the coordinates in a geojson formatted array
       // polygon is WKT format
       for(var a in alerts){
         if(!!alerts[a]['cap:polygon'] && alerts[a]['cap:polygon'][0] != ""){
 
           if(alerts[a]['cap:event'][0].indexOf('Flood') !== -1){
+            if(!geoAlerts.floods)
+              geoAlerts.floods = [];
             geoAlerts.floods.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
               alerts[a]['distance'] = self.calcNearestAlert(scope
                 ,'tint'
@@ -459,6 +473,8 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
               return [parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0])];//need lng,lat array
             }));
           } else if(alerts[a]['cap:event'][0].indexOf('Fire') !== -1){
+            if(!geoAlerts.fires)
+              geoAlerts.fires = [];
             geoAlerts.fires.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
               alerts[a]['distance'] = self.calcNearestAlert(scope
                 ,'fire'
@@ -472,6 +488,8 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
             || alerts[a]['cap:event'][0].indexOf('Frost') !== -1
             || alerts[a]['cap:event'][0].indexOf('Freez') !== -1
             || alerts[a]['cap:event'][0].indexOf('Blizzard') !== -1){
+              if(!geoAlerts.winter)
+                geoAlerts.winter = [];
             geoAlerts.winter.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
               alerts[a]['distance'] = self.calcNearestAlert(scope
                 ,'asterisk'
@@ -482,6 +500,8 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
               return [parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0])];//need lng,lat array
             }));
           } else {
+            if(!geoAlerts.other)
+              geoAlerts.other = [];
             //TODO determine what other events there are
             geoAlerts.other.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
               alerts[a]['distance'] = self.calcNearestAlert(scope
@@ -497,7 +517,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
       }
       scope.geoAlerts = geoAlerts;
 
-      if(geoAlerts.floods.length){
+      if(geoAlerts.floods && geoAlerts.floods.length){
          scope.geojson.floods = this.mapGeoJson(geoAlerts.floods,'Flood');
          //center the map
          scope.centerJSON("floods");
@@ -507,7 +527,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
           scope.prediction.forecast.floods.in_alert=true;
       }
 
-      if(geoAlerts.fires.length){
+      if(geoAlerts.fires && geoAlerts.fires.length){
         scope.geojson.fires = this.mapGeoJson(geoAlerts.fires,'Fire');
         //center the map
         if(!centered)
@@ -518,7 +538,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
          scope.prediction.forecast.fires.in_alert=true;
       }
 
-      if(geoAlerts.winter.length){
+      if(geoAlerts.winter && geoAlerts.winter.length){
         scope.geojson.winter = this.mapGeoJson(geoAlerts.winter,'Winter');
         //center the map
         if(!centered)
@@ -529,7 +549,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
          scope.prediction.forecast.winter.in_alert=true;
       }
 
-      if(geoAlerts.other.length){
+      if(geoAlerts.other && geoAlerts.other.length){
         scope.geojson.other = this.mapGeoJson(geoAlerts.other,'Other');
         //center the map
         if(!centered)

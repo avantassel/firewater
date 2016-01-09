@@ -62,7 +62,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
         return 'label-success';
     }
   };
-  
+
   $scope.setProcessMessage = function(message){
     if(!timeout){
       timeout = $timeout(function(){
@@ -132,17 +132,6 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
         return map.fitBounds(latlngs);
       });
   };
-
-  // $scope.addEsriLayers = function(){
-  //   leafletData.getMap().then(function(map) {
-  //     var fires = L.esri.featureLayer({
-  //        url: "http://landscape3.arcgis.com/arcgis/rest/services/USA_Fire_Potential/ImageServer",
-  //        style: function () {
-  //          return { color: "#70ca49", weight: 2 };
-  //        }
-  //      }).addTo(map);
-  //    });
-  // };
 
   $scope.getGeo = function(){
     $scope.setProcessMessage('Getting geo location...');
@@ -287,7 +276,9 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
         }
       }
 
-      if(!!alerts.length && alerts[0]['title'][0] != 'There are no active watches, warnings or advisories'){
+      if(!!alerts.length
+        && !!Object.keys($scope.geoAlerts).length
+        ){
         $scope.nearest.alert.message = 'The nearest alert ('+$scope.nearest.alert.type+')';
       } else {
         $scope.nearest.alert.icon = 'exclamation';

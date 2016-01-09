@@ -2,6 +2,7 @@
 applications:
 - services:
   - weatherinsights
+  - twitterinsights
   - stormdata
   name:    firewater
   host:    firewater
