@@ -100,7 +100,7 @@ module.exports = function(Location) {
 			var callURL = vcap['cloudantNoSQLDB'][0]['credentials']['url']+'/stormdata_geo/_design/geodd/_geo/geoidx?include_docs=true&lat='+lat+'&lon='+lng+'&radius='+radius;
 
 			request({url: callURL, method: 'GET'}, function(err, response, body) {
-				if(response.statusCode !== 200)
+				if(!response || response.statusCode !== 200)
 					return cb(err || 'Bad Response',null);
 
 				if(body){

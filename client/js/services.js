@@ -235,7 +235,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
                     margin : {
                         top: 20,
                         right: 20,
-                        bottom: 30,
+                        bottom: 45,
                         left: 40
                     },
                     x: function(d){return d[0];},
@@ -253,6 +253,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
                       }
                     },
                     xAxis: {
+                        axisLabel: 'Time',
                         showMaxMin: false,
                         tickFormat: function(d) {
                             return d3.time.format('%I:%M%p')(new Date(d))
@@ -274,6 +275,36 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
                     }
                 }
             };
+        }
+        else if(type=='forecastTen'){
+          return {
+              chart: {
+                  type: 'multiBarChart',
+                  height: 450,
+                  margin : {
+                      top: 20,
+                      right: 20,
+                      bottom: 45,
+                      left: 45
+                  },
+                  clipEdge: true,
+                  duration: 500,
+                  stacked: true,
+                  xAxis: {
+                      axisLabel: 'Date',
+                      showMaxMin: false,
+                      tickFormat: function(d){
+                          return d3.time.format('%m/%d/%y')(new Date(d))
+                      }
+                  },
+                  yAxis: {
+                      axisLabelDistance: -20,
+                      tickFormat: function(d){
+                          return d;
+                      }
+                  }
+              }
+          };
         }
     },
 

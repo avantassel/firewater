@@ -2,7 +2,16 @@
 
 <leaflet id="map" class="map" center="center" defaults="defaults" geojson="geojson" geojson-nested="true" layers="layers" markers="markers"></leaflet>
 
-<nvd3 options="forecastOptions" data="forecastData"></nvd3>
+<div class="row">
+  <br>
+  <div class="container-fluid pull-right">
+    <button ng-click="changeForecast()" class="btn btn-primary">{{(showTenForecast)?'24 Hour Forecast':'10 Day Forecast'}}</button>
+  </div>
+</div>
+
+<nvd3 ng-show="!showTenForecast" options="forecastOptions" data="forecastData"></nvd3>
+
+<nvd3 ng-show="showTenForecast" options="forecastTenOptions" data="forecastTenData"></nvd3>
 
 <div class="row alerts">
   <div class="col-md-12">

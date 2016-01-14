@@ -5,6 +5,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
     , elev: 0
     , geometry: { location: {lat:($stateParams.lat || 0),lng:($stateParams.lng || 0)}}
   };
+  $scope.showTenForecast = false;
   $scope.currentName = $state.current.name;
   $scope.position = null;
   $scope.forecast = null;
@@ -47,8 +48,17 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   angular.extend($scope, FWService.mapOptions($scope));
 
   $scope.forecastOptions = FWService.chartOptions('forecast');
+  $scope.forecastTenOptions = FWService.chartOptions('forecastTen');
 
   var timeout=null, messages=[];
+
+  $scope.changeForecast = function(){
+    $scope.showTenForecast = !$scope.showTenForecast;
+    if($scope.showTenForecast)
+      $scope.getForecast('10');
+    else
+      $scope.getForecast('24');
+  };
 
   $scope.getNoaaAlertClass = function(severity){
      switch(severity){
@@ -302,79 +312,127 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   };
 
   // https://twcservice.mybluemix.net/rest-api/#!/twc_forecast_hourly/v2fcsthourly24
- $scope.getForecast = function(){
+ $scope.getForecast = function(type){
+
+   if(type=='24' && $scope.forecastData){
+     return true;
+   } else if(type=='10' && $scope.forecastTenData){
+     return true;
+   }
+
    $scope.setProcessMessage('Analyzing weather foreast...');
    var q = $q.defer();
-   var dewpt = [], mslp = [], wspd = [], gust = [], pop = [], temp = [], popAmount = 0, severityAmount = 0;
+   var dewpt = [], mslp = [], wspd = [], gust = [], pop = [], rh = [], temp = [], popAmount = 0, severityAmount = 0;
    //get 24hr forecast for user location
-   FWService.forecast($scope.position.coords,'24').then(function(forecast){
+   FWService.forecast($scope.position.coords,type).then(function(response){
 
-     for(var f in forecast.forecasts){
+     for(var f in response.forecasts){
 
-       popAmount += forecast.forecasts[f].pop;
-       severityAmount += forecast.forecasts[f].severity;
+       var d = new Date(response.forecasts[f].fcst_valid_local);
 
-       var d = new Date(forecast.forecasts[f].fcst_valid_local);
-       dewpt.push(
-         [d.getTime(), forecast.forecasts[f].dewpt]
-       );
-       mslp.push(
-         [d.getTime(), forecast.forecasts[f].mslp]
-       );
-       wspd.push(
-         [d.getTime(), forecast.forecasts[f].wspd]
-       );
-       gust.push(
-         [d.getTime(), forecast.forecasts[f].gust]
-       );
-       pop.push(
-         [d.getTime(), forecast.forecasts[f].pop]
-       );
-       temp.push(
-         [d.getTime(), forecast.forecasts[f].temp]
-       );
+       if(type=='24'){
+         popAmount += response.forecasts[f].pop;
+         severityAmount += response.forecasts[f].severity;
 
-       //  https://en.wikipedia.org/wiki/Gale_warning
-       if(forecast.forecasts[f].wspd >= 40){
-         $scope.prediction.forecast.high_winds=true;
+         dewpt.push(
+           [d.getTime(), response.forecasts[f].dewpt]
+         );
+         mslp.push(
+           [d.getTime(), response.forecasts[f].mslp]
+         );
+         wspd.push(
+           [d.getTime(), response.forecasts[f].wspd]
+         );
+         gust.push(
+           [d.getTime(), response.forecasts[f].gust]
+         );
+         pop.push(
+           [d.getTime(), response.forecasts[f].pop]
+         );
+         temp.push(
+           [d.getTime(), response.forecasts[f].temp]
+         );
+
+         //  https://en.wikipedia.org/wiki/Gale_warning
+         if(response.forecasts[f].wspd >= 40){
+           $scope.prediction.forecast.high_winds=true;
+         }
+       } else {
+         rh.push(
+           {x:d.getTime(), y:(response.forecasts[f].day.rh+response.forecasts[f].night.rh)/2}
+         );
+         wspd.push(
+           {x:d.getTime(), y:(response.forecasts[f].day.wspd+response.forecasts[f].night.wspd)/2}
+         );
+         pop.push(
+           {x:d.getTime(), y:(response.forecasts[f].day.pop+response.forecasts[f].night.wspd)/2}
+         );
+         temp.push(
+           {x:d.getTime(), y:(response.forecasts[f].day.temp+response.forecasts[f].night.wspd)/2}
+         );
        }
      }
 
-     if(popAmount/forecast.forecasts.length > 50)
-      $scope.prediction.forecast.high_pop=true;
+    if(type=='24'){
 
-     if(severityAmount/forecast.forecasts.length > 3)
-      $scope.prediction.forecast.high_severity=true;
+      if(popAmount/response.forecasts.length > 50)
+       $scope.prediction.forecast.high_pop=true;
 
-     $scope.forecastData = [
-       {
-         "key": "Dew Point",
-         "values": dewpt
-       },
-       {
-         "key": "Mean Sea Level Pressure",
-         "values": mslp
-       },
-       {
-         "key": "Wind Speed",
-         "values": wspd
-       },
-       {
-         "key": "Wind Gust",
-         "values": gust
-       },
-       {
-         "key": "Probability of Precipitation",
-         "values": pop
-       },
-       {
-         "key": "Temperature F",
-         "values": temp
-       }
-     ];
+      if(severityAmount/response.forecasts.length > 3)
+       $scope.prediction.forecast.high_severity=true;
+
+      $scope.forecastData = [
+        {
+          "key": "Dew Point",
+          "values": dewpt
+        },
+        {
+          "key": "Mean Sea Level Pressure",
+          "values": mslp
+        },
+        {
+          "key": "Wind Speed",
+          "values": wspd
+        },
+        {
+          "key": "Wind Gust",
+          "values": gust
+        },
+        {
+          "key": "Probability of Precipitation",
+          "values": pop
+        },
+        {
+          "key": "Temperature F",
+          "values": temp
+        }
+      ];
+    } else if(type=='10'){
+      $scope.forecastTenData = [
+        {
+          "key": "Relative Humidity",
+          "values": rh
+        },
+        {
+          "key": "Wind Speed",
+          "values": wspd
+        },
+        {
+          "key": "Probability of Precipitation",
+          "values": pop
+        },
+        {
+          "key": "Temperature F",
+          "values": temp
+        }
+      ];
+      console.log($scope.forecastTenData)
+    }
 
      //set forecast
-     $scope.forecast = forecast;
+     if(type=='24')
+      $scope.forecast = response;
+
      q.resolve(true);
    },function(err){
      q.resolve(true);
@@ -472,7 +530,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
  }).then(function(){
 
    $q.all([
-     $scope.getForecast()
+     $scope.getForecast('24')
      ,$scope.getHistorical()
      ,$scope.getAlerts()
      ,$scope.getUrtheCast()
