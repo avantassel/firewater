@@ -280,7 +280,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
             if($scope.nearest.alert.type.toLowerCase().indexOf('flood') !== -1
              && $scope.nearest.alert.miles < 10
              && $scope.geocode.elev < $scope.nearest.alert.elev){
-               $scope.predictions.push({message:'Be aware you are below a flood alert area',type:'danger',icon:'ship'});
+               $scope.predictions.push({message:'Be aware you are below a flood alert area',type:'danger',icon:'ship fa-lg'});
              }
           });
         }
@@ -382,10 +382,12 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
    return q.promise;
  };
 
+ // Good resources on data modeling for floods and wildfires
  // https://www.researchgate.net/publication/233775970_Quantitative_Precipitation_Forecasts_and_Early_Flood_Warning_the_Hunter_Valley_Flood_of_June_2007
  // http://www.erh.noaa.gov/nerfc/qpfpaper.htm
  // http://www.firelab.org/project/firesev
  // http://behaveplus.firemodels.org/sites/default/files/images/downloads/FY14_FMI_Annual_Report_final.pdf
+ // https://www.esri.com/news/arcuser/0700/files/firemodel.pdf
 
  $scope.calcPrediction = function(){
 

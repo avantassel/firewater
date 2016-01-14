@@ -58,7 +58,7 @@
           </div>
           <div class="panel-body">
             <strong>{{event.doc.EVENT_TYPE}}</strong> {{event.distance | number:2}} miles away<br/>
-            <p>Updated {{event.doc.BEGIN_DATE_TIME | moment}}</p>
+            <p>Happened {{event.doc.BEGIN_DATE_TIME | moment}}</p>
             <p ng-if="event.doc.EVENT_NARRATIVE!=''">{{event.doc.EVENT_NARRATIVE}}</p>
             <p ng-if="event.doc.EPISODE_NARRATIVE!=''">{{event.doc.EPISODE_NARRATIVE}}</p>
           </div>

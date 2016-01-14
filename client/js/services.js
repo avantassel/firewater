@@ -260,7 +260,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
                     },
                     yAxis: {
                         tickFormat: function(d){
-                            return d3.format(',.2f')(d);
+                            return d;
                         }
                     },
                     zoom: {
@@ -344,6 +344,15 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
                     name: "Soil Survey",
                     type: "agsTiled",
                     url: "http://server.arcgisonline.com/arcgis/rest/services/Specialty/Soil_Survey_Map/MapServer",
+                    visible: false,
+                    layerOptions: {
+                        opacity: 0.4
+                    }
+                },
+                fires: {
+                    name: "Fire Potential",
+                    type: "agsTiled",
+                    url: "http://tiles.arcgis.com/tiles/DO4gTjwJVIJ7O9Ca/arcgis/rest/services/WLFP_2013/MapServer",
                     visible: false,
                     layerOptions: {
                         opacity: 0.4

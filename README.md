@@ -2,13 +2,17 @@
 
 <img src="client/img/fire-water-icon50.png?raw=true" alt="FireWater logo" title="FireWater" align="right" />
 
-FireWater is a perfect storm prediction application.
+FireWater is a perfect storm weather prediction application.
 
-FireWater uses historical weather disaster data from NOAA and weather insights to predict locations susceptible to flooding and wild fires.
+FireWater uses historical weather disaster data from NOAA and weather insights to predict locations susceptible to flooding and wildfires.
 
 FireWater was developed for the IBM [Sparkathon](http://sparkathon.devpost.com/)
 
 [![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy)
+
+## Demo
+
+[http://firewater.mybluemix.net](http://firewater.mybluemix.net)
 
 ## Config environment variables
 
@@ -67,7 +71,7 @@ Create a geo index to query by lat/lng
 
 ## Bluemix Services
 
-* Cloudant
+* CloudantDB
 * Weather Insights
 * Twitter Insights
 * Apache Spark
