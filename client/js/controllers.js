@@ -337,6 +337,9 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
          dewpt.push(
            [d.getTime(), response.forecasts[f].dewpt]
          );
+         rh.push(
+           [d.getTime(), response.forecasts[f].rh]
+         );
          mslp.push(
            [d.getTime(), response.forecasts[f].mslp]
          );
@@ -358,6 +361,9 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
            $scope.prediction.forecast.high_winds=true;
          }
        } else {
+
+         popAmount += response.forecasts[f].day.pop+response.forecasts[f].night.pop;
+
          rh.push(
            {x:d.getTime(), y:(response.forecasts[f].day.rh+response.forecasts[f].night.rh)/2}
          );
@@ -382,6 +388,10 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
        $scope.prediction.forecast.high_severity=true;
 
       $scope.forecastData = [
+        {
+          "key": "Relative Humidity",
+          "values": rh
+        },
         {
           "key": "Dew Point",
           "values": dewpt
@@ -408,6 +418,10 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
         }
       ];
     } else if(type=='10'){
+
+      if(popAmount/response.forecasts.length*2 > 50)
+       $scope.prediction.forecast.high_pop=true;
+
       $scope.forecastTenData = [
         {
           "key": "Relative Humidity",
@@ -426,12 +440,13 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
           "values": temp
         }
       ];
-      console.log($scope.forecastTenData)
     }
 
      //set forecast
      if(type=='24')
       $scope.forecast = response;
+     else
+      $scope.setProcessMessage('');
 
      q.resolve(true);
    },function(err){
