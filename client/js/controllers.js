@@ -335,25 +335,25 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
          severityAmount += response.forecasts[f].severity;
 
          dewpt.push(
-           [d.getTime(), response.forecasts[f].dewpt]
+           [d.getTime(), response.forecasts[f].dewpt || 0]
          );
          rh.push(
-           [d.getTime(), response.forecasts[f].rh]
+           [d.getTime(), response.forecasts[f].rh || 0]
          );
          mslp.push(
-           [d.getTime(), response.forecasts[f].mslp]
+           [d.getTime(), response.forecasts[f].mslp || 0]
          );
          wspd.push(
-           [d.getTime(), response.forecasts[f].wspd]
+           [d.getTime(), response.forecasts[f].wspd || 0]
          );
          gust.push(
-           [d.getTime(), response.forecasts[f].gust]
+           [d.getTime(), response.forecasts[f].gust || 0]
          );
          pop.push(
-           [d.getTime(), response.forecasts[f].pop]
+           [d.getTime(), response.forecasts[f].pop || 0]
          );
          temp.push(
-           [d.getTime(), response.forecasts[f].temp]
+           [d.getTime(), response.forecasts[f].temp || 0]
          );
 
          //  https://en.wikipedia.org/wiki/Gale_warning
@@ -362,19 +362,33 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
          }
        } else {
 
-         popAmount += response.forecasts[f].day.pop+response.forecasts[f].night.pop;
+         popAmount += response.forecasts[f].day.pop || 0;
+         popAmount += response.forecasts[f].night.pop || 0;
 
-         rh.push(
-           {x:d.getTime(), y:(response.forecasts[f].day.rh+response.forecasts[f].night.rh)/2}
+         //bar structure
+        //  rh.push(
+        //    {x:d.getTime(), y:((response.forecasts[f].day.rh || 0)+(response.forecasts[f].night.rh || 0))/2}
+        //  );
+        //  wspd.push(
+        //    {x:d.getTime(), y:((response.forecasts[f].day.wspd || 0)+(response.forecasts[f].night.wspd || 0))/2}
+        //  );
+        //  pop.push(
+        //    {x:d.getTime(), y:((response.forecasts[f].day.pop || 0)+(response.forecasts[f].night.wspd || 0))/2}
+        //  );
+        //  temp.push(
+        //    {x:d.getTime(), y:((response.forecasts[f].day.temp || 0)+(response.forecasts[f].night.wspd || 0))/2}
+        //  );
+        rh.push(
+           [d.getTime(), ((response.forecasts[f].day.rh || 0)+(response.forecasts[f].night.rh || 0))/2]
          );
          wspd.push(
-           {x:d.getTime(), y:(response.forecasts[f].day.wspd+response.forecasts[f].night.wspd)/2}
+           [d.getTime(), ((response.forecasts[f].day.wspd || 0)+(response.forecasts[f].night.wspd || 0))/2]
          );
          pop.push(
-           {x:d.getTime(), y:(response.forecasts[f].day.pop+response.forecasts[f].night.wspd)/2}
+           [d.getTime(), ((response.forecasts[f].day.pop || 0)+(response.forecasts[f].night.wspd || 0))/2]
          );
          temp.push(
-           {x:d.getTime(), y:(response.forecasts[f].day.temp+response.forecasts[f].night.wspd)/2}
+           [d.getTime(), ((response.forecasts[f].day.temp || 0)+(response.forecasts[f].night.wspd || 0))/2]
          );
        }
      }
@@ -389,8 +403,20 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
       $scope.forecastData = [
         {
+          "key": "Temperature F",
+          "values": temp
+        },
+        {
+          "key": "Probability of Precipitation",
+          "values": pop
+        },
+        {
           "key": "Relative Humidity",
           "values": rh
+        },
+        {
+          "key": "Wind Speed",
+          "values": wspd
         },
         {
           "key": "Dew Point",
@@ -401,20 +427,8 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
           "values": mslp
         },
         {
-          "key": "Wind Speed",
-          "values": wspd
-        },
-        {
           "key": "Wind Gust",
           "values": gust
-        },
-        {
-          "key": "Probability of Precipitation",
-          "values": pop
-        },
-        {
-          "key": "Temperature F",
-          "values": temp
         }
       ];
     } else if(type=='10'){
@@ -424,20 +438,20 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
       $scope.forecastTenData = [
         {
-          "key": "Relative Humidity",
-          "values": rh
-        },
-        {
-          "key": "Wind Speed",
-          "values": wspd
+          "key": "Temperature F",
+          "values": temp
         },
         {
           "key": "Probability of Precipitation",
           "values": pop
         },
         {
-          "key": "Temperature F",
-          "values": temp
+          "key": "Relative Humidity",
+          "values": rh
+        },
+        {
+          "key": "Wind Speed",
+          "values": wspd
         }
       ];
     }

@@ -243,7 +243,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
                     useVoronoi: false,
                     clipEdge: true,
                     duration: 200,
-                    noData: 'The foreast is not available',
+                    noData: 'The 24 hour foreast is not available',
                     useInteractiveGuideline: true,
                     interactiveLayer: {
                       tooltip: {
@@ -277,7 +277,65 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
             };
         }
         else if(type=='forecastTen'){
+
           return {
+                  title: {
+                      enable: true,
+                      text: '10 Day Forecast'
+                  },
+                  chart: {
+                      type: 'stackedAreaChart',
+                      height: 450,
+                      margin : {
+                          top: 20,
+                          right: 20,
+                          bottom: 45,
+                          left: 40
+                      },
+                      x: function(d){return d[0];},
+                      y: function(d){return d[1];},
+                      useVoronoi: false,
+                      clipEdge: true,
+                      duration: 200,
+                      noData: 'The 10 day foreast is not available',
+                      useInteractiveGuideline: true,
+                      interactiveLayer: {
+                        tooltip: {
+                          headerFormatter: function (d) {
+                            return d;
+                          }
+                        }
+                      },
+                      xAxis: {
+                          axisLabel: 'Date',
+                          showMaxMin: false,
+                          tickFormat: function(d) {
+                              return d3.time.format('%m/%d/%y')(new Date(d))
+                          }
+                      },
+                      yAxis: {
+                          tickFormat: function(d){
+                              return d;
+                          }
+                      },
+                      zoom: {
+                          enabled: true,
+                          scaleExtent: [1, 10],
+                          useFixedDomain: false,
+                          useNiceScale: false,
+                          horizontalOff: false,
+                          verticalOff: true,
+                          unzoomEventType: 'dblclick.zoom'
+                      }
+                  }
+              };
+          }
+        else if(type=='forecastTenBar'){
+          return {
+              title: {
+                  enable: true,
+                  text: '10 Day Forecast'
+              },
               chart: {
                   type: 'multiBarChart',
                   height: 450,
