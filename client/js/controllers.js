@@ -504,8 +504,10 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
        $scope.prediction.forecast.fires.risk++;
        if($scope.prediction=='summer')
         $scope.prediction.forecast.fires.risk++;
-   } else if(!$scope.prediction.forecast.fires.in_alert){
+   } else if(!$scope.prediction.forecast.fires.in_alert && $scope.prediction.forecast.fires.risk==0){
      $scope.predictions.push({message:'There is no risk of fires',type:'success'});
+   } else if($scope.prediction.forecast.fires.risk != 0){
+     $scope.predictions.push({message:'Fire risk is low',type:'info',icon:'fire-extinguisher fa-lg'});
    }
 
    //FLOODS
@@ -533,8 +535,23 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
    } else if($scope.prediction.counts.alerts.floods){
        $scope.predictions.push({message:'Flood risk is low',type:'info',icon:'ship fa-lg'});
        $scope.prediction.forecast.floods.risk++;
-   } else if(!$scope.prediction.forecast.floods.in_alert){
+   } else if(!$scope.prediction.forecast.floods.in_alert && $scope.prediction.forecast.floods.risk == 0){
      $scope.predictions.push({message:'There is no risk of flooding',type:'success'});
+   } else if($scope.prediction.forecast.floods.risk != 0){
+     $scope.predictions.push({message:'Flood risk is low',type:'info',icon:'ship fa-lg'});
+   }
+
+   //WINTER/BLIZZARD
+   //of alerts if > 50% are Severe
+
+   if($scope.prediction.forecast.high_pop
+     && $scope.prediction.forecast.high_severity
+     && $scope.prediction.forecast.winter.risk / $scope.prediction.forecast.winter.alerts * 100 > 20 ){
+     $scope.predictions.unshift({message:'Winter/Blizzard risk is high '+ Math.round($scope.prediction.forecast.winter.risk / $scope.prediction.forecast.winter.alerts * 100)+'%',type:'danger',icon:'shovel'});
+   } else if($scope.prediction.forecast.winter.risk !== 0 && $scope.prediction.forecast.winter.risk / $scope.prediction.forecast.winter.alerts * 100 < 20 ){
+     $scope.predictions.unshift({message:'Winter/Blizzard risk is medium '+ Math.round($scope.prediction.forecast.winter.risk / $scope.prediction.forecast.winter.alerts * 100)+'%',type:'warning',icon:'shovel'});
+   } else if($scope.prediction.forecast.winter.risk !== 0){
+     $scope.predictions.unshift({message:'Winter/Blizzard risk is low '+ Math.round($scope.prediction.forecast.winter.risk / $scope.prediction.forecast.winter.alerts * 100)+'%',type:'info',icon:'shovel'});
    }
 
    //24HR FORECAST
@@ -574,7 +591,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
      if($scope.prediction.forecast.floods.risk > 0){
        social.push($scope.getTweets('%23flood').then(function(count){
          if(!!count){
-           $scope.predictions.push({message:'People are talking about #Flood',type:'info',icon:'ship fa-lg'});
+           $scope.predictions.unshift({message:'People are talking about #Flood',type:'info',icon:'ship fa-lg'});
            $scope.prediction.forecast.floods.risk++;
          }
        }));
@@ -582,7 +599,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
      if($scope.prediction.forecast.fires.risk > 0){
        social.push($scope.getTweets('%23fire').then(function(count){
          if(!!count){
-           $scope.predictions.push({message:'People are talking about #Fire',type:'info',icon:'fire-extinguisher fa-lg'});
+           $scope.predictions.unshift({message:'People are talking about #Fire',type:'info',icon:'fire-extinguisher fa-lg'});
            $scope.prediction.forecast.fires.risk++;
          }
        }));
@@ -590,7 +607,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
      social.push($scope.getTweets('%23blizzard').then(function(count){
        if(!!count){
-         $scope.predictions.push({message:'People are talking about #Blizzard',type:'info',icon:'shovel'});
+         $scope.predictions.unshift({message:'People are talking about #Blizzard',type:'info',icon:'shovel'});
          $scope.prediction.forecast.fires.risk++;
        }
      }));

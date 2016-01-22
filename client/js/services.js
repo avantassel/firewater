@@ -546,6 +546,8 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
           scope.prediction.counts.historical.floods++;
         if(type.toLowerCase().indexOf('flash')!==-1)
           scope.prediction.counts.historical.flash++;
+        if(type.toLowerCase().indexOf('blizzard')!==-1)
+          scope.prediction.counts.historical.winter++;
       }
       //update scope distance
       if(scope.nearest.historical.miles == 0 || distance < scope.nearest.historical.miles){
@@ -569,7 +571,9 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
           if(alerts[a]['cap:event'][0].indexOf('Flood') !== -1){
             if(!geoAlerts.floods)
               geoAlerts.floods = [];
-            scope.prediction.forecast.floods.alerts++
+            scope.prediction.forecast.floods.alerts++;
+            if(alerts[a]['cap:severity'] && alerts[a]['cap:severity'][0]=='Severe')
+              scope.prediction.forecast.fires.risk++;
             if(!!alerts[a]['cap:polygon'] && alerts[a]['cap:polygon'][0] != ""){
               geoAlerts.floods.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
                 alerts[a]['distance'] = self.calcNearestAlert(scope
@@ -586,7 +590,9 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
           } else if(alerts[a]['cap:event'][0].indexOf('Fire') !== -1){
             if(!geoAlerts.fires)
               geoAlerts.fires = [];
-              scope.prediction.forecast.fires.alerts++
+              scope.prediction.forecast.fires.alerts++;
+              if(alerts[a]['cap:severity'] && alerts[a]['cap:severity'][0]=='Severe')
+                scope.prediction.forecast.fires.risk++;
               if(!!alerts[a]['cap:polygon'] && alerts[a]['cap:polygon'][0] != ""){
                 geoAlerts.fires.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
                   alerts[a]['distance'] = self.calcNearestAlert(scope
@@ -606,7 +612,9 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
             || alerts[a]['cap:event'][0].indexOf('Blizzard') !== -1){
               if(!geoAlerts.winter)
                 geoAlerts.winter = [];
-                scope.prediction.forecast.winter.alerts++
+                scope.prediction.forecast.winter.alerts++;
+                if(alerts[a]['cap:severity'] && alerts[a]['cap:severity'][0]=='Severe')
+                  scope.prediction.forecast.winter.risk++;
                 if(!!alerts[a]['cap:polygon'] && alerts[a]['cap:polygon'][0] != ""){
                   geoAlerts.winter.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
                     alerts[a]['distance'] = self.calcNearestAlert(scope
@@ -617,13 +625,13 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
                     );
                     return [parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0])];//need lng,lat array
                   }));
-                } else {
-                  //track alerts without polygon
                 }
           } else {
             if(!geoAlerts.other)
               geoAlerts.other = [];
-            scope.prediction.forecast.other.alerts++  
+            scope.prediction.forecast.other.alerts++;
+            if(alerts[a]['cap:severity'] && alerts[a]['cap:severity'][0]=='Severe')
+              scope.prediction.forecast.other.risk++;
             //TODO determine what other events there are
             if(!!alerts[a]['cap:polygon'] && alerts[a]['cap:polygon'][0] != ""){
               geoAlerts.other.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
@@ -635,8 +643,6 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
                 );
                 return [parseFloat(coord.split(',')[1]),parseFloat(coord.split(',')[0])];//need lng,lat array
               }));
-            } else {
-              //track alerts without polygon
             }
           }
 
