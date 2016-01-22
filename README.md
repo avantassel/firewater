@@ -42,14 +42,39 @@ python csv-import.py -f ~/Downloads/stormdata_2013.csv -d stormdata_geo -u 5a96f
 ```
 
 Create a geo index to query by lat/lng
+
+https://5a96fba5-a18f-4c28-b935-06dc8f5832cf-bluemix.cloudant.com/stormdata_geo/_design/geodd/_geo/geoidx?include_docs=true&lat=39.996457&lon=-105.1053292&radius=3218
+
 ```json
 {
   "_id": "_design/geodd",
-  "views": {},
+  "views": {
+    "types": {
+      "map": "function(doc) { emit(doc.EVENT_TYPE, 1) }",
+      "reduce": "_sum"
+    }
+  },
   "language": "javascript",
   "st_indexes": {
     "geoidx": {
       "index": "function(doc) {if (doc.geometry && doc.geometry.coordinates) {st_index(doc.geometry);}}"
+    }
+  }
+}
+```
+
+Create a view to group by EVENT_TYPE
+
+https://5a96fba5-a18f-4c28-b935-06dc8f5832cf-bluemix.cloudant.com/stormdata_geo/_design/events/_view/types?reduce=true&group=true
+
+```json
+{
+  "_id": "_design/events",
+  "language": "javascript",
+  "views": {
+    "types": {
+      "map": "function(doc) { emit(doc.EVENT_TYPE, 1) }",
+      "reduce": "_sum"
     }
   }
 }

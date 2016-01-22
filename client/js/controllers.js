@@ -30,10 +30,10 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
                       ,high_severity:false
                       ,season:''
                       ,forecast: {
-                        fires: {risk:0,social:null,in_alert:false}
-                        ,floods: {risk:0,social:null,in_alert:false}
-                        ,winter: {risk:0,in_alert:false}
-                        ,other: {risk:0,in_alert:false}
+                        fires: {risk:0,alerts:0,social:null,in_alert:false}
+                        ,floods: {risk:0,alerts:0,social:null,in_alert:false}
+                        ,winter: {risk:0,alerts:0,in_alert:false}
+                        ,other: {risk:0,alerts:0,in_alert:false}
                       }
                       ,counts:{
                         alerts: {floods:0,flash:0,fires:0}
@@ -539,15 +539,15 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
    //24HR FORECAST
    if($scope.prediction.forecast.high_winds){
-     $scope.predictions.push({message:'High winds are forecasted',type:'warning'});
+     $scope.predictions.unshift({message:'High winds are forecasted',type:'warning'});
      $scope.prediction.forecast.fires.risk++;
    }
    if($scope.prediction.forecast.high_pop){
-     $scope.predictions.push({message:'High Precipitation is forecasted',type:'warning'});
+     $scope.predictions.unshift({message:'High Precipitation is forecasted',type:'danger'});
      $scope.prediction.forecast.floods.risk++;
    }
    if($scope.prediction.forecast.high_severity){
-     $scope.predictions.push({message:'Weather Severity is high',type:'warning'});
+     $scope.predictions.unshift({message:'Weather Severity is high',type:'danger'});
    }
 
  };
@@ -587,6 +587,14 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
          }
        }));
      }
+
+     social.push($scope.getTweets('%23blizzard').then(function(count){
+       if(!!count){
+         $scope.predictions.push({message:'People are talking about #Blizzard',type:'info',icon:'shovel'});
+         $scope.prediction.forecast.fires.risk++;
+       }
+     }));
+
      return $q.all(social);
    }).then(function(){
      $scope.setProcessMessage('');

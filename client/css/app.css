@@ -39,6 +39,7 @@ a {
 .report-card .col-md-4{
   border-left: 1px solid #ccc;
   height: 286px;
+  overflow-x: scroll;
 }
 
 .report-card .col-md-4 .message{
@@ -115,6 +116,12 @@ ul.alerts li{
 
 .fa-circle{
   color: #ffc94c;
+}
+
+.fa-shovel {
+  background: url('../img/shovel.png') no-repeat;
+  width: 28px;
+  height: 28px;
 }
 
 /* leaflet overrides */
