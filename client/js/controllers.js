@@ -52,6 +52,10 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
   var timeout=null, messages=[];
 
+  $scope.shareUrl = function(){
+      return document.location.href;
+  };
+
   $scope.changeForecast = function(){
     $scope.showTenForecast = !$scope.showTenForecast;
     if($scope.showTenForecast)
