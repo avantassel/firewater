@@ -298,11 +298,15 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
 
       if(!!alerts.length
         && !!Object.keys($scope.geoAlerts).length
+        && $scope.nearest.alert.miles != 0
         ){
         $scope.nearest.alert.message = 'The nearest alert ('+$scope.nearest.alert.type+')';
       } else {
         $scope.nearest.alert.icon = 'exclamation';
-        $scope.nearest.alert.message = 'There are no alerts nearby';
+        if(alerts.length > 1)
+          $scope.nearest.alert.message = 'Alerts are broad, view list';
+        else
+          $scope.nearest.alert.message = 'There are no alerts nearby';
       }
       q.resolve(true);
     },function(err){
@@ -547,11 +551,11 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
    if($scope.prediction.forecast.high_pop
      && $scope.prediction.forecast.high_severity
      && $scope.prediction.forecast.winter.risk / $scope.prediction.forecast.winter.alerts * 100 > 20 ){
-     $scope.predictions.unshift({message:'Winter/Blizzard risk is high '+ Math.round($scope.prediction.forecast.winter.risk / $scope.prediction.forecast.winter.alerts * 100)+'%',type:'danger',icon:'shovel'});
+     $scope.predictions.unshift({message:'Winter/Blizzard risk is high '+ Math.round($scope.prediction.forecast.winter.risk / $scope.prediction.forecast.winter.alerts * 100)+'% are severe',type:'danger',icon:'shovel'});
    } else if($scope.prediction.forecast.winter.risk !== 0 && $scope.prediction.forecast.winter.risk / $scope.prediction.forecast.winter.alerts * 100 < 20 ){
-     $scope.predictions.unshift({message:'Winter/Blizzard risk is medium '+ Math.round($scope.prediction.forecast.winter.risk / $scope.prediction.forecast.winter.alerts * 100)+'%',type:'warning',icon:'shovel'});
+     $scope.predictions.unshift({message:'Winter/Blizzard risk is medium '+ Math.round($scope.prediction.forecast.winter.risk / $scope.prediction.forecast.winter.alerts * 100)+'% are severe',type:'warning',icon:'shovel'});
    } else if($scope.prediction.forecast.winter.risk !== 0){
-     $scope.predictions.unshift({message:'Winter/Blizzard risk is low '+ Math.round($scope.prediction.forecast.winter.risk / $scope.prediction.forecast.winter.alerts * 100)+'%',type:'info',icon:'shovel'});
+     $scope.predictions.unshift({message:'Winter/Blizzard risk is low '+ Math.round($scope.prediction.forecast.winter.risk / $scope.prediction.forecast.winter.alerts * 100)+'% are severe',type:'info',icon:'shovel'});
    }
 
    //24HR FORECAST
