@@ -132,6 +132,11 @@ ul.alerts li{
 .fa-twitter {
   color: #4099FF;
 }
+
+.highlighted {
+    background-color: yellow;
+}
+
 /* leaflet overrides */
 
 .leaflet-div-icon {

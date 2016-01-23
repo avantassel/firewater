@@ -40,7 +40,7 @@
           <div class="panel-body">
             <strong>{{alert['cap:event'][0]}}</strong> <span ng-if="alert['distance']">{{alert['distance'] | number:2}} miles away</span><br/>
             <p>Updated {{alert['updated'][0] | moment}} Expires {{alert['cap:expires'][0] | moment}}</p>
-            {{alert['summary'][0]}} <a ng-href="{{alert['cap:link'][0]}}" title="Read More" target="_blank">more...</a>
+            <div ng-bind-html="alert['summary'][0] | highlight:searchText">{{alert['summary'][0]}}</div> <a ng-href="{{alert['cap:link'][0]}}" title="Read More" target="_blank">more...</a>
             <br/><strong>Affected areas:</strong> {{alert['cap:areaDesc'][0]}}
           </div>
         </td>
@@ -72,8 +72,8 @@
           <div class="panel-body">
             <strong>{{event.doc.EVENT_TYPE}}</strong> <span ng-if="event.distance">{{event.distance | number:2}} miles away</span><br/>
             <p>Happened {{event.doc.BEGIN_DATE_TIME | moment}}</p>
-            <p ng-if="event.doc.EVENT_NARRATIVE!=''">{{event.doc.EVENT_NARRATIVE}}</p>
-            <p ng-if="event.doc.EPISODE_NARRATIVE!=''">{{event.doc.EPISODE_NARRATIVE}}</p>
+            <div ng-if="event.doc.EVENT_NARRATIVE!=''" ng-bind-html="event.doc.EVENT_NARRATIVE | highlight:pastSearchText">{{event.doc.EVENT_NARRATIVE}}</div>
+            <div ng-if="event.doc.EPISODE_NARRATIVE!=''" ng-bind-html="event.doc.EPISODE_NARRATIVE | highlight:pastSearchText">{{event.doc.EPISODE_NARRATIVE}}</div>
           </div>
         </td>
       </tr>
