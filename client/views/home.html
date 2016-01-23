@@ -17,7 +17,11 @@
   <div class="col-md-12">
   <form>
     <div class="form-group">
-      <label for="search">Search Current NOAA Alerts</label>
+      <label for="search">Search Current NOAA Alerts
+        <button class="btn btn-{{getNoaaAlertClass('Minor')}}" ng-click="searchText='Minor'">Minor</button>
+        <button class="btn btn-{{getNoaaAlertClass('Moderate')}}" ng-click="searchText='Moderate'">Moderate</button>
+        <button class="btn btn-{{getNoaaAlertClass('Severe')}}" ng-click="searchText='Severe'">Severe</div></button>
+      </label>
       <input type="text" class="form-control" id="search" placeholder="Alert search" ng-model="searchText">
     </div>
   </form>
@@ -30,7 +34,7 @@
             <h3 class="panel-title">
               <i class="fa fa-{{(alert['cap:event'][0] | eventIcon)}} fa-2x"></i>
               &nbsp;<a ui-sref="state({state:(alert['cap:geocode'] | parseState)})">{{alert['title'][0]}}</a>
-              <div class="label label-noaa pull-right {{getNoaaAlertClass(alert['cap:severity'][0])}}">{{alert['cap:severity'][0]}}</div>
+              <div class="label label-noaa pull-right label-{{getNoaaAlertClass(alert['cap:severity'][0])}}">{{alert['cap:severity'][0]}}</div>
             </h3>
           </div>
           <div class="panel-body">

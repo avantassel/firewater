@@ -30,9 +30,9 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
                         high_winds:false
                         ,high_pop:false
                         ,high_severity:false
-                        ,fires: {risk:0,alerts:0,social:null,in_alert:false,message:'assessing...'}
-                        ,floods: {risk:0,alerts:0,social:null,in_alert:false,message:'assessing...'}
-                        ,winter: {risk:0,alerts:0,social:12,in_alert:false,message:'assessing...'}
+                        ,fires: {risk:0,alerts:0,social:null,in_alert:false,message:'Analyzing...'}
+                        ,floods: {risk:0,alerts:0,social:null,in_alert:false,message:'Analyzing...'}
+                        ,winter: {risk:0,alerts:0,social:null,in_alert:false,message:'Analyzing...'}
                         ,other: {risk:0,alerts:0,in_alert:false}
                       }
                       ,counts:{
@@ -67,13 +67,13 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
   $scope.getNoaaAlertClass = function(severity){
      switch(severity){
       case 'Severe':
-        return 'label-danger';
+        return 'danger';
       case 'Moderate':
-        return 'label-warning';
+        return 'warning';
       case 'Minor':
-        return 'label-info';
+        return 'info';
       default:
-        return 'label-success';
+        return 'success';
     }
   };
 
@@ -571,6 +571,9 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
      if($scope.prediction.forecast.high_pop
        && $scope.prediction.forecast.high_severity
        && $scope.prediction.forecast.winter.risk / $scope.prediction.forecast.winter.alerts * 100 > 20 ){
+         $scope.prediction.forecast.winter.message = 'risk is high '+ Math.round($scope.prediction.forecast.winter.risk / $scope.prediction.forecast.winter.alerts * 100)+'% are severe';
+       } else if($scope.prediction.forecast.winter.risk !== 0
+         && $scope.prediction.forecast.winter.risk / $scope.prediction.forecast.winter.alerts * 100 > 50 ){
          $scope.prediction.forecast.winter.message = 'risk is high '+ Math.round($scope.prediction.forecast.winter.risk / $scope.prediction.forecast.winter.alerts * 100)+'% are severe';
        } else if($scope.prediction.forecast.winter.risk !== 0
          && $scope.prediction.forecast.winter.risk / $scope.prediction.forecast.winter.alerts * 100 > 20 ){
