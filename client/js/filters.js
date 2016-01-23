@@ -15,18 +15,22 @@ firewaterApp.filter('parseState', function() {
         if(!alert)
           return 'bell';
 
-        if(alert['cap:event'][0].indexOf('Flood') !== -1){
+        if(alert['cap:event']&& alert['cap:event'][0].indexOf('Flood') !== -1){
           return 'tint';
         }
-        else if(alert['cap:event'][0].indexOf('Fire') !== -1){
+        else if(alert['cap:event'] && alert['cap:event'][0].indexOf('Fire') !== -1){
           return 'fire';
         }
-        else if(alert['cap:event'][0].indexOf('Winter') !== -1
-            || alert['cap:event'][0].indexOf('Frost') !== -1
-            || alert['cap:event'][0].indexOf('Freez') !== -1
-            || alert['cap:event'][0].indexOf('Blizzard') !== -1
-            || alert['summary'][0].indexOf('HEAVY SNOW') !== -1
-            || alert['summary'][0].indexOf('HEAVY BANDS OF SNOW') !== -1){
+        else if(alert['cap:event'] && (
+            alert['cap:event'][0].indexOf('Winter') !== -1
+              || alert['cap:event'][0].indexOf('Frost') !== -1
+              || alert['cap:event'][0].indexOf('Freez') !== -1
+              || alert['cap:event'][0].indexOf('Blizzard') !== -1
+            ) ||
+            alert['summary'] && (
+              alert['summary'][0].indexOf('HEAVY SNOW') !== -1
+              || alert['summary'][0].indexOf('HEAVY BANDS OF SNOW') !== -1
+            )){
           return 'asterisk';
         }
         else {

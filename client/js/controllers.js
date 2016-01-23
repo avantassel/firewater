@@ -323,7 +323,7 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
         $scope.nearest.alert.message = 'The nearest alert ('+$scope.nearest.alert.type+')';
       } else {
         $scope.nearest.alert.icon = 'exclamation';
-        if(alerts.length > 1)
+        if(alerts.length > 0)
           $scope.nearest.alert.message = 'Alerts are broad, view list';
         else
           $scope.nearest.alert.message = 'There are no alerts nearby';

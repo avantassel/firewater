@@ -568,7 +568,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
       // push all the coordinates in a geojson formatted array
       // polygon is WKT format
       for(var a in alerts){
-          if(alerts[a]['cap:event'][0].indexOf('Flood') !== -1){
+          if(alerts[a]['cap:event'] && alerts[a]['cap:event'][0].indexOf('Flood') !== -1){
             if(!geoAlerts.floods)
               geoAlerts.floods = [];
             scope.prediction.forecast.floods.alerts++;
@@ -587,7 +587,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
             } else {
               //track alerts without polygon
             }
-          } else if(alerts[a]['cap:event'][0].indexOf('Fire') !== -1){
+          } else if(alerts[a]['cap:event'] && alerts[a]['cap:event'][0].indexOf('Fire') !== -1){
             if(!geoAlerts.fires)
               geoAlerts.fires = [];
               scope.prediction.forecast.fires.alerts++;
@@ -606,12 +606,12 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
               } else {
                 //track alerts without polygon
               }
-          } else if(alerts[a]['cap:event'][0].indexOf('Winter') !== -1
+          } else if(alerts[a]['cap:event'] && (alerts[a]['cap:event'][0].indexOf('Winter') !== -1
             || alerts[a]['cap:event'][0].indexOf('Frost') !== -1
             || alerts[a]['cap:event'][0].indexOf('Freez') !== -1
             || alerts[a]['cap:event'][0].indexOf('Blizzard') !== -1
             || alerts[a]['summary'][0].indexOf('HEAVY SNOW') !== -1
-            || alerts[a]['summary'][0].indexOf('HEAVY BANDS OF SNOW') !== -1){
+            || alerts[a]['summary'][0].indexOf('HEAVY BANDS OF SNOW') !== -1)){
               if(!geoAlerts.winter)
                 geoAlerts.winter = [];
                 scope.prediction.forecast.winter.alerts++;
