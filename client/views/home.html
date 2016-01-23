@@ -22,7 +22,7 @@
         <button class="btn btn-{{getNoaaAlertClass('Moderate')}}" ng-click="searchText='Moderate'">Moderate</button>
         <button class="btn btn-{{getNoaaAlertClass('Severe')}}" ng-click="searchText='Severe'">Severe</div></button>
       </label>
-      <input type="text" class="form-control" id="search" placeholder="Alert search" ng-model="searchText">
+      <input type="text" class="form-control" id="search" placeholder="Search alerts..." ng-model="searchText">
     </div>
   </form>
 
@@ -55,7 +55,7 @@
     <form>
       <div class="form-group">
         <label for="search">Search Past Events</label>
-        <input type="text" class="form-control" id="search" placeholder="Past event search" ng-model="pastSearchText">
+        <input type="text" class="form-control" id="search" placeholder="Search past events..." ng-model="pastSearchText">
       </div>
     </form>
 

@@ -41,13 +41,12 @@ a {
   color: #ebebeb;
 }
 
-.report-card .col-md-4{
+.report-card .col-md-6{
   border-left: 1px solid #ccc;
-  height: 286px;
   overflow-x: scroll;
 }
 
-.report-card .col-md-4 .message{
+.report-card .col-md-6 .message{
   padding: 15px;
 }
 
@@ -68,6 +67,8 @@ ul.alerts li{
 
 .badge.danger{
   background-color: #da4f51 !important;
+  font-size: 18px;
+  padding: 5px 9px;
 }
 
 .summary{
