@@ -609,7 +609,9 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
           } else if(alerts[a]['cap:event'][0].indexOf('Winter') !== -1
             || alerts[a]['cap:event'][0].indexOf('Frost') !== -1
             || alerts[a]['cap:event'][0].indexOf('Freez') !== -1
-            || alerts[a]['cap:event'][0].indexOf('Blizzard') !== -1){
+            || alerts[a]['cap:event'][0].indexOf('Blizzard') !== -1
+            || alerts[a]['summary'][0].indexOf('HEAVY SNOW') !== -1
+            || alerts[a]['summary'][0].indexOf('HEAVY BANDS OF SNOW') !== -1){
               if(!geoAlerts.winter)
                 geoAlerts.winter = [];
                 scope.prediction.forecast.winter.alerts++;

@@ -32,7 +32,7 @@
         <td>
           <div class="panel-heading">
             <h3 class="panel-title">
-              <i class="fa fa-{{(alert['cap:event'][0] | eventIcon)}} fa-2x"></i>
+              <i class="fa fa-{{(alert | eventIcon)}} fa-2x"></i>
               &nbsp;<a ui-sref="state({state:(alert['cap:geocode'] | parseState)})">{{alert['title'][0]}}</a>
               <div class="label label-noaa pull-right label-{{getNoaaAlertClass(alert['cap:severity'][0])}}">{{alert['cap:severity'][0]}}</div>
             </h3>
