@@ -27,6 +27,11 @@ a {
   padding: 10px;
 }
 
+.bg-danger,.bg-warning,.bg-info,.bg-success{
+  padding: 10px;
+  border-radius: 10px;
+}
+
 .table-alerts td,.table-past td{
   border-top: none !important;
 }
@@ -124,6 +129,9 @@ ul.alerts li{
   height: 28px;
 }
 
+.fa-twitter {
+  color: #4099FF;
+}
 /* leaflet overrides */
 
 .leaflet-div-icon {

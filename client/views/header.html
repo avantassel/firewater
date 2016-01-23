@@ -17,7 +17,7 @@
         <button type="submit" class="btn btn-default">GO</button>
       </form>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="http://sparkathon.devpost.com" target="_blank">Vote</a></li>
+        <li><a href="http://devpost.com/software/firewater" target="_blank">Vote</a></li>
         <li><a href="https://www.facebook.com/sharer/sharer.php?u={{shareUrl()}}" target="_blank">Share</a></li>
         <li><a ng-href="javascript:return false;" ng-click="ShowAbout();">About</a></li>
       </ul>
@@ -27,7 +27,7 @@
 
 <div class="container-fluid report-card">
 <div class="row">
-  <div class="col-md-4">
+  <div class="col-md-5">
     <ul class="list-group">
       <li class="list-group-item"><i class="fa fa-home fa-2x"></i>
         <a ng-click="zoomToAddress()">{{geocode.formatted_address}}</a>
@@ -46,7 +46,7 @@
       </li>
     </ul>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-7">
     <ul class="list-group">
       <li class="list-group-item">
         <div class="message bg-info" ng-if="searching">
@@ -60,18 +60,32 @@
           {{prediction.message}}
         </div>
       </li>
-      <li class="list-group-item risk">
-
+      <li class="list-group-item">
+        <i class="fa fa-fire fa-2x" ></i> <strong>{{geocode.state}} WildFire Alerts</strong>
+        <span ng-class="predictionClass(prediction.forecast.fires.message)">{{prediction.forecast.fires.message}}</span>
+        <span ng-show="prediction.forecast.fires.social">&nbsp;<i class="fa fa-twitter fa-lg"></i> tweets are up</span>
+        <span class="badge danger">{{prediction.forecast.fires.alerts || 0}}</span>
       </li>
-    </ul>
-  </div>
-  <div class="col-md-4">
-    <ul class="list-group">
-      <li class="list-group-item"><i class="fa fa-fire fa-2x" ></i> <strong>{{geocode.state}} WildFire Alerts</strong> <span class="badge danger">{{prediction.forecast.fires.alerts || 0}}</span></li>
-      <li class="list-group-item"><i class="fa fa-tint fa-2x" ></i> <strong>{{geocode.state}} Flood Alerts</strong> <span class="badge danger">{{prediction.forecast.floods.alerts || 0}}</span></li>
-      <li class="list-group-item"><i class="fa fa-asterisk fa-2x" ></i> <strong>{{geocode.state}} Winter Alerts</strong> <span class="badge danger">{{prediction.forecast.winter.alerts || 0}}</span></li>
-      <li class="list-group-item"><i class="fa fa-bell fa-2x" ></i> <strong>Other {{geocode.state}} Alerts</strong> <span class="badge danger">{{prediction.forecast.other.alerts || 0}}</span></li>
-      <li class="list-group-item"><i class="fa fa-circle fa-2x" ></i> <strong>Historical Events Nearby</strong> <span class="badge danger">{{historical.length || 0}}</span></li>
+      <li class="list-group-item">
+        <i class="fa fa-tint fa-2x" ></i> <strong>{{geocode.state}} Flood Alerts</strong>
+        <span ng-class="predictionClass(prediction.forecast.floods.message)">{{prediction.forecast.floods.message}}</span>
+        <span ng-show="prediction.forecast.floods.social">&nbsp;<i class="fa fa-twitter fa-lg"></i> tweets are up</span>
+        <span class="badge danger">{{prediction.forecast.floods.alerts || 0}}</span>
+      </li>
+      <li class="list-group-item">
+        <i class="fa fa-asterisk fa-2x" ></i> <strong>{{geocode.state}} Winter Alerts</strong>
+        <span ng-class="predictionClass(prediction.forecast.winter.message)">{{prediction.forecast.winter.message}}</span>
+        <span ng-show="prediction.forecast.winter.social">&nbsp;<i class="fa fa-twitter fa-lg"></i> tweets are up</span>
+        <span class="badge danger">{{prediction.forecast.winter.alerts || 0}}</span>
+      </li>
+      <li class="list-group-item">
+        <i class="fa fa-bell fa-2x" ></i> <strong>Other {{geocode.state}} Alerts</strong>
+        <span class="badge danger">{{prediction.forecast.other.alerts || 0}}</span>
+      </li>
+      <li class="list-group-item">
+        <i class="fa fa-circle fa-2x" ></i> <strong>Historical Events Nearby</strong>
+        <span class="badge danger">{{historical.length || 0}}</span>
+      </li>
     </ul>
     <p style="text-align:center;">See map for <a href="http://alerts.weather.gov/" target="_blank">NOAA</a> alerted areas</p>
   </div>
