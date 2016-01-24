@@ -1,0 +1,63 @@
+{
+  "rows": [{
+    "key": "Astronomical Low Tide",
+    "value": 342
+  }, {
+    "key": "Avalanche",
+    "value": 312
+  }, {
+    "key": "Blizzard",
+    "value": 8520
+  }, {
+    "key": "Coastal Flood",
+    "value": 1424
+  }, {
+    "key": "Cold/Wind Chill",
+    "value": 6641
+  }, {
+    "key": "Debris Flow",
+    "value": 105
+  }, {
+    "key": "Dense Fog",
+    "value": 5652
+  }, {
+    "key": "Dense Smoke",
+    "value": 18
+  }, {
+    "key": "Drought",
+    "value": 30046
+  }, {
+    "key": "Dust Devil",
+    "value": 106
+  }, {
+    "key": "Dust Storm",
+    "value": 445
+  }, {
+    "key": "Excessive Heat",
+    "value": 6654
+  }, {
+    "key": "Extreme Cold/Wind Chill",
+    "value": 4250
+  }, {
+    "key": "Flash Flood",
+    "value": 37075
+  }, {
+    "key": "Flood",
+    "value": 23475
+  }, {
+    "key": "Freezing Fog",
+    "value": 211
+  }, {
+    "key": "Frost/Freeze",
+    "value": 7302
+  }, {
+    "key": "Funnel Cloud",
+    "value": 4239
+  }, {
+    "key": "Hail",
+    "value": 132144
+  }, {
+    "key": "Heat",
+    "value": 8891
+  }]
+}

@@ -33,6 +33,11 @@ var firewaterApp = angular.module('firewater'
       controller: 'mainCtrl',
       templateUrl: 'views/home.html'
     })
+    .state('historical', {
+      url: '/historical',
+      controller: 'pastCtrl',
+      templateUrl: 'views/historical.html'
+    })
     .state('otherwise', {
       url: '*path',
       templateUrl: 'views/not-found.html'

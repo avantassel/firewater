@@ -1,4 +1,4 @@
-firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $state, $filter, $timeout, $q, leafletData, FWService) {
+firewaterApp.controller('mainCtrl', function($scope, $stateParams, $state, $filter, $timeout, $q, leafletData, FWService) {
 
   $scope.geocode = {state: ($stateParams.state || 'US')
     , formatted_address: 'Locating...'
@@ -648,5 +648,47 @@ firewaterApp.controller('mainCtrl', function($rootScope, $scope, $stateParams, $
    });
 
  });
+
+}).controller('pastCtrl', function($scope, $state, $http, FWService) {
+
+  $scope.searchAddress = '';
+  $scope.historicalOptions = FWService.chartOptions('historical');
+  $scope.historicalData = [];
+
+  $scope.ShowAbout = function(){
+    return Custombox.open({
+        target: '#about-modal',
+        effect: 'blur',
+        width: 800
+    });
+  };
+
+  $scope.Search = function(e){
+    if((e.type && e.type == 'submit') || (e && e.which === 13)){
+      FWService.geocodeAddress(this.searchAddress).then(function(response){
+        // $scope.geocode.formatted_address = response.formatted_address;
+        // $scope.geocode.geometry = response.geometry;
+        // $scope.geocode.found_state = response.state;
+        //redirect to location
+        $state.go('location',{state:response.state,lat:response.geometry.location.lat,lng:response.geometry.location.lng})
+      });
+    }
+  };
+
+  $scope.getLocation = function(val) {
+    if(val.length<3)
+      return '';
+    return FWService.address(val).then(function(response){
+      return response.map(function(item){
+        return item.description;
+      });
+    });
+  };
+
+  $http.get('data/historical.json').success(function(data) {
+    if(data && data.rows){
+        $scope.historicalData = data.rows;
+    }
+  });
 
 });

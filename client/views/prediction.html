@@ -1,0 +1,66 @@
+<div class="container-fluid report-card">
+<div class="row">
+  <div class="col-md-6">
+    <ul class="list-group">
+      <li class="list-group-item"><i class="fa fa-home fa-2x"></i>
+        <a ng-click="zoomToAddress()">{{geocode.formatted_address}}</a>
+        <span ng-if="geocode.elev"><br/>Altitude at {{geocode.elev | number:0}} ft.</span>
+        <span ng-if="prediction.season"><br/>Season is {{prediction.season}}</span>
+      </li>
+      <li class="list-group-item"><i class="fa fa-sun-o fa-2x"></i> The current weather is {{forecast.forecasts[0].phrase_22char}} {{forecast.forecasts[0].temp}}&deg;F</li>
+      <li class="list-group-item">
+        <i class="fa fa-{{nearest.alert.icon}} fa-2x"></i> {{nearest.alert.message}}
+        <span ng-if="nearest.alert.miles"><br/>{{nearest.alert.miles | number:2}} miles away</span>
+        <span ng-if="nearest.alert.elev"><br/>Altitude at {{nearest.alert.elev | number:0}} ft.</span>
+      </li>
+      <li class="list-group-item">
+        <i class="fa fa-clock-o fa-2x"></i> {{nearest.historical.message}}
+        <span ng-if="nearest.alert.miles"><br/>{{nearest.historical.miles | number:2}} miles away</span>
+      </li>
+    </ul>
+  </div>
+  <div class="col-md-6">
+    <ul class="list-group">
+      <li class="list-group-item">
+        <div class="message bg-info" ng-if="searching">
+          <i class="fa fa-circle-o-notch fa-spin fa-lg"></i>
+          {{searching}}
+        </div>
+      </li>
+      <li class="list-group-item" ng-repeat="prediction in predictions">
+        <div class="message bg-{{prediction.type}}">
+          <i ng-if="prediction.icon" class="fa fa-{{prediction.icon}}"></i>
+          {{prediction.message}}
+        </div>
+      </li>
+      <li class="list-group-item">
+        <i class="fa fa-fire fa-2x" ></i> <strong>{{geocode.state}} WildFire Alerts</strong>
+        <span ng-class="predictionClass(prediction.forecast.fires.message)">{{prediction.forecast.fires.message}}</span>
+        <span ng-show="prediction.forecast.fires.social">&nbsp;<i class="fa fa-twitter fa-lg"></i> tweets are up</span>
+        <span class="badge danger" inc-counter locale="en-IN" interval="2" value="{{prediction.forecast.fires.alerts || 0}}"></span>
+      </li>
+      <li class="list-group-item">
+        <i class="fa fa-tint fa-2x" ></i> <strong>{{geocode.state}} Flood Alerts</strong>
+        <span ng-class="predictionClass(prediction.forecast.floods.message)">{{prediction.forecast.floods.message}}</span>
+        <span ng-show="prediction.forecast.floods.social">&nbsp;<i class="fa fa-twitter fa-lg"></i> tweets are up</span>
+        <span class="badge danger" inc-counter locale="en-IN" interval="2" value="{{prediction.forecast.floods.alerts || 0}}"></span>
+      </li>
+      <li class="list-group-item">
+        <i class="fa fa-asterisk fa-2x" ></i> <strong>{{geocode.state}} Winter Alerts</strong>
+        <span ng-class="predictionClass(prediction.forecast.winter.message)">{{prediction.forecast.winter.message}}</span>
+        <span ng-show="prediction.forecast.winter.social">&nbsp;<i class="fa fa-twitter fa-lg"></i> tweets are up</span>
+        <span class="badge danger" inc-counter locale="en-IN" interval="2" value="{{prediction.forecast.winter.alerts || 0}}"></span>
+      </li>
+      <li class="list-group-item">
+        <i class="fa fa-bell fa-2x" ></i> <strong>Other {{geocode.state}} Alerts</strong>
+        <span class="badge danger" inc-counter locale="en-IN" interval="2" value="{{prediction.forecast.other.alerts || 0}}"></span>
+      </li>
+      <li class="list-group-item">
+        <i class="fa fa-circle fa-2x" ></i> <strong>Historical Events Nearby</strong>
+        <span class="badge danger" inc-counter locale="en-IN" interval="2" value="{{historical.length || 0}}"></span>
+      </li>
+    </ul>
+    <p style="text-align:center;">See map for <a href="http://alerts.weather.gov/" target="_blank">NOAA</a> alerted areas</p>
+  </div>
+</div>
+</div>

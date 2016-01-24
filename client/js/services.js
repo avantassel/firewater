@@ -162,7 +162,33 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
 
     chartOptions: function(type){
 
-      if(type=='risk'){
+      if(type=='historical'){
+        return {
+          title: {
+              enable: true,
+              text: 'Historical Data 1996 - 2013'
+          },
+            chart: {
+                type: 'pieChart',
+                height: 800,
+                x: function(d){return d.key;},
+                y: function(d){return d.value;},
+                showLabels: true,
+                duration: 500,
+                labelThreshold: .01,
+                labelSunbeamLayout: true,
+                legend: {
+                    margin: {
+                        top: 5,
+                        right: 35,
+                        bottom: 5,
+                        left: 0
+                    }
+                }
+            }
+        };
+      }
+      else if(type=='risk'){
         return {
                 chart: {
                   type: 'multiBarChart',

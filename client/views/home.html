@@ -1,5 +1,7 @@
 <ng-include src="'views/header.html'"></ng-include>
 
+<ng-include src="'views/prediction.html'"></ng-include>
+
 <leaflet id="map" class="map" center="center" defaults="defaults" geojson="geojson" geojson-nested="true" layers="layers" markers="markers"></leaflet>
 
 <div class="row">
@@ -39,9 +41,9 @@
           </div>
           <div class="panel-body">
             <strong>{{alert['cap:event'][0]}}</strong> <span ng-if="alert['distance']">{{alert['distance'] | number:2}} miles away</span><br/>
-            <p>Updated {{alert['updated'][0] | moment}} Expires {{alert['cap:expires'][0] | moment}}</p>
+            <p>Updated {{alert['updated'][0] | moment}} <span ng-if="alert['cap:expires'][0]">Expires {{alert['cap:expires'][0] | moment}}</span></p>
             <div ng-bind-html="alert['summary'][0] | highlight:searchText">{{alert['summary'][0]}}</div> <a ng-href="{{alert['cap:link'][0]}}" title="Read More" target="_blank">more...</a>
-            <br/><strong>Affected areas:</strong> {{alert['cap:areaDesc'][0]}}
+            <br/><strong ng-if="alert['cap:areaDesc'][0]">Affected areas:</strong> {{alert['cap:areaDesc'][0]}}
           </div>
         </td>
       </tr>
