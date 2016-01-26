@@ -440,14 +440,22 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
       );
       //counts for historical events within 2 miles
       if(distance <= this.alertDistance){
-        if(type.toLowerCase().indexOf('fire')!==-1)
+        if(type.toLowerCase().indexOf('fire')!==-1){
           scope.prediction.counts.historical.fires++;
-        if(type.toLowerCase().indexOf('flood')!==-1)
+          scope.prediction.forecast.fires.risk++;
+        }
+        if(type.toLowerCase().indexOf('flood')!==-1){
           scope.prediction.counts.historical.floods++;
-        if(type.toLowerCase().indexOf('flash')!==-1)
+          scope.prediction.forecast.floods.risk++;
+        }
+        if(type.toLowerCase().indexOf('flash')!==-1){
           scope.prediction.counts.historical.flash++;
-        if(type.toLowerCase().indexOf('blizzard')!==-1)
+          scope.prediction.forecast.floods.risk++;
+        }
+        if(type.toLowerCase().indexOf('blizzard')!==-1){
           scope.prediction.counts.historical.winter++;
+          scope.prediction.forecast.winter.risk++;                              
+        }
       }
       //update scope distance
       if(scope.nearest.historical.miles == 0 || distance < scope.nearest.historical.miles){
