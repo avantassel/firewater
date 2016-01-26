@@ -188,66 +188,6 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
             }
         };
       }
-      else if(type=='risk'){
-        return {
-                chart: {
-                  type: 'multiBarChart',
-                  height: 200,
-                  margin : {
-                      top: 20,
-                      right: 20,
-                      bottom: 45,
-                      left: 45
-                  },
-                  clipEdge: true,
-                  duration: 500,
-                  stacked: true,
-                  xAxis: {
-                      axisLabel: 'Time (ms)',
-                      showMaxMin: false,
-                      tickFormat: function(d){
-                          return d3.format(',f')(d);
-                      }
-                  },
-                  yAxis: {
-                      axisLabel: 'Y Axis',
-                      axisLabelDistance: -20,
-                      tickFormat: function(d){
-                          return d3.format(',.1f')(d);
-                      }
-                  }
-              }
-            };
-      }
-      else if(type=='prediction'){
-        return {
-              chart: {
-                  type: 'pieChart',
-                  height: 286,
-                  donut: true,
-                  x: function(d){return d.key;},
-                  y: function(d){return d.y;},
-                  showLabels: true,
-                  showLegend: false,
-                  duration: 500,
-                  noData: 'Predicting risk',
-                  pie: {
-                      startAngle: function(d) { return d.startAngle/2 -Math.PI/2 },
-                      endAngle: function(d) { return d.endAngle/2 -Math.PI/2 }
-                  },
-                  color: function(d,l){
-                    if(d.key.indexOf('Positive') !== -1)
-                      return '#31A354';
-                    else if(d.key.indexOf('Neutral') !== -1)
-                      return '#3182BD';
-                    else if(d.key.indexOf('Negative') !== -1)
-                      return '#E6550D';
-                    else
-                      return '#C6DBEF';
-                  }
-              }
-          };
-      }
       else if(type=='forecast'){
 
         return {
@@ -256,7 +196,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
                     text: '24 Hour Forecast'
                 },
                 chart: {
-                    type: 'stackedAreaChart',
+                    type: 'lineChart',
                     height: 450,
                     margin : {
                         top: 20,
@@ -264,40 +204,24 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
                         bottom: 45,
                         left: 40
                     },
-                    x: function(d){return d[0];},
-                    y: function(d){return d[1];},
-                    useVoronoi: false,
-                    clipEdge: true,
-                    duration: 200,
-                    noData: 'The 24 hour foreast is not available',
+                    x: function(d){ return d.x; },
+                    y: function(d){ return d.y; },
                     useInteractiveGuideline: true,
-                    interactiveLayer: {
-                      tooltip: {
-                        headerFormatter: function (d) {
-                          return d;
-                        }
-                      }
-                    },
+                    focusEnable: false,
+                    duration: 500,
+                    noData: 'The 24 hour foreast is not available',
                     xAxis: {
                         axisLabel: 'Time',
-                        showMaxMin: false,
                         tickFormat: function(d) {
                             return d3.time.format('%I:%M%p')(new Date(d))
                         }
                     },
+                    forceY: [0,100],
                     yAxis: {
+                        showMaxMin: true,
                         tickFormat: function(d){
                             return d;
                         }
-                    },
-                    zoom: {
-                        enabled: true,
-                        scaleExtent: [1, 10],
-                        useFixedDomain: false,
-                        useNiceScale: false,
-                        horizontalOff: false,
-                        verticalOff: true,
-                        unzoomEventType: 'dblclick.zoom'
                     }
                 }
             };
@@ -310,7 +234,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
                       text: '10 Day Forecast'
                   },
                   chart: {
-                      type: 'stackedAreaChart',
+                      type: 'lineChart',
                       height: 450,
                       margin : {
                           top: 20,
@@ -318,78 +242,28 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
                           bottom: 45,
                           left: 40
                       },
-                      x: function(d){return d[0];},
-                      y: function(d){return d[1];},
-                      useVoronoi: false,
-                      clipEdge: true,
-                      duration: 200,
-                      noData: 'The 10 day foreast is not available',
+                      x: function(d){ return d.x; },
+                      y: function(d){ return d.y; },
                       useInteractiveGuideline: true,
-                      interactiveLayer: {
-                        tooltip: {
-                          headerFormatter: function (d) {
-                            return d;
-                          }
-                        }
-                      },
+                      focusEnable: false,
+                      duration: 500,
+                      noData: 'The 10 day foreast is not available',
                       xAxis: {
                           axisLabel: 'Date',
-                          showMaxMin: false,
                           tickFormat: function(d) {
                               return d3.time.format('%m/%d/%y')(new Date(d))
                           }
                       },
+                      forceY: [0,100],
                       yAxis: {
+                          showMaxMin: true,
                           tickFormat: function(d){
                               return d;
                           }
-                      },
-                      zoom: {
-                          enabled: true,
-                          scaleExtent: [1, 10],
-                          useFixedDomain: false,
-                          useNiceScale: false,
-                          horizontalOff: false,
-                          verticalOff: true,
-                          unzoomEventType: 'dblclick.zoom'
                       }
                   }
               };
           }
-        else if(type=='forecastTenBar'){
-          return {
-              title: {
-                  enable: true,
-                  text: '10 Day Forecast'
-              },
-              chart: {
-                  type: 'multiBarChart',
-                  height: 450,
-                  margin : {
-                      top: 20,
-                      right: 20,
-                      bottom: 45,
-                      left: 45
-                  },
-                  clipEdge: true,
-                  duration: 500,
-                  stacked: true,
-                  xAxis: {
-                      axisLabel: 'Date',
-                      showMaxMin: false,
-                      tickFormat: function(d){
-                          return d3.time.format('%m/%d/%y')(new Date(d))
-                      }
-                  },
-                  yAxis: {
-                      axisLabelDistance: -20,
-                      tickFormat: function(d){
-                          return d;
-                      }
-                  }
-              }
-          };
-        }
     },
 
     mapCenter: function(){

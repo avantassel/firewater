@@ -335,6 +335,39 @@ firewaterApp.controller('mainCtrl', function($scope, $stateParams, $state, $filt
     return q.promise;
   };
 
+  function calcRisk(forecast,type){
+    var risk = 0;
+    if(type == 'fire'){
+      //high winds
+      if((forecast.wspd && forecast.wspd >= 40)
+        || (forecast.gust && forecast.gust >= 40)){
+        risk++;
+      }
+      risk += $scope.prediction.forecast.fires.risk;
+    }
+
+    if(type == 'flood'){
+      //pop
+      if(forecast.pop){
+        risk += forecast.pop*.1;//0-10
+      }
+      if(forecast.day && forecast.day.pop){
+        risk += forecast.day.pop*.1;//0-10
+      }
+      if(forecast.night && forecast.night.pop){
+        risk += forecast.night.pop*.1;//0-10
+      }
+      risk += $scope.prediction.forecast.floods.risk;
+    }
+
+    //severity
+    if(forecast.severity){
+      risk += forecast.severity;//0-6
+    }
+
+    return risk;
+  }
+
   // https://twcservice.mybluemix.net/rest-api/#!/twc_forecast_hourly/v2fcsthourly24
  $scope.getForecast = function(type){
 
@@ -346,7 +379,10 @@ firewaterApp.controller('mainCtrl', function($scope, $stateParams, $state, $filt
 
    $scope.setProcessMessage('Analyzing weather foreast...');
    var q = $q.defer();
-   var dewpt = [], mslp = [], wspd = [], gust = [], pop = [], rh = [], temp = [], popAmount = 0, severityAmount = 0;
+   var temp = [], pop = [], rh = [], wspd = [], fire = [], flood = [];//graph elements
+   var dewpt = [], mslp = [], gust = [];//other elements
+   var popAmount = 0, severityAmount = 0;//summed elements
+
    //get 24hr forecast for user location
    FWService.forecast($scope.position.coords,type).then(function(response){
 
@@ -355,29 +391,27 @@ firewaterApp.controller('mainCtrl', function($scope, $stateParams, $state, $filt
        var d = new Date(response.forecasts[f].fcst_valid_local);
 
        if(type=='24'){
+
          popAmount += response.forecasts[f].pop;
          severityAmount += response.forecasts[f].severity;
 
-         dewpt.push(
-           [d.getTime(), response.forecasts[f].dewpt || 0]
-         );
-         rh.push(
-           [d.getTime(), response.forecasts[f].rh || 0]
-         );
-         mslp.push(
-           [d.getTime(), response.forecasts[f].mslp || 0]
-         );
-         wspd.push(
-           [d.getTime(), response.forecasts[f].wspd || 0]
-         );
-         gust.push(
-           [d.getTime(), response.forecasts[f].gust || 0]
+         temp.push(
+           {x:d.getTime(), y: response.forecasts[f].temp || 0}
          );
          pop.push(
-           [d.getTime(), response.forecasts[f].pop || 0]
+           {x:d.getTime(), y: response.forecasts[f].pop || 0}
          );
-         temp.push(
-           [d.getTime(), response.forecasts[f].temp || 0]
+         rh.push(
+           {x:d.getTime(), y: response.forecasts[f].rh || 0}
+         );
+         wspd.push(
+           {x:d.getTime(), y: response.forecasts[f].wspd || 0}
+         );
+         fire.push(
+           {x:d.getTime(), y: calcRisk(response.forecasts[f],'fire')}
+         );
+         flood.push(
+           {x:d.getTime(), y: calcRisk(response.forecasts[f],'flood')}
          );
 
          //  https://en.wikipedia.org/wiki/Gale_warning
@@ -389,33 +423,61 @@ firewaterApp.controller('mainCtrl', function($scope, $stateParams, $state, $filt
          popAmount += response.forecasts[f].day.pop || 0;
          popAmount += response.forecasts[f].night.pop || 0;
 
-         //bar structure
-        //  rh.push(
-        //    {x:d.getTime(), y:((response.forecasts[f].day.rh || 0)+(response.forecasts[f].night.rh || 0))/2}
-        //  );
-        //  wspd.push(
-        //    {x:d.getTime(), y:((response.forecasts[f].day.wspd || 0)+(response.forecasts[f].night.wspd || 0))/2}
-        //  );
-        //  pop.push(
-        //    {x:d.getTime(), y:((response.forecasts[f].day.pop || 0)+(response.forecasts[f].night.wspd || 0))/2}
-        //  );
-        //  temp.push(
-        //    {x:d.getTime(), y:((response.forecasts[f].day.temp || 0)+(response.forecasts[f].night.wspd || 0))/2}
-        //  );
-        rh.push(
-           [d.getTime(), ((response.forecasts[f].day.rh || 0)+(response.forecasts[f].night.rh || 0))/2]
-         );
-         wspd.push(
-           [d.getTime(), ((response.forecasts[f].day.wspd || 0)+(response.forecasts[f].night.wspd || 0))/2]
-         );
-         pop.push(
-           [d.getTime(), ((response.forecasts[f].day.pop || 0)+(response.forecasts[f].night.wspd || 0))/2]
-         );
-         temp.push(
-           [d.getTime(), ((response.forecasts[f].day.temp || 0)+(response.forecasts[f].night.wspd || 0))/2]
-         );
+          temp.push(
+            {x:d.getTime(), y: ((response.forecasts[f].day.temp || 0)+(response.forecasts[f].night.wspd || 0))/2}
+          );
+          pop.push(
+            {x:d.getTime(), y: ((response.forecasts[f].day.pop || 0)+(response.forecasts[f].night.wspd || 0))/2}
+          );
+          rh.push(
+             {x:d.getTime(), y: ((response.forecasts[f].day.rh || 0)+(response.forecasts[f].night.rh || 0))/2}
+          );
+          wspd.push(
+             {x:d.getTime(), y: ((response.forecasts[f].day.wspd || 0)+(response.forecasts[f].night.wspd || 0))/2}
+          );
+          fire.push(
+            {x:d.getTime(), y: calcRisk(response.forecasts[f],'fire')}
+          );
+          flood.push(
+            {x:d.getTime(), y: calcRisk(response.forecasts[f],'flood')}
+          );
        }
      }
+
+     var chartData = [
+       {
+         "key": "Temperature F",
+         "color":'#D62728',
+         "values": temp
+       },
+       {
+         "key": "Probability of Precipitation",
+         "color": '#AEC7E8',
+         "values": pop
+       },
+       {
+         "key": "Relative Humidity",
+         "color": '#2CA02C',
+         "values": rh
+       },
+       {
+         "key": "Wind Speed",
+         "color": '#5bc0de',
+         "values": wspd
+       },
+       {
+         "key": "Fire Risk",
+         "color": '#ffa556',
+         "area": true,
+         "values": fire
+       },
+       {
+         "key": "Flood Risk",
+         "color": '#1F77B4',
+         "area": true,
+         "values": flood
+       }
+     ];
 
     if(type=='24'){
 
@@ -425,36 +487,8 @@ firewaterApp.controller('mainCtrl', function($scope, $stateParams, $state, $filt
       if(severityAmount/response.forecasts.length > 3)
        $scope.prediction.forecast.high_severity=true;
 
-      $scope.forecastData = [
-        {
-          "key": "Temperature F",
-          "values": temp
-        },
-        {
-          "key": "Probability of Precipitation",
-          "values": pop
-        },
-        {
-          "key": "Relative Humidity",
-          "values": rh
-        },
-        {
-          "key": "Wind Speed",
-          "values": wspd
-        },
-        {
-          "key": "Dew Point",
-          "values": dewpt
-        },
-        {
-          "key": "Mean Sea Level Pressure",
-          "values": mslp
-        },
-        {
-          "key": "Wind Gust",
-          "values": gust
-        }
-      ];
+      $scope.forecastData = chartData;
+
     } else if(type=='10'){
 
       if(popAmount/response.forecasts.length*2 > 50){
@@ -463,24 +497,7 @@ firewaterApp.controller('mainCtrl', function($scope, $stateParams, $state, $filt
           $scope.prediction.forecast.floods.risk++;
       }
 
-      $scope.forecastTenData = [
-        {
-          "key": "Temperature F",
-          "values": temp
-        },
-        {
-          "key": "Probability of Precipitation",
-          "values": pop
-        },
-        {
-          "key": "Relative Humidity",
-          "values": rh
-        },
-        {
-          "key": "Wind Speed",
-          "values": wspd
-        }
-      ];
+      $scope.forecastTenData = chartData;
     }
 
      //set forecast
@@ -612,11 +629,14 @@ firewaterApp.controller('mainCtrl', function($scope, $stateParams, $state, $filt
  }).then(function(){
 
    $q.all([
-     $scope.getForecast('24')
-     ,$scope.getHistorical()
+     $scope.getHistorical()
      ,$scope.getAlerts()
      ,$scope.getUrtheCast()
-   ]).then(function() {
+   ])
+   .then(function(){
+     return $scope.getForecast('24');
+   })
+   .then(function() {
      return $scope.calcPrediction();
    },function(err){
      $scope.predictions.push({message:err,type:'danger'});
@@ -648,16 +668,6 @@ firewaterApp.controller('mainCtrl', function($scope, $stateParams, $state, $filt
      return $q.all(social);
    }).then(function(){
      $scope.setProcessMessage('');
-
-     var layer_precipitation = new OpenLayers.Layer.XYZ(
-        "precipitation",
-        "http://${s}.tile.openweathermap.org/map/precipitation/${z}/${x}/${y}.png",
-        {
-            isBaseLayer: false,
-            opacity: 0.7,
-            sphericalMercator: true
-        }
-    );
    });
 
  });
