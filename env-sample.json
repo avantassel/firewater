@@ -1,5 +1,6 @@
 {
-  "URTHECAST_KEY": ""
+  "OPEN_WEATHER_MAP_KEY":""
+  ,"URTHECAST_KEY": ""
   ,"URTHECAST_SECRET": ""
   ,"VCAP_SERVICES": {
     "weatherinsights": [

@@ -457,8 +457,11 @@ firewaterApp.controller('mainCtrl', function($scope, $stateParams, $state, $filt
       ];
     } else if(type=='10'){
 
-      if(popAmount/response.forecasts.length*2 > 50)
-       $scope.prediction.forecast.high_pop=true;
+      if(popAmount/response.forecasts.length*2 > 50){
+          $scope.prediction.forecast.high_pop=true;
+          $scope.predictions.unshift({message:'High Precipitation is forecasted within 10 days',type:'danger'});
+          $scope.prediction.forecast.floods.risk++;
+      }
 
       $scope.forecastTenData = [
         {
@@ -593,7 +596,7 @@ firewaterApp.controller('mainCtrl', function($scope, $stateParams, $state, $filt
      $scope.prediction.forecast.fires.risk++;
    }
    if($scope.prediction.forecast.high_pop){
-     $scope.predictions.unshift({message:'High Precipitation is forecasted',type:'danger'});
+     $scope.predictions.unshift({message:'High Precipitation is forecasted within 24 hrs',type:'danger'});
      $scope.prediction.forecast.floods.risk++;
    }
    if($scope.prediction.forecast.high_severity){
@@ -645,6 +648,16 @@ firewaterApp.controller('mainCtrl', function($scope, $stateParams, $state, $filt
      return $q.all(social);
    }).then(function(){
      $scope.setProcessMessage('');
+
+     var layer_precipitation = new OpenLayers.Layer.XYZ(
+        "precipitation",
+        "http://${s}.tile.openweathermap.org/map/precipitation/${z}/${x}/${y}.png",
+        {
+            isBaseLayer: false,
+            opacity: 0.7,
+            sphericalMercator: true
+        }
+    );
    });
 
  });
