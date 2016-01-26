@@ -48,12 +48,7 @@ https://5a96fba5-a18f-4c28-b935-06dc8f5832cf-bluemix.cloudant.com/stormdata_geo/
 ```json
 {
   "_id": "_design/geodd",
-  "views": {
-    "types": {
-      "map": "function(doc) { emit(doc.EVENT_TYPE, 1) }",
-      "reduce": "_sum"
-    }
-  },
+  "views": {},
   "language": "javascript",
   "st_indexes": {
     "geoidx": {
