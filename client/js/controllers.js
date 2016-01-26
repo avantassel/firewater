@@ -5,7 +5,7 @@ firewaterApp.controller('mainCtrl', function($scope, $stateParams, $state, $filt
     , elev: 0
     , geometry: { location: {lat:($stateParams.lat || 0),lng:($stateParams.lng || 0)}}
   };
-  $scope.showTenForecast = false;
+  $scope.showTenForecast = true;
   $scope.currentName = $state.current.name;
   $scope.position = null;
   $scope.forecast = null;
@@ -481,11 +481,21 @@ firewaterApp.controller('mainCtrl', function($scope, $stateParams, $state, $filt
 
     if(type=='24'){
 
-      if(popAmount/response.forecasts.length > 50)
-       $scope.prediction.forecast.high_pop=true;
+      if(popAmount/response.forecasts.length > 50){
+        $scope.prediction.forecast.high_pop=true;
+        $scope.predictions.unshift({message:'High Precipitation is forecasted within 24 hrs',type:'danger'});
+      }
 
-      if(severityAmount/response.forecasts.length > 3)
-       $scope.prediction.forecast.high_severity=true;
+      if(severityAmount/response.forecasts.length > 3){
+        $scope.prediction.forecast.high_severity=true;
+        $scope.predictions.unshift({message:'Weather Severity is high',type:'danger'});
+      }
+
+       //24HR FORECAST
+       if($scope.prediction.forecast.high_winds){
+         $scope.predictions.unshift({message:'High winds are forecasted',type:'warning'});
+         $scope.prediction.forecast.fires.risk++;
+       }
 
       $scope.forecastData = chartData;
 
@@ -501,7 +511,7 @@ firewaterApp.controller('mainCtrl', function($scope, $stateParams, $state, $filt
     }
 
      //set forecast
-     if(type=='24')
+     if(type=='10')
       $scope.forecast = response;
      else
       $scope.setProcessMessage('');
@@ -582,7 +592,7 @@ firewaterApp.controller('mainCtrl', function($scope, $stateParams, $state, $filt
    } else if(!$scope.prediction.forecast.floods.in_alert && $scope.prediction.forecast.floods.risk == 0){
      $scope.prediction.forecast.floods.message = 'no risk';
    } else if($scope.prediction.forecast.floods.risk != 0){
-     $scope.prediction.forecast.winter.message = 'risk is low';
+     $scope.prediction.forecast.floods.message = 'risk is low';
    }
 
    //WINTER/BLIZZARD
@@ -606,20 +616,6 @@ firewaterApp.controller('mainCtrl', function($scope, $stateParams, $state, $filt
    } else {
      $scope.prediction.forecast.winter.message = 'no risk';
    }
-
-   //24HR FORECAST
-   if($scope.prediction.forecast.high_winds){
-     $scope.predictions.unshift({message:'High winds are forecasted',type:'warning'});
-     $scope.prediction.forecast.fires.risk++;
-   }
-   if($scope.prediction.forecast.high_pop){
-     $scope.predictions.unshift({message:'High Precipitation is forecasted within 24 hrs',type:'danger'});
-     $scope.prediction.forecast.floods.risk++;
-   }
-   if($scope.prediction.forecast.high_severity){
-     $scope.predictions.unshift({message:'Weather Severity is high',type:'danger'});
-   }
-
  };
 
  $scope.getGeo().then(function(){
@@ -634,7 +630,7 @@ firewaterApp.controller('mainCtrl', function($scope, $stateParams, $state, $filt
      ,$scope.getUrtheCast()
    ])
    .then(function(){
-     return $scope.getForecast('24');
+     return $scope.getForecast($scope.showTenForecast?'10':'24');
    })
    .then(function() {
      return $scope.calcPrediction();

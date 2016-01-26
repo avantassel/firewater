@@ -7,7 +7,7 @@
         <span ng-if="geocode.elev"><br/>Altitude at {{geocode.elev | number:0}} ft.</span>
         <span ng-if="prediction.season"><br/>Season is {{prediction.season}}</span>
       </li>
-      <li class="list-group-item"><i class="fa fa-sun-o fa-2x"></i> The current weather is {{forecast.forecasts[0].phrase_22char}} {{forecast.forecasts[0].temp}}&deg;F</li>
+      <li class="list-group-item"><i class="fa fa-sun-o fa-2x"></i> {{forecast.forecasts[0].narrative}}</li>
       <li class="list-group-item">
         <i class="fa fa-{{nearest.alert.icon}} fa-2x"></i> {{nearest.alert.message}}
         <span ng-if="nearest.alert.miles"><br/>{{nearest.alert.miles | number:2}} miles away</span>
