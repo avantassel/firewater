@@ -420,20 +420,20 @@ firewaterApp.controller('mainCtrl', function($scope, $stateParams, $state, $filt
          }
        } else {
 
-         popAmount += response.forecasts[f].day.pop || 0;
+         popAmount += response.forecasts[f].day ? (response.forecasts[f].day.pop || 0):0;
          popAmount += response.forecasts[f].night.pop || 0;
 
           temp.push(
-            {x:d.getTime(), y: ((response.forecasts[f].day.temp || 0)+(response.forecasts[f].night.wspd || 0))/2}
+            {x:d.getTime(), y: ((response.forecasts[f].day ? (response.forecasts[f].day.temp || 0):0)+(response.forecasts[f].night.wspd || 0))/2}
           );
           pop.push(
-            {x:d.getTime(), y: ((response.forecasts[f].day.pop || 0)+(response.forecasts[f].night.wspd || 0))/2}
+            {x:d.getTime(), y: ((response.forecasts[f].day ? (response.forecasts[f].day.pop || 0):0)+(response.forecasts[f].night.wspd || 0))/2}
           );
           rh.push(
-             {x:d.getTime(), y: ((response.forecasts[f].day.rh || 0)+(response.forecasts[f].night.rh || 0))/2}
+             {x:d.getTime(), y: ((response.forecasts[f].day ? (response.forecasts[f].day.rh || 0):0)+(response.forecasts[f].night.rh || 0))/2}
           );
           wspd.push(
-             {x:d.getTime(), y: ((response.forecasts[f].day.wspd || 0)+(response.forecasts[f].night.wspd || 0))/2}
+             {x:d.getTime(), y: ((response.forecasts[f].day ? (response.forecasts[f].day.wspd || 0):0)+(response.forecasts[f].night.wspd || 0))/2}
           );
           fire.push(
             {x:d.getTime(), y: calcRisk(response.forecasts[f],'fire')}
