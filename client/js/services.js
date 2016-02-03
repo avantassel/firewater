@@ -454,7 +454,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
         }
         if(type.toLowerCase().indexOf('blizzard')!==-1){
           scope.prediction.counts.historical.winter++;
-          scope.prediction.forecast.winter.risk++;                              
+          scope.prediction.forecast.winter.risk++;
         }
       }
       //update scope distance
@@ -481,7 +481,7 @@ firewaterApp.factory('FWService', function($http, $q, $filter, $location, $geolo
               geoAlerts.floods = [];
             scope.prediction.forecast.floods.alerts++;
             if(alerts[a]['cap:severity'] && alerts[a]['cap:severity'][0]=='Severe')
-              scope.prediction.forecast.fires.risk++;
+              scope.prediction.forecast.floods.risk++;
             if(!!alerts[a]['cap:polygon'] && alerts[a]['cap:polygon'][0] != ""){
               geoAlerts.floods.push(alerts[a]['cap:polygon'][0].split(' ').map(function(coord){
                 alerts[a]['distance'] = self.calcNearestAlert(scope
